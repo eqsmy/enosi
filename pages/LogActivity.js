@@ -1,6 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StatusBar } from "expo-status-bar";
-import { Text, View, Image } from "react-native";
+import { Text, View, Image, SafeAreaView } from "react-native";
 import { StyleSheet } from "react-native";
 import { enosiStyles } from "./styles";
 
@@ -8,9 +8,9 @@ import { enosiStyles } from "./styles";
 
 export default function LogActivity() {
   return (
-    <View>
+    <SafeAreaView>
       <Ionicons name="play-circle-outline" color="green" size={24} />
-    </View>
+    </SafeAreaView>
   );
 }
 

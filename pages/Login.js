@@ -1,4 +1,11 @@
-import { Image, View, TextInput, Text, Button } from "react-native";
+import {
+  Image,
+  View,
+  TextInput,
+  Text,
+  Button,
+  SafeAreaView,
+} from "react-native";
 import { StyleSheet } from "react-native";
 import { useState } from "react";
 import { BasicButton } from "../components/Buttons";
@@ -13,7 +20,7 @@ export default function Login({ setLoggedIn }) {
   }
 
   return (
-    <View style={enosiStyles.container}>
+    <SafeAreaView style={enosiStyles.container}>
       <Image
         style={{
           margin: "auto",
@@ -38,6 +45,6 @@ export default function Login({ setLoggedIn }) {
         onChangeText={setPassword}
       ></TextInput>
       <BasicButton onPress={login}></BasicButton>
-    </View>
+    </SafeAreaView>
   );
 }

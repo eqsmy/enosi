@@ -1,10 +1,12 @@
 import { ScrollView, Text, TextInput, View } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { Text, View, SafeAreaView } from "react-native";
 import { enosiStyles } from "./styles";
 import Community from "../components/Community";
 
 export default function Communities() {
   return (
-    <View style={enosiStyles.feedContainer}>
+    <SafeAreaView style={enosiStyles.feedContainer}>
       <TextInput placeholder="Search" style={enosiStyles.searchBar}></TextInput>
       <ScrollView style={{ width: "90%" }} showsVerticalScrollIndicator={false}>
         <Community
@@ -20,6 +22,6 @@ export default function Communities() {
           icon={require("../assets/community.png")}
         ></Community>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
