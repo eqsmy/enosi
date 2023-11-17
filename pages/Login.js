@@ -12,6 +12,7 @@ import {
 import { supabase } from "../utils/Supabase";
 import { BasicButton } from "../components/Buttons";
 import { useNavigation } from "@react-navigation/native";
+import { enosiStyles } from "./styles";
 
 export default function Login({ setLoggedIn }) {
   const [email, setEmail] = useState("");
@@ -66,7 +67,7 @@ export default function Login({ setLoggedIn }) {
   };
 
   return (
-    <SafeAreaView style={loginStyles.container}>
+    <SafeAreaView style={enosiStyles.container}>
       <Image
         style={{
           margin: "auto",
@@ -79,16 +80,16 @@ export default function Login({ setLoggedIn }) {
         resizeMode="contain"
       />
       <TextInput
-        style={loginStyles.input}
+        style={enosiStyles.textInput}
+        placeholder={"Email address"}
         onChangeText={setEmail}
         value={email}
-        placeholder={"email@address.com"}
         autoCapitalize={"none"}
       ></TextInput>
       <TextInput
-        style={loginStyles.input}
-        onChangeText={setPassword}
+        style={enosiStyles.textInput}
         value={password}
+        onChangeText={setPassword}
         secureTextEntry={true}
         placeholder={"Password"}
         autoCapitalize={"none"}
@@ -116,20 +117,3 @@ export default function Login({ setLoggedIn }) {
     </SafeAreaView>
   );
 }
-
-export const loginStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  input: {
-    height: 40,
-    margin: 12,
-    width: "70%",
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 10,
-  },
-});
