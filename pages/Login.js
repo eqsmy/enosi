@@ -9,7 +9,7 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import { supabase } from "../utils/supabase";
+import { supabase } from "../utils/Supabase";
 import { BasicButton } from "../components/Buttons";
 import { useNavigation } from "@react-navigation/native";
 

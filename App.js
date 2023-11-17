@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { supabase } from "./utils/supabase";
+import { supabase } from "./utils/Supabase";
 import { TouchableWithoutFeedback } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
@@ -116,7 +116,7 @@ export default function App() {
           />
           <Tab.Screen
             name="Profile"
-            component={Profile}
+            children={() => <Profile setLoggedIn={setLoggedIn} />}
             options={{
               headerShadowVisible: false,
               tabBarIcon: ({ color, size }) => (
