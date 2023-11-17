@@ -1,6 +1,5 @@
-import { ScrollView, Text, TextInput, View } from "react-native";
+import { ScrollView, Text, TextInput, View, SafeAreaView } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { Text, View, SafeAreaView } from "react-native";
 import { enosiStyles } from "./styles";
 import Community from "../components/Community";
 
