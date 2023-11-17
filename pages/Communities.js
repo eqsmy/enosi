@@ -1,12 +1,21 @@
-import { StatusBar } from "expo-status-bar";
-import { Text, View } from "react-native";
+import { ScrollView, Text, TextInput, View } from "react-native";
 import { enosiStyles } from "./styles";
+import Community from "../components/Community";
 
 export default function Communities() {
   return (
-    <View style={enosiStyles.container}>
-      <Text>Communities</Text>
-      <StatusBar style="auto" />
+    <View style={enosiStyles.feedContainer}>
+      <TextInput placeholder="Search" style={enosiStyles.searchBar}></TextInput>
+      <ScrollView style={{ width: "90%" }}>
+        <Community
+          name="LGHS Class of 2019"
+          icon={require("../assets/community.png")}
+        ></Community>
+        <Community
+          name="LGHS Class of 2019"
+          icon={require("../assets/community.png")}
+        ></Community>
+      </ScrollView>
     </View>
   );
 }
