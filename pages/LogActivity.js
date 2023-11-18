@@ -4,8 +4,6 @@ import { Text, View, Image, SafeAreaView } from "react-native";
 import { StyleSheet } from "react-native";
 import { enosiStyles } from "./styles";
 
-// X-Button: <Image source={require("../assets/close.png")} style={styles.myExit} />
-
 export default function LogActivity() {
   return (
     <SafeAreaView>

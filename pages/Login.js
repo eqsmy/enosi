@@ -1,23 +1,70 @@
+import React, { useState } from "react";
 import {
   Image,
-  View,
   TextInput,
-  Text,
-  Button,
   SafeAreaView,
+  StyleSheet,
+  Alert,
+  View,
+  Text,
+  TouchableOpacity,
 } from "react-native";
-import { StyleSheet } from "react-native";
-import { useState } from "react";
+import { supabase } from "../utils/Supabase";
 import { BasicButton } from "../components/Buttons";
+import { useNavigation } from "@react-navigation/native";
 import { enosiStyles } from "./styles";
 
 export default function Login({ setLoggedIn }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+  const navigation = useNavigation();
 
-  function login() {
-    setLoggedIn(true);
+  //a function to allow the user to sign in with their email and password
+  async function signInWithEmail() {
+    console.log("sign in with email attempt");
+    try {
+      setLoading(true);
+      const { user, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+      console.log("Sign in response: ", { user, error });
+      if (user) setLoggedIn(true) && navigation.navigate("Home");
+    } catch (error) {
+      Alert.alert(error.message);
+    } finally {
+      setLoading(false);
+    }
   }
+
+  //a function to allow the user to sign up with their email and password
+  async function signUpWithEmail() {
+    try {
+      setLoading(true);
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.signUp({ email, password });
+
+      if (error) throw error;
+      if (user) {
+        Alert.alert("Check your email for the confirmation link.");
+        setLoggedIn(true) && navigation.navigate("Home"); // Set loggedIn to true on successful sign-up
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  //a variable to toggle between sign in and sign up
+  const toggleLoginSignup = () => {
+    setIsLogin(!isLogin);
+  };
 
   return (
     <SafeAreaView style={enosiStyles.container}>
@@ -35,16 +82,38 @@ export default function Login({ setLoggedIn }) {
       <TextInput
         style={enosiStyles.textInput}
         placeholder={"Email address"}
-        value={email}
         onChangeText={setEmail}
+        value={email}
+        autoCapitalize={"none"}
       ></TextInput>
       <TextInput
         style={enosiStyles.textInput}
-        placeholder={"Password"}
         value={password}
         onChangeText={setPassword}
+        secureTextEntry={true}
+        placeholder={"Password"}
+        autoCapitalize={"none"}
       ></TextInput>
-      <BasicButton onPress={login} text="Login"></BasicButton>
+      {isLogin ? (
+        <BasicButton
+          text="Sign In"
+          onPress={() => signInWithEmail()}
+          loading={loading}
+        />
+      ) : (
+        <BasicButton
+          text="Sign Up"
+          onPress={() => signUpWithEmail()}
+          loading={loading}
+        />
+      )}
+      <TouchableOpacity onPress={toggleLoginSignup}>
+        <Text>
+          {isLogin
+            ? "Don't have an account? Sign Up"
+            : "Already have an account? Sign In"}
+        </Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }

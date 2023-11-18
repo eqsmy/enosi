@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { Alert, Modal, TouchableWithoutFeedback } from "react-native";
+import React, { useEffect, useState } from "react";
+import { supabase } from "./utils/Supabase";
+import { TouchableWithoutFeedback } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import Home from "./pages/Home";
@@ -28,6 +29,23 @@ const Theme = {
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [addFriendOrCommModal, setAddFriendOrCommModal] = useState(false);
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    // Get the current session
+    const currentSession = supabase.auth.getSession();
+    setSession(currentSession);
+    setLoggedIn(!!currentSession); // Set loggedIn based on current session
+
+    // Subscribe to auth state changes
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        setLoggedIn(!!session); // Update loggedIn based on new session state
+      }
+    );
+  }, []);
+
   return (
     <NavigationContainer theme={Theme}>
       {loggedIn ? (
@@ -117,7 +135,7 @@ export default function App() {
           />
           <Tab.Screen
             name="Profile"
-            component={Profile}
+            children={() => <Profile setLoggedIn={setLoggedIn} />}
             options={{
               headerShadowVisible: false,
               tabBarIcon: ({ color, size }) => (

@@ -1,5 +1,4 @@
-import { ScrollView, TextInput } from "react-native";
-import { View, SafeAreaView } from "react-native";
+import { ScrollView, Text, TextInput, View, SafeAreaView } from "react-native";
 import { enosiStyles } from "./styles";
 import Community from "../components/Community";
 import { BasicButton } from "../components/Buttons";
