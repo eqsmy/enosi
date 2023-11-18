@@ -3,9 +3,7 @@ import {
   Image,
   TextInput,
   SafeAreaView,
-  StyleSheet,
   Alert,
-  View,
   Text,
   TouchableOpacity,
 } from "react-native";
@@ -13,55 +11,54 @@ import { supabase } from "../utils/Supabase";
 import { BasicButton } from "../components/Buttons";
 import { useNavigation } from "@react-navigation/native";
 import { enosiStyles } from "./styles";
+import { useUser } from "../utils/UserContext";
 
-export default function Login({ setLoggedIn }) {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLogin, setIsLogin] = useState(true); //have to use this logic for this page only
   const [loading, setLoading] = useState(false);
-  const [isLogin, setIsLogin] = useState(true);
+  const { dispatch } = useUser();
   const navigation = useNavigation();
 
   //a function to allow the user to sign in with their email and password
-  async function signInWithEmail() {
-    console.log("sign in with email attempt");
+  const signInWithEmail = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const { user, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      if (error) throw error;
-      console.log("Sign in response: ", { user, error });
-      if (user) setLoggedIn(true) && navigation.navigate("Home");
-    } catch (error) {
-      Alert.alert(error.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  //a function to allow the user to sign up with their email and password
-  async function signUpWithEmail() {
-    try {
-      setLoading(true);
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.signUp({ email, password });
-
-      if (error) throw error;
-      if (user) {
-        Alert.alert("Check your email for the confirmation link.");
-        setLoggedIn(true) && navigation.navigate("Home"); // Set loggedIn to true on successful sign-up
+      if (error) {
+        Alert.alert("Login Failed", error.message);
+        return;
       }
-    } catch (error) {
-      Alert.alert(error.message);
+      if (user) {
+        dispatch({ type: "SET_SESSION", payload: user });
+        console.log("Dispatched SET_SESSION with user:", user);
+        navigation.navigate("Home");
+      }
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  //a variable to toggle between sign in and sign up
+  const signUpWithEmail = async () => {
+    setLoading(true);
+    try {
+      const { user, error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        Alert.alert("Sign Up Failed", error.message);
+        return;
+      }
+      if (user) {
+        Alert.alert("Success", "Check your email for the confirmation link.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const toggleLoginSignup = () => {
     setIsLogin(!isLogin);
   };
@@ -97,13 +94,13 @@ export default function Login({ setLoggedIn }) {
       {isLogin ? (
         <BasicButton
           text="Sign In"
-          onPress={() => signInWithEmail()}
+          onPress={signInWithEmail}
           loading={loading}
         />
       ) : (
         <BasicButton
           text="Sign Up"
-          onPress={() => signUpWithEmail()}
+          onPress={signUpWithEmail}
           loading={loading}
         />
       )}

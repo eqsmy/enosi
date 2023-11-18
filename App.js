@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { UserProvider, useUser } from "./utils/UserContext";
 import { supabase } from "./utils/Supabase";
 import { TouchableWithoutFeedback } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -8,12 +9,12 @@ import Communities from "./pages/Communities";
 import Challenges from "./pages/Challenges";
 import Profile from "./pages/Profile";
 import LogActivity from "./pages/LogActivity";
+import Login from "./pages/Login";
 
 import { Ionicons } from "@expo/vector-icons";
 import Svg, { Circle, Path } from "react-native-svg";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { LogoHeader } from "./components/Headers";
-import Login from "./pages/Login";
 
 const Tab = createBottomTabNavigator();
 
@@ -25,28 +26,19 @@ const Theme = {
   },
 };
 
-export default function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [session, setSession] = useState(null);
+const AppContent = () => {
+  //use 'useUser' custom hook directly
+  const { state } = useUser();
 
   useEffect(() => {
-    // Get the current session
-    const currentSession = supabase.auth.getSession();
-    setSession(currentSession);
-    setLoggedIn(!!currentSession); // Set loggedIn based on current session
-
-    // Subscribe to auth state changes
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setLoggedIn(!!session); // Update loggedIn based on new session state
-      }
-    );
-  }, []);
+    console.log("Logged In State Changed:", state.loggedIn);
+    // You can add any logic here that should run when loggedIn state changes
+  }, [state.loggedIn]);
 
   return (
     <NavigationContainer theme={Theme}>
-      {loggedIn ? (
+      {/* the state of the app is managed globally via Context /  */}
+      {state.loggedIn ? (
         <Tab.Navigator>
           <Tab.Screen
             name="Home"
@@ -103,7 +95,6 @@ export default function App() {
               ),
             }}
           />
-
           <Tab.Screen
             name="Challenges"
             component={Challenges}
@@ -116,7 +107,6 @@ export default function App() {
           />
           <Tab.Screen
             name="Profile"
-            children={() => <Profile setLoggedIn={setLoggedIn} />}
             options={{
               headerShadowVisible: false,
               tabBarIcon: ({ color, size }) => (
@@ -126,8 +116,16 @@ export default function App() {
           />
         </Tab.Navigator>
       ) : (
-        <Login setLoggedIn={setLoggedIn}></Login>
+        <Login />
       )}
     </NavigationContainer>
+  );
+};
+
+export default function App() {
+  return (
+    <UserProvider>
+      <AppContent />
+    </UserProvider>
   );
 }
