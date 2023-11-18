@@ -10,7 +10,7 @@ export function CancelButton({ navigation }) {
   );
 }
 
-export function BasicButton({ onPress }) {
+export function BasicButton({ onPress, text }) {
   return (
     <Button
       onPress={onPress}
@@ -18,7 +18,7 @@ export function BasicButton({ onPress }) {
       style={buttonStyles.button}
       title="hi"
     >
-      Login
+      {text}
     </Button>
   );
 }
@@ -27,5 +27,6 @@ export const buttonStyles = StyleSheet.create({
   button: {
     color: "#ff04d",
     backgroundColor: "#61B8C2",
+    height: 40,
   },
 });
