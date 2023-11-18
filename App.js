@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "./utils/Supabase";
 import { TouchableWithoutFeedback } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { setCustomText } from "react-native-global-props";
 
 import Home from "./pages/Home";
 import Communities from "./pages/Communities";
@@ -17,6 +18,14 @@ import Login from "./pages/Login";
 import { Text } from "react-native-paper";
 
 const Tab = createBottomTabNavigator();
+
+// This is not working right now but it would be cool if it did
+const customTextProps = {
+  style: {
+    fontFamily: "Avenir",
+  },
+};
+setCustomText(customTextProps);
 
 const Theme = {
   ...DefaultTheme,
@@ -71,19 +80,7 @@ export default function App() {
               ></Communities>
             )}
             options={{
-              headerShadowVisible: false,
-              headerRight: () => (
-                <TouchableWithoutFeedback>
-                  <Ionicons
-                    onPress={() => {
-                      setAddFriendOrCommModal(true);
-                    }}
-                    name="add"
-                    size={35}
-                    style={{ right: 10 }}
-                  />
-                </TouchableWithoutFeedback>
-              ),
+              headerShown: false,
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name="people" color={color} size={size} />
               ),
