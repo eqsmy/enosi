@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TouchableWithoutFeedback } from "react-native";
+import { Alert, Modal, TouchableWithoutFeedback } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import Home from "./pages/Home";
@@ -13,6 +13,7 @@ import Svg, { Circle, Path } from "react-native-svg";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { LogoHeader } from "./components/Headers";
 import Login from "./pages/Login";
+import { Text } from "react-native-paper";
 
 const Tab = createBottomTabNavigator();
 
@@ -26,6 +27,7 @@ const Theme = {
 
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [addFriendOrCommModal, setAddFriendOrCommModal] = useState(false);
   return (
     <NavigationContainer theme={Theme}>
       {loggedIn ? (
@@ -44,9 +46,26 @@ export default function App() {
           />
           <Tab.Screen
             name="Communities"
-            component={Communities}
+            children={() => (
+              <Communities
+                addFriendOrCommModal={addFriendOrCommModal}
+                setAddFriendOrCommModal={setAddFriendOrCommModal}
+              ></Communities>
+            )}
             options={{
               headerShadowVisible: false,
+              headerRight: () => (
+                <TouchableWithoutFeedback>
+                  <Ionicons
+                    onPress={() => {
+                      setAddFriendOrCommModal(true);
+                    }}
+                    name="add"
+                    size={35}
+                    style={{ right: 10 }}
+                  />
+                </TouchableWithoutFeedback>
+              ),
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name="people" color={color} size={size} />
               ),

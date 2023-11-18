@@ -23,8 +23,8 @@ export const enosiStyles = StyleSheet.create({
   },
   searchBar: {
     height: 40,
-    margin: 12,
-    width: "90%",
+    marginTop: 10,
+    width: "100%",
     borderWidth: 1,
     padding: 10,
     borderRadius: 100,

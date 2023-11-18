@@ -44,7 +44,7 @@ export default function Login({ setLoggedIn }) {
         value={password}
         onChangeText={setPassword}
       ></TextInput>
-      <BasicButton onPress={login}></BasicButton>
+      <BasicButton onPress={login} text="Login"></BasicButton>
     </SafeAreaView>
   );
 }
