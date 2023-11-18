@@ -1,12 +1,25 @@
-import { ScrollView, Text, TextInput, View, SafeAreaView } from "react-native";
+import {
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+  SafeAreaView,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { enosiStyles } from "./styles";
 import Community from "../components/Community";
 import { BasicButton } from "../components/Buttons";
 import { Pressable } from "react-native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { Ionicons } from "@expo/vector-icons";
+import NewCommunities from "./NewCommunities";
 
-export default function Communities({
+const Stack = createStackNavigator();
+
+function CommunitiesFeed({
   addFriendOrCommModal,
   setAddFriendOrCommModal,
+  props,
 }) {
   return (
     <SafeAreaView style={enosiStyles.feedContainer}>
@@ -37,7 +50,10 @@ export default function Communities({
           }}
         >
           <View style={{ flex: 1, paddingLeft: 20, paddingRight: 10 }}>
-            <BasicButton text={"New Community"}></BasicButton>
+            <BasicButton
+              onPress={() => props.navigation.push("NewCommunities")}
+              text={"New Community"}
+            ></BasicButton>
           </View>
           <View style={{ flex: 1, paddingRight: 20, paddingLeft: 10 }}>
             <BasicButton text={"Add a Friend"}></BasicButton>
@@ -70,5 +86,63 @@ export default function Communities({
         </ScrollView>
       </View>
     </SafeAreaView>
+  );
+}
+
+export default function Communities({
+  addFriendOrCommModal,
+  setAddFriendOrCommModal,
+}) {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShadowVisible: false,
+      }}
+    >
+      <Stack.Screen
+        name="Communities"
+        options={{
+          headerRight: () => (
+            <TouchableWithoutFeedback>
+              <Ionicons
+                onPress={() => {
+                  setAddFriendOrCommModal(true);
+                }}
+                name="add"
+                size={35}
+                style={{ right: 10 }}
+              />
+            </TouchableWithoutFeedback>
+          ),
+        }}
+        children={(props) => (
+          <CommunitiesFeed
+            props={props}
+            addFriendOrCommModal={addFriendOrCommModal}
+            setAddFriendOrCommModal={setAddFriendOrCommModal}
+          />
+        )}
+      />
+      <Stack.Screen
+        name="NewCommunities"
+        options={{
+          title: "New Communities",
+          headerRight: () => (
+            <TouchableWithoutFeedback>
+              <Ionicons
+                onPress={() => {
+                  setAddFriendOrCommModal(true);
+                }}
+                name="close"
+                size={35}
+                style={{ right: 10 }}
+                color="#FF4A00"
+              />
+            </TouchableWithoutFeedback>
+          ),
+        }}
+        component={NewCommunities}
+      />
+    </Stack.Navigator>
   );
 }
