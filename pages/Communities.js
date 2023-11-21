@@ -12,7 +12,7 @@ import { BasicButton } from "../components/Buttons";
 import { Pressable } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
-import NewCommunities from "./NewCommunities";
+import NewCommunities, { PrivacySettings } from "./NewCommunities";
 
 const Stack = createStackNavigator();
 
@@ -126,7 +126,14 @@ export default function Communities({
       <Stack.Screen
         name="NewCommunities"
         options={{
-          title: "New Communities",
+          title: "New Community",
+        }}
+        component={NewCommunities}
+      />
+      <Stack.Screen
+        name="NewCommunityPrivacySettings"
+        options={{
+          title: "New Community",
           headerRight: () => (
             <TouchableWithoutFeedback>
               <Ionicons
@@ -141,7 +148,7 @@ export default function Communities({
             </TouchableWithoutFeedback>
           ),
         }}
-        component={NewCommunities}
+        component={PrivacySettings}
       />
     </Stack.Navigator>
   );
