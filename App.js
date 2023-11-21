@@ -72,7 +72,7 @@ export default function App() {
             }}
           />
           <Tab.Screen
-            name="Communities"
+            name="CommunitiesTab"
             children={() => (
               <Communities
                 addFriendOrCommModal={addFriendOrCommModal}
