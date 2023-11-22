@@ -51,7 +51,10 @@ function CommunitiesFeed({
         >
           <View style={{ flex: 1, paddingLeft: 20, paddingRight: 10 }}>
             <BasicButton
-              onPress={() => props.navigation.push("NewCommunities")}
+              onPress={() => {
+                setAddFriendOrCommModal(false);
+                props.navigation.push("NewCommunities");
+              }}
               text={"New Community"}
             ></BasicButton>
           </View>
@@ -133,7 +136,7 @@ export default function Communities({
       <Stack.Screen
         name="NewCommunityPrivacySettings"
         options={{
-          title: "New Community",
+          title: "Community Settings",
           headerRight: () => (
             <TouchableWithoutFeedback>
               <Ionicons
