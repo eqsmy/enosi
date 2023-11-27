@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { supabase } from "./utils/Supabase";
+import { supabase } from "./utils/supabase";
 import { TouchableWithoutFeedback } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { setCustomText } from "react-native-global-props";

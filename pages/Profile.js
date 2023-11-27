@@ -2,7 +2,7 @@ import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { Text, SafeAreaView, Button } from "react-native";
 import { enosiStyles } from "./styles";
-import { supabase } from "../utils/Supabase"; // Adjust this path as needed
+import { supabase } from "../utils/supabase"; // Adjust this path as needed
 
 export default function Profile({ setLoggedIn }) {
   const handleLogout = async () => {
