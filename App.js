@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { UserProvider, useUser } from "./utils/UserContext";
 import { supabase } from "./utils/Supabase";
 import { TouchableWithoutFeedback } from "react-native";
@@ -38,6 +38,7 @@ const Theme = {
 const AppContent = () => {
   //use 'useUser' custom hook directly
   const { state } = useUser();
+  const [addFriendOrCommModal, setAddFriendOrCommModal] = useState(false);
 
   useEffect(() => {
     console.log("Logged In State Changed:", state.loggedIn);
@@ -63,10 +64,15 @@ const AppContent = () => {
               }}
             />
             <Tab.Screen
-              name="Communities"
-              component={Communities}
+              name="CommunitiesTab"
+              children={() => (
+                <Communities
+                  addFriendOrCommModal={addFriendOrCommModal}
+                  setAddFriendOrCommModal={setAddFriendOrCommModal}
+                ></Communities>
+              )}
               options={{
-                headerShadowVisible: false,
+                headerShown: false,
                 tabBarIcon: ({ color, size }) => (
                   <Ionicons name="people" color={color} size={size} />
                 ),
