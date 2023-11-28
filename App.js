@@ -38,86 +38,95 @@ const AppContent = () => {
   return (
     <NavigationContainer theme={Theme}>
       {/* the state of the app is managed globally via Context /  */}
-      {state.loggedIn ? (
-        <Tab.Navigator>
+      <Tab.Navigator>
+        {state.loggedIn ? (
+          <>
+            <Tab.Screen
+              name="Home"
+              component={Home}
+              options={{
+                headerTitle: (props) => <LogoHeader {...props} />,
+                tabBarStyle: { visibility: "hidden" },
+                headerShadowVisible: false,
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="home" color={color} size={size} />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="Communities"
+              component={Communities}
+              options={{
+                headerShadowVisible: false,
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="people" color={color} size={size} />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="LogActivity"
+              component={LogActivity}
+              options={{
+                title: "Log Activity",
+                headerShadowVisible: false,
+                tabBarButton: (props) => (
+                  <TouchableWithoutFeedback {...props}>
+                    <Svg
+                      width="20%"
+                      height="100%"
+                      viewBox="0 0 50 50"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <Circle cx="24.5" cy="24.5" r="20" fill="#61B8C2" />
+                      <Path
+                        d="M24 15V35"
+                        stroke="white"
+                        stroke-width="10"
+                        stroke-linecap="square"
+                      />
+                      <Path
+                        d="M14 25H34"
+                        stroke="white"
+                        stroke-width="10"
+                        stroke-linecap="square"
+                      />
+                    </Svg>
+                  </TouchableWithoutFeedback>
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="Challenges"
+              component={Challenges}
+              options={{
+                headerShadowVisible: false,
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="map" color={color} size={size} />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="Profile"
+              component={Profile}
+              options={{
+                headerShadowVisible: false,
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="person" color={color} size={size} />
+                ),
+              }}
+            />
+          </>
+        ) : (
           <Tab.Screen
-            name="Home"
-            component={Home}
+            name="Login"
+            component={Login}
             options={{
-              headerTitle: (props) => <LogoHeader {...props} />,
-              tabBarStyle: { visibility: "hidden" },
-              headerShadowVisible: false,
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="home" color={color} size={size} />
-              ),
+              tabBarButton: () => null,
             }}
           />
-          <Tab.Screen
-            name="Communities"
-            component={Communities}
-            options={{
-              headerShadowVisible: false,
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="people" color={color} size={size} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="LogActivity"
-            component={LogActivity}
-            options={{
-              title: "Log Activity",
-              headerShadowVisible: false,
-              tabBarButton: (props) => (
-                <TouchableWithoutFeedback {...props}>
-                  <Svg
-                    width="20%"
-                    height="100%"
-                    viewBox="0 0 50 50"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <Circle cx="24.5" cy="24.5" r="20" fill="#61B8C2" />
-                    <Path
-                      d="M24 15V35"
-                      stroke="white"
-                      stroke-width="10"
-                      stroke-linecap="square"
-                    />
-                    <Path
-                      d="M14 25H34"
-                      stroke="white"
-                      stroke-width="10"
-                      stroke-linecap="square"
-                    />
-                  </Svg>
-                </TouchableWithoutFeedback>
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Challenges"
-            component={Challenges}
-            options={{
-              headerShadowVisible: false,
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="map" color={color} size={size} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Profile"
-            options={{
-              headerShadowVisible: false,
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="person" color={color} size={size} />
-              ),
-            }}
-          />
-        </Tab.Navigator>
-      ) : (
-        <Login />
-      )}
+        )}
+      </Tab.Navigator>
     </NavigationContainer>
   );
 };

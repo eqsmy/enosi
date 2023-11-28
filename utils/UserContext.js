@@ -13,12 +13,14 @@ const SET_SESSION = "SET_SESSION";
 const reducer = (state, action) => {
   switch (action.type) {
     case SET_SESSION:
-      console.log("Dispatched SET_SESSION with user:", action.payload);
-      return {
+      //console.log("Dispatched SET_SESSION with data:", action.payload);
+      const newState = {
         ...state,
         session: action.payload,
         loggedIn: !!action.payload,
       };
+      //console.log("New State after dispatch:", newState);
+      return newState;
     default:
       return state;
   }

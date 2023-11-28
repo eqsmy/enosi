@@ -21,39 +21,26 @@ export default function Login() {
   const { dispatch } = useUser();
   const navigation = useNavigation();
 
-  //a function to allow the user to sign in with their email and password
-  const signInWithEmail = async () => {
+  const authenticateUser = async (action) => {
     setLoading(true);
     try {
-      const { user, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) {
-        Alert.alert("Login Failed", error.message);
-        return;
-      }
-      if (user) {
-        dispatch({ type: "SET_SESSION", payload: user });
-        console.log("Dispatched SET_SESSION with user:", user);
+      const response =
+        action === "login"
+          ? await supabase.auth.signInWithPassword({ email, password })
+          : await supabase.auth.signUp({ email, password });
+
+      const { data, error } = response;
+      //console.log("Response:", { data, error });
+      if (error) throw new Error(error.message);
+      if (data) {
+        dispatch({ type: "SET_SESSION", payload: data });
         navigation.navigate("Home");
       }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const signUpWithEmail = async () => {
-    setLoading(true);
-    try {
-      const { user, error } = await supabase.auth.signUp({ email, password });
-      if (error) {
-        Alert.alert("Sign Up Failed", error.message);
-        return;
-      }
-      if (user) {
-        Alert.alert("Success", "Check your email for the confirmation link.");
-      }
+    } catch (error) {
+      Alert.alert(
+        action === "login" ? "Login Failed" : "Sign Up Failed",
+        error.message
+      );
     } finally {
       setLoading(false);
     }
@@ -91,24 +78,14 @@ export default function Login() {
         placeholder={"Password"}
         autoCapitalize={"none"}
       ></TextInput>
-      {isLogin ? (
-        <BasicButton
-          text="Sign In"
-          onPress={signInWithEmail}
-          loading={loading}
-        />
-      ) : (
-        <BasicButton
-          text="Sign Up"
-          onPress={signUpWithEmail}
-          loading={loading}
-        />
-      )}
+      <BasicButton
+        title={isLogin ? "Login" : "Sign Up"}
+        onPress={() => authenticateUser(isLogin ? "login" : "signup")}
+        loading={loading}
+      />
       <TouchableOpacity onPress={toggleLoginSignup}>
-        <Text>
-          {isLogin
-            ? "Don't have an account? Sign Up"
-            : "Already have an account? Sign In"}
+        <Text style={enosiStyles.text}>
+          {isLogin ? "Sign Up" : "Login"} Instead
         </Text>
       </TouchableOpacity>
     </SafeAreaView>
