@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { UserProvider, useUser } from "./utils/UserContext";
-import { supabase } from "./utils/Supabase";
 import { TouchableWithoutFeedback } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { setCustomText } from "react-native-global-props";
@@ -35,8 +34,7 @@ const Theme = {
   },
 };
 
-const AppContent = () => {
-  //use 'useUser' custom hook directly
+const AppContent = () => {  //use 'useUser' custom hook directly
   const { state } = useUser();
   const [addFriendOrCommModal, setAddFriendOrCommModal] = useState(false);
 
