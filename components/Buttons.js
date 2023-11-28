@@ -10,22 +10,18 @@ export function CancelButton({ navigation }) {
   );
 }
 
-export function BasicButton({ onPress }) {
+export function BasicButton({ onPress, text, fontSize, backgroundColor }) {
   return (
     <Button
       onPress={onPress}
       textColor={"white"}
-      style={buttonStyles.button}
-      title="hi"
+      style={{
+        color: "#ff04d",
+        backgroundColor: backgroundColor ?? "#61B8C2",
+      }}
+      labelStyle={{ fontSize: fontSize }}
     >
-      Login
+      {text}
     </Button>
   );
 }
-
-export const buttonStyles = StyleSheet.create({
-  button: {
-    color: "#ff04d",
-    backgroundColor: "#61B8C2",
-  },
-});
