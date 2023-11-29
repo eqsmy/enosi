@@ -9,6 +9,7 @@ import {
   TextInput,
 } from "react-native";
 import { StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { enosiStyles } from "./styles";
 import { useState } from "react";
 import { Dropdown } from "react-native-element-dropdown";
@@ -16,6 +17,8 @@ import {
   GestureHandlerRootView,
   TouchableOpacity,
 } from "react-native-gesture-handler";
+
+import LogActivity2 from "./LogActivity2";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
@@ -93,8 +96,9 @@ export default function LogActivity() {
     { label: "Kilometers", value: "2" },
     { label: "Minutes", value: "3" },
   ];
-
+  const navigation = useNavigation();
   const handlePress = () => {
+    navigation.navigate("LogActivity2");
     console.log("Text clicked!");
   };
 

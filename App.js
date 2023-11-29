@@ -3,22 +3,20 @@ import { supabase } from "./utils/supabase";
 import { TouchableWithoutFeedback } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { setCustomText } from "react-native-global-props";
-
 import Home from "./pages/Home";
 import Communities from "./pages/Communities";
 import Challenges from "./pages/Challenges";
 import Profile from "./pages/Profile";
 import LogActivity from "./pages/LogActivity";
-
+import LogActivity2 from "./pages/LogActivity2";
 import { Ionicons } from "@expo/vector-icons";
 import Svg, { Circle, Path } from "react-native-svg";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import { LogoHeader } from "./components/Headers";
 import Login from "./pages/Login";
 import { Text } from "react-native-paper";
-
 const Tab = createBottomTabNavigator();
-
 // This is not working right now but it would be cool if it did
 const customTextProps = {
   style: {
@@ -26,7 +24,6 @@ const customTextProps = {
   },
 };
 setCustomText(customTextProps);
-
 const Theme = {
   ...DefaultTheme,
   colors: {
@@ -34,18 +31,24 @@ const Theme = {
     primary: "#61B8C2",
   },
 };
-
+const Stack = createStackNavigator();
+function LogStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="LogActivity" component={LogActivity} />
+      <Stack.Screen name="LogActivity2" component={LogActivity2} />
+    </Stack.Navigator>
+  );
+}
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [addFriendOrCommModal, setAddFriendOrCommModal] = useState(false);
   const [session, setSession] = useState(null);
-
   useEffect(() => {
     // Get the current session
     const currentSession = supabase.auth.getSession();
     setSession(currentSession);
     setLoggedIn(!!currentSession); // Set loggedIn based on current session
-
     // Subscribe to auth state changes
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
@@ -54,7 +57,6 @@ export default function App() {
       }
     );
   }, []);
-
   return (
     <NavigationContainer theme={Theme}>
       {loggedIn ? (
@@ -88,7 +90,7 @@ export default function App() {
           />
           <Tab.Screen
             name="LogActivity"
-            component={LogActivity}
+            component={LogStack}
             options={{
               title: "Log Activity",
               headerShadowVisible: false,
@@ -119,7 +121,6 @@ export default function App() {
               ),
             }}
           />
-
           <Tab.Screen
             name="Challenges"
             component={Challenges}
