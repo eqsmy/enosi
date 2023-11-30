@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { enosiStyles } fro
 import { useState } from "react";
 import { Dropdown } from "react-native-element-dropdown";
 import {
