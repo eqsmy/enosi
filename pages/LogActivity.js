@@ -1,5 +1,3 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { StatusBar } from "expo-status-bar";
 import {
   Text,
   View,
@@ -7,10 +5,11 @@ import {
   SafeAreaView,
   Dimensions,
   TextInput,
+  Alert,
 } from "react-native";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { enosiStyles } from "./styles";
+import { enosiStyles } fro
 import { useState } from "react";
 import { Dropdown } from "react-native-element-dropdown";
 import {
@@ -19,76 +18,86 @@ import {
 } from "react-native-gesture-handler";
 
 import LogActivity2 from "./LogActivity2";
+import { supabase } from "../utils/Supabase";
+import { useUser } from "../utils/UserContext";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 
+const initialBgColors = {
+  meditate: "transparent",
+  hike: "transparent",
+  swim: "transparent",
+  bike: "transparent",
+  run: "transparent",
+  lift: "transparent",
+};
+
 export default function LogActivity() {
-  const [meditatebg, setmeditatebg] = useState("transparent");
-  const [hikebg, sethikebg] = useState("transparent");
-  const [swimbg, setswimbg] = useState("transparent");
+  //utilzie the user context to get user details and pass to activityData
+  const { state } = useUser();
+  const userId = state.session.user.id ? state.session.user.id : null;
+  //console.log("userId", userId);
 
-  const [bikebg, setbikebg] = useState("transparent");
-  const [runbg, setrunbg] = useState("transparent");
-  const [liftbg, setliftbg] = useState("transparent");
-
-  const toggleMeditateBg = () => {
-    setmeditatebg((prevBg) =>
-      prevBg === "transparent" ? "#61B8C2" : "transparent"
-    );
-  };
-
-  const toggleHikeBg = () => {
-    sethikebg((prevBg) =>
-      prevBg === "transparent" ? "#61B8C2" : "transparent"
-    );
-  };
-
-  const toggleSwimBg = () => {
-    setswimbg((prevBg) =>
-      prevBg === "transparent" ? "#61B8C2" : "transparent"
-    );
-  };
-
-  const toggleBikeBg = () => {
-    setbikebg((prevBg) =>
-      prevBg === "transparent" ? "#61B8C2" : "transparent"
-    );
-  };
-
-  const toggleRunBg = () => {
-    setrunbg((prevBg) =>
-      prevBg === "transparent" ? "#61B8C2" : "transparent"
-    );
-  };
-
-  const toggleLiftBg = () => {
-    setliftbg((prevBg) =>
-      prevBg === "transparent" ? "#61B8C2" : "transparent"
-    );
-  };
-
+  const [bgColors, setBgColors] = useState(initialBgColors);
   const [activity, setActivity] = useState(null);
-  const chooseActivity = (y) => {
-    setActivity(y);
-  };
-
   const [input, setInput] = useState("");
-  const updateActivity = (inputText) => {
-    setInput(inputText);
-  };
-
   const [inputNum, setNum] = useState("0.0");
-
-  const updateNum = (inputNum) => {
-    setNum(inputNum);
-  };
+  const [val, setValue] = useState(null);
 
   const [textColor, setTextColor] = useState("#C9C9C9");
 
-  const [val, setValue] = useState(null);
-  const DropdownVal = () => {
-    setValue(val);
+  const toggleBgColor = (activity) => {
+    setBgColors((prevColors) => ({
+      ...prevColors,
+      [activity]:
+        prevColors[activity] === "transparent" ? "#61B8C2" : "transparent",
+    }));
+  };
+
+  //function to handle the sumibssion of the activity data
+  const handleSubmit = async () => {
+    // Basic form validation
+    // if (!activity || !inputNum || !val) {
+    //   Alert.alert("Error", "Please fill in all the fields.");
+    //   return;
+    // }
+
+    // Ensure inputNum is a valid number
+    const distance = parseFloat(inputNum);
+    if (isNaN(distance)) {
+      Alert.alert("Error", "Please enter a valid number for distance.");
+      return;
+    }
+
+    // Prepare data for submission
+    const activityData = {
+      user_id: userId,
+      activity_type: activity,
+      distance: distance,
+      time_spent: 0, // Update as needed
+      comments: input, // Assuming 'input' is for comments
+      photo_url: "", // Update if collecting a photo URL
+      distance_unit: val, // Ensure val is set correctly from dropdown
+      time_unit: "", // Update as needed
+    };
+
+    try {
+      const { data, error } = await supabase
+        .from("user_activities")
+        .insert([activityData])
+        .select();
+      if (error) throw error;
+      Alert.alert("Success", "Activity logged successfully.");
+      // Reset form or navigate to another screen if necessary
+    } catch (error) {
+      console.error("Error logging activity:", error.message);
+      Alert.alert("Error", "Failed to log activity.");
+    }
+  };
+
+  const updateActivity = (inputText) => {
+    setInput(inputText);
   };
 
   const data = [
@@ -116,8 +125,8 @@ export default function LogActivity() {
           >
             <View style={styles.container}>
               <TouchableOpacity
-                style={[styles.box, { backgroundColor: meditatebg }]}
-                onPress={toggleMeditateBg}
+                style={[styles.box, { backgroundColor: bgColors.meditate }]}
+                onPress={() => toggleBgColor("meditate")}
               >
                 <Text style={styles.boxText}>Meditate</Text>
                 <Image
@@ -127,8 +136,8 @@ export default function LogActivity() {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.box, { backgroundColor: hikebg }]}
-                onPress={toggleHikeBg}
+                style={[styles.box, { backgroundColor: bgColors.hike }]}
+                onPress={() => toggleBgColor("hike")}
               >
                 <Text style={styles.boxText}>Hike</Text>
                 <Image
@@ -137,8 +146,8 @@ export default function LogActivity() {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.box, { backgroundColor: swimbg }]}
-                onPress={toggleSwimBg}
+                style={[styles.box, { backgroundColor: bgColors.swim }]}
+                onPress={() => toggleBgColor("swim")}
               >
                 <Text style={styles.boxText}>Swim</Text>
                 <Image
@@ -150,8 +159,8 @@ export default function LogActivity() {
 
             <View style={styles.container}>
               <TouchableOpacity
-                style={[styles.box, { backgroundColor: bikebg }]}
-                onPress={toggleBikeBg}
+                style={[styles.box, { backgroundColor: bgColors.bike }]}
+                onPress={() => toggleBgColor("bike")}
               >
                 <Text style={styles.boxText}>Bike</Text>
                 <Image
@@ -160,8 +169,8 @@ export default function LogActivity() {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.box, { backgroundColor: runbg }]}
-                onPress={toggleRunBg}
+                style={[styles.box, { backgroundColor: bgColors.run }]}
+                onPress={() => toggleBgColor("run")}
               >
                 <Text style={styles.boxText}>Run</Text>
                 <Image
@@ -170,8 +179,8 @@ export default function LogActivity() {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.box, { backgroundColor: liftbg }]}
-                onPress={toggleLiftBg}
+                style={[styles.box, { backgroundColor: bgColors.lift }]}
+                onPress={() => toggleBgColor("lift")}
               >
                 <Text style={styles.boxText}>Lift</Text>
                 <Image
@@ -235,7 +244,7 @@ export default function LogActivity() {
                   labelField="label"
                   valueField="value"
                   onChange={(item) => {
-                    DropdownVal();
+                    setValue(item.value); // Directly update the 'val' state with the selected item's value
                   }}
                 />
               </View>
@@ -255,7 +264,7 @@ export default function LogActivity() {
                   { alignItems: "center", justifyContent: "center" },
                 ]}
               >
-                <TouchableOpacity onPress={handlePress}>
+                <TouchableOpacity onPress={handleSubmit}>
                   <Text
                     style={{
                       color: "white",

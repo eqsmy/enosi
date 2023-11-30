@@ -3,65 +3,65 @@ import {
   Image,
   TextInput,
   SafeAreaView,
-  StyleSheet,
   Alert,
-  View,
   Text,
   TouchableOpacity,
+  Pressable,
+  StyleSheet,
 } from "react-native";
-import { supabase } from "../utils/supabase";
-import { BasicButton } from "../components/Buttons";
+import { supabase } from "../utils/Supabase";
 import { useNavigation } from "@react-navigation/native";
 import { enosiStyles } from "./styles";
+import { useUser } from "../utils/UserContext";
 
-export default function Login({ setLoggedIn }) {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState(""); // Added state for first name
+  const [lastName, setLastName] = useState("");
+  const [isLogin, setIsLogin] = useState(true); //have to use this logic for this page only
   const [loading, setLoading] = useState(false);
-  const [isLogin, setIsLogin] = useState(true);
+  const { dispatch } = useUser();
   const navigation = useNavigation();
 
-  //a function to allow the user to sign in with their email and password
-  async function signInWithEmail() {
-    console.log("sign in with email attempt");
+  const signIn = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const { user, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
       });
       if (error) throw error;
-      console.log("Sign in response: ", { user, error });
-      if (user) setLoggedIn(true) && navigation.navigate("Home");
+      dispatch({ type: "SET_SESSION", payload: data });
+      navigation.navigate("Home");
     } catch (error) {
-      Alert.alert(error.message);
+      Alert.alert("Login Failed", error.message);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  //a function to allow the user to sign up with their email and password
-  async function signUpWithEmail() {
+  const signUp = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.signUp({ email, password });
-
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: { first_name: firstName, last_name: lastName }, // Passing additional data
+        },
+      });
       if (error) throw error;
-      if (user) {
-        Alert.alert("Check your email for the confirmation link.");
-        setLoggedIn(true) && navigation.navigate("Home"); // Set loggedIn to true on successful sign-up
-      }
+      dispatch({ type: "SET_SESSION", payload: data });
+      navigation.navigate("Profile"); // Navigate to Profile page
     } catch (error) {
-      Alert.alert(error.message);
+      console.error("Signup Error:", error);
+      Alert.alert("Sign Up Failed", error.message);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  //a variable to toggle between sign in and sign up
   const toggleLoginSignup = () => {
     setIsLogin(!isLogin);
   };
@@ -94,26 +94,60 @@ export default function Login({ setLoggedIn }) {
         placeholder={"Password"}
         autoCapitalize={"none"}
       ></TextInput>
-      {isLogin ? (
-        <BasicButton
-          text="Sign In"
-          onPress={() => signInWithEmail()}
-          loading={loading}
-        />
-      ) : (
-        <BasicButton
-          text="Sign Up"
-          onPress={() => signUpWithEmail()}
-          loading={loading}
-        />
+      {!isLogin && (
+        <>
+          <TextInput
+            style={enosiStyles.textInput}
+            placeholder={"First Name"}
+            onChangeText={setFirstName}
+            value={firstName}
+            autoCapitalize={"none"}
+          />
+          <TextInput
+            style={enosiStyles.textInput}
+            placeholder={"Last Name"}
+            onChangeText={setLastName}
+            value={lastName}
+            autoCapitalize={"none"}
+          />
+        </>
       )}
+      <Pressable
+        style={styles.button}
+        onPress={isLogin ? signIn : signUp}
+        loading={loading}
+      >
+        <Text style={styles.login_signup}>
+          {" "}
+          {isLogin ? "Login" : "Sign Up"}
+        </Text>
+      </Pressable>
       <TouchableOpacity onPress={toggleLoginSignup}>
-        <Text>
-          {isLogin
-            ? "Don't have an account? Sign Up"
-            : "Already have an account? Sign In"}
+        <Text style={enosiStyles.text}>
+          {isLogin ? "Sign Up" : "Login"} Instead
         </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    margin: 10,
+    borderRadius: 20,
+    elevation: 3,
+    backgroundColor: "#61B8C2",
+  },
+  login_signup: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: "bold",
+    letterSpacing: 0.25,
+    color: "white",
+    fontFamily: "Avenir",
+  },
+});
