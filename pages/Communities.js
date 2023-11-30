@@ -28,45 +28,47 @@ function CommunitiesFeed({
 }) {
   return (
     <SafeAreaView style={enosiStyles.feedContainer}>
-      <Pressable
-        onPress={() => setAddFriendOrCommModal(false)}
-        style={{
-          height: "100%",
-          width: "100%",
-          position: "absolute",
-          backgroundColor: addFriendOrCommModal
-            ? "rgba(128, 128, 128, .30)"
-            : "rgba(128, 128, 128, 0)",
-          zIndex: 50,
-        }}
-      ></Pressable>
       {addFriendOrCommModal ? (
-        <View
-          style={{
-            backgroundColor: "white",
-            paddingTop: 10,
-            height: 70,
-            borderBottomLeftRadius: 45,
-            borderBottomRightRadius: 45,
-            display: "flex",
-            flexDirection: "row",
-            with: "100%",
-            zIndex: 100,
-          }}
-        >
-          <View style={{ flex: 1, paddingLeft: 20, paddingRight: 10 }}>
-            <BasicButton
-              onPress={() => {
-                setAddFriendOrCommModal(false);
-                props.navigation.push("NewCommunities");
-              }}
-              text={"New Community"}
-            ></BasicButton>
+        <>
+          <Pressable
+            onPress={() => setAddFriendOrCommModal(false)}
+            style={{
+              height: "100%",
+              width: "100%",
+              position: "absolute",
+              backgroundColor: addFriendOrCommModal
+                ? "rgba(128, 128, 128, .30)"
+                : "rgba(128, 128, 128, 0)",
+              zIndex: 50,
+            }}
+          ></Pressable>
+          <View
+            style={{
+              backgroundColor: "white",
+              paddingTop: 10,
+              height: 70,
+              borderBottomLeftRadius: 45,
+              borderBottomRightRadius: 45,
+              display: "flex",
+              flexDirection: "row",
+              with: "100%",
+              zIndex: 100,
+            }}
+          >
+            <View style={{ flex: 1, paddingLeft: 20, paddingRight: 10 }}>
+              <BasicButton
+                onPress={() => {
+                  setAddFriendOrCommModal(false);
+                  props.navigation.push("NewCommunities");
+                }}
+                text={"New Community"}
+              ></BasicButton>
+            </View>
+            <View style={{ flex: 1, paddingRight: 20, paddingLeft: 10 }}>
+              <BasicButton text={"Add a Friend"}></BasicButton>
+            </View>
           </View>
-          <View style={{ flex: 1, paddingRight: 20, paddingLeft: 10 }}>
-            <BasicButton text={"Add a Friend"}></BasicButton>
-          </View>
-        </View>
+        </>
       ) : null}
       <View
         style={{
@@ -80,7 +82,7 @@ function CommunitiesFeed({
           style={enosiStyles.searchBar}
         ></TextInput>
         <ScrollView
-          style={{ width: "90%" }}
+          style={{ width: "100%" }}
           showsVerticalScrollIndicator={false}
         >
           {communities.map((community, key) => {
