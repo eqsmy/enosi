@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { UserProvider, useUser } from "./utils/UserContext";
-import { TouchableWithoutFeedback } from "react-native";
+import { TouchableWithoutFeedback, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { setCustomText } from "react-native-global-props";
 
@@ -64,7 +64,16 @@ const AppContent = () => {
               name="Home"
               component={Home}
               options={{
-                headerTitle: (props) => <LogoHeader {...props} />,
+                headerTitle: (props) => (
+                  <View
+                    style={{
+                      paddingBottom: 20,
+                    }}
+                  >
+                    <LogoHeader {...props} />
+                  </View>
+                ),
+                headerStyle: { height: 80, borderWidth: 1 },
                 tabBarStyle: { visibility: "hidden" },
                 headerShadowVisible: false,
                 tabBarIcon: ({ color, size }) => (
@@ -146,6 +155,7 @@ const AppContent = () => {
             name="Login"
             component={Login}
             options={{
+              headerShown: false,
               tabBarButton: () => null,
             }}
           />
