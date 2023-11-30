@@ -4,24 +4,29 @@ import { BasicButton } from "./Buttons";
 
 export function ProfilePreview({
   name,
-  activities,
+  bio,
   avatar,
   added,
   toggleAddPerson,
   id,
 }) {
   return (
-    <View style={{ width: "50%", height: 120 }}>
+    <View style={{ width: "50%", height: 140 }}>
       <View
         style={{
           margin: 5,
           borderRadius: 20,
-          height: 110,
+          height: 130,
           backgroundColor: "#F6F6F6",
         }}
       >
         <Image
-          style={{ marginLeft: 15, marginTop: 15, width: 35 }}
+          style={{
+            marginLeft: 15,
+            marginTop: 15,
+            width: 35,
+            height: 35,
+          }}
           resizeMode="contain"
           source={avatar}
         ></Image>
@@ -55,12 +60,7 @@ export function ProfilePreview({
             marginBottom: 5,
           }}
         >
-          {activities.map((value, idx) => {
-            if (idx > 0) {
-              return " | " + value;
-            }
-            return value;
-          })}
+          {bio}
         </Text>
       </View>
     </View>

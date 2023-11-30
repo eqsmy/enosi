@@ -44,7 +44,8 @@ function LogStack() {
     </Stack.Navigator>
   );
 }
-const AppContent = () => {  //use 'useUser' custom hook directly
+const AppContent = () => {
+  //use 'useUser' custom hook directly
   const { state } = useUser();
   const [addFriendOrCommModal, setAddFriendOrCommModal] = useState(false);
 
