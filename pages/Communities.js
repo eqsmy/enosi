@@ -5,6 +5,7 @@ import {
   View,
   SafeAreaView,
   TouchableWithoutFeedback,
+  Image,
 } from "react-native";
 import { enosiStyles } from "./styles";
 import Community from "../components/Community";
@@ -13,12 +14,15 @@ import { Pressable } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
 import NewCommunities, { PrivacySettings } from "./NewCommunities";
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "../utils/Supabase";
 
 const Stack = createStackNavigator();
 
 function CommunitiesFeed({
   addFriendOrCommModal,
   setAddFriendOrCommModal,
+  communities,
   props,
 }) {
   return (
@@ -78,14 +82,17 @@ function CommunitiesFeed({
           style={{ width: "90%" }}
           showsVerticalScrollIndicator={false}
         >
-          <Community
-            name="LGHS Class of 2019"
-            icon={require("../assets/community.png")}
-          ></Community>
-          <Community
-            name="LGHS Class of 2019"
-            icon={require("../assets/community.png")}
-          ></Community>
+          {communities.map((community, key) => {
+            return (
+              <Community
+                key={key}
+                name={community.name}
+                icon={{
+                  url: community.photo_url,
+                }}
+              ></Community>
+            );
+          })}
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -96,6 +103,22 @@ export default function Communities({
   addFriendOrCommModal,
   setAddFriendOrCommModal,
 }) {
+  const [communities, setCommunities] = useState([]);
+  async function fetchCommunities() {
+    try {
+      let { data: comms, error } = await supabase
+        .from("communities")
+        .select("*");
+      setCommunities(comms);
+      if (error) throw error;
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+  useEffect(() => {
+    fetchCommunities();
+  }, []);
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -121,6 +144,7 @@ export default function Communities({
         children={(props) => (
           <CommunitiesFeed
             props={props}
+            communities={communities}
             addFriendOrCommModal={addFriendOrCommModal}
             setAddFriendOrCommModal={setAddFriendOrCommModal}
           />
@@ -131,7 +155,9 @@ export default function Communities({
         options={{
           title: "New Community",
         }}
-        component={NewCommunities}
+        children={(props) => (
+          <NewCommunities props={props} fetchCommunities={fetchCommunities} />
+        )}
       />
       <Stack.Screen
         name="NewCommunityPrivacySettings"

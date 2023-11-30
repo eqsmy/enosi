@@ -10,8 +10,11 @@ import {
 import { enosiStyles } from "./styles";
 import { BasicButton } from "../components/Buttons";
 import { ProfilePreview } from "../components/ProfilePreview";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { useUser } from "../utils/UserContext";
+import { supabase } from "../utils/Supabase";
+import { useMemo } from "react";
 
 export function PrivacySettings() {
   const navigation = useNavigation();
@@ -94,40 +97,62 @@ export function PrivacySettings() {
   );
 }
 
-export default function NewCommunities() {
+export default function NewCommunities({ fetchCommunities }) {
   const navigation = useNavigation();
   const [communityName, setCommunityName] = useState("");
-  function createCommunity() {
-    // TODO
-    navigation.navigate("NewCommunityPrivacySettings");
+  const [peopleSearch, setPeopleSearch] = useState("");
+  const { state, dispatch } = useUser();
+  const [peopleToAdd, setPeopleToAdd] = useState([state.session.user.id]);
+  const [profiles, setProfiles] = useState([]);
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        let { data: profs, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .neq("id", state.session.user.id);
+        setProfiles(profs);
+        if (error) throw error;
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+    fetchUsers();
+  }, []);
+
+  const filteredUsers = useMemo(() => {
+    return profiles.filter((person) => {
+      return (person.first_name + " " + person.last_name).includes(
+        peopleSearch
+      );
+    });
+  }, [peopleSearch, profiles]);
+
+  async function createCommunity() {
+    const communityData = {
+      name: communityName,
+      members: peopleToAdd,
+    };
+    try {
+      const { data, error } = await supabase
+        .from("communities")
+        .insert([communityData])
+        .select();
+      if (error) throw error;
+      fetchCommunities();
+      navigation.navigate("NewCommunityPrivacySettings");
+      // Reset form or navigate to another screen if necessary
+    } catch (error) {
+      console.error("Error creating community:", error.message);
+      alert("Error", "Failed to create community.");
+    }
   }
-  const fakeProfiles = [
-    {
-      name: "Jane Doe",
-      avatar: require("../assets/avatar2.png"),
-      activities: ["hiking", "running"],
-      id: 1,
-    },
-    {
-      name: "John Smith",
-      avatar: require("../assets/avatar2.png"),
-      activities: ["hiking", "running"],
-      id: 2,
-    },
-    {
-      name: "Barbie",
-      avatar: require("../assets/avatar2.png"),
-      activities: ["hiking", "running"],
-      id: 3,
-    },
-  ];
-  const [peopleToAdd, setPeopleToAdd] = useState([]);
   const renderItem = ({ item }) => {
     return (
       <ProfilePreview
-        name={item.name}
-        avatar={item.avatar}
-        activities={item.activities}
+        name={item.first_name + " " + item.last_name}
+        avatar={{ url: item.avatar_url }}
+        bio={item.bio}
         id={item.id}
         added={peopleToAdd.includes(item.id)}
         toggleAddPerson={(person) => {
@@ -168,10 +193,12 @@ export default function NewCommunities() {
           <TextInput
             placeholder="Search. . ."
             style={enosiStyles.searchBar}
+            value={peopleSearch}
+            onChangeText={setPeopleSearch}
           ></TextInput>
           <View style={{ width: "100%", marginTop: 10 }}>
             <FlatList
-              data={fakeProfiles}
+              data={filteredUsers}
               numColumns={2}
               horizontal={false}
               renderItem={renderItem}
