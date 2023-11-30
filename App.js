@@ -3,6 +3,7 @@ import { UserProvider, useUser } from "./utils/UserContext";
 import { TouchableWithoutFeedback } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { setCustomText } from "react-native-global-props";
+
 import Home from "./pages/Home";
 import Communities from "./pages/Communities";
 import Challenges from "./pages/Challenges";
@@ -13,12 +14,10 @@ import Login from "./pages/Login";
 import { Ionicons } from "@expo/vector-icons";
 import Svg, { Circle, Path } from "react-native-svg";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
 import { LogoHeader } from "./components/Headers";
-import Login from "./pages/Login";
-import { Text } from "react-native-paper";
 
 const Tab = createBottomTabNavigator();
+
 // This is not working right now but it would be cool if it did
 const customTextProps = {
   style: {
@@ -26,6 +25,7 @@ const customTextProps = {
   },
 };
 setCustomText(customTextProps);
+
 const Theme = {
   ...DefaultTheme,
   colors: {
