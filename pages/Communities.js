@@ -16,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import NewCommunities, { PrivacySettings } from "./NewCommunities";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../utils/Supabase";
+import { useUser } from "../utils/UserContext";
 
 const Stack = createStackNavigator();
 
@@ -104,11 +105,13 @@ export default function Communities({
   setAddFriendOrCommModal,
 }) {
   const [communities, setCommunities] = useState([]);
+  const { state, dispatch } = useUser();
   async function fetchCommunities() {
     try {
       let { data: comms, error } = await supabase
         .from("communities")
-        .select("*");
+        .select("*")
+        .contains("members", [state.session.user.id]);
       setCommunities(comms);
       if (error) throw error;
     } catch (error) {
