@@ -8,6 +8,8 @@ import {
   Alert,
 } from "react-native";
 import { StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { enosiStyles } fro
 import { useState } from "react";
 import { Dropdown } from "react-native-element-dropdown";
 import {
@@ -15,6 +17,7 @@ import {
   TouchableOpacity,
 } from "react-native-gesture-handler";
 
+import LogActivity2 from "./LogActivity2";
 import { supabase } from "../utils/Supabase";
 import { useUser } from "../utils/UserContext";
 
@@ -102,6 +105,11 @@ export default function LogActivity() {
     { label: "Kilometers", value: "2" },
     { label: "Minutes", value: "3" },
   ];
+  const navigation = useNavigation();
+  const handlePress = () => {
+    navigation.navigate("LogActivity2");
+    console.log("Text clicked!");
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

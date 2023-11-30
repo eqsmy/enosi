@@ -9,11 +9,12 @@ import Communities from "./pages/Communities";
 import Challenges from "./pages/Challenges";
 import Profile from "./pages/Profile";
 import LogActivity from "./pages/LogActivity";
+import LogActivity2 from "./pages/LogActivity2";
 import Login from "./pages/Login";
-
 import { Ionicons } from "@expo/vector-icons";
 import Svg, { Circle, Path } from "react-native-svg";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import { LogoHeader } from "./components/Headers";
 
 const Tab = createBottomTabNavigator();
@@ -34,6 +35,15 @@ const Theme = {
   },
 };
 
+const Stack = createStackNavigator();
+function LogStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="LogActivity" component={LogActivity} />
+      <Stack.Screen name="LogActivity2" component={LogActivity2} />
+    </Stack.Navigator>
+  );
+}
 const AppContent = () => {
   //use 'useUser' custom hook directly
   const { state } = useUser();
@@ -79,7 +89,7 @@ const AppContent = () => {
             />
             <Tab.Screen
               name="LogActivity"
-              component={LogActivity}
+              component={LogStack}
               options={{
                 title: "Log Activity",
                 headerShadowVisible: false,
