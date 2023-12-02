@@ -8,8 +8,7 @@ import Home from "./pages/Home";
 import Communities from "./pages/Communities";
 import Challenges from "./pages/Challenges";
 import Profile from "./pages/Profile";
-import LogActivity from "./pages/LogActivity";
-import LogActivity2 from "./pages/LogActivity2";
+import { LogActivity1, LogActivity2 } from "./pages/LogActivity";
 import Login from "./pages/Login";
 import { Ionicons } from "@expo/vector-icons";
 import Svg, { Circle, Path } from "react-native-svg";
@@ -39,11 +38,20 @@ const Stack = createStackNavigator();
 function LogStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="LogActivity" component={LogActivity} />
-      <Stack.Screen name="LogActivity2" component={LogActivity2} />
+      <Stack.Screen
+        name="LogActivity1"
+        options={{ headerShown: false }}
+        component={LogActivity1}
+      />
+      <Stack.Screen
+        name="LogActivity2"
+        options={{ headerShown: false }}
+        component={LogActivity2}
+      />
     </Stack.Navigator>
   );
 }
+
 const AppContent = () => {
   //use 'useUser' custom hook directly
   const { state } = useUser();
