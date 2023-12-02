@@ -67,13 +67,13 @@ const AppContent = () => {
                 headerTitle: (props) => (
                   <View
                     style={{
-                      paddingBottom: 20,
+                      paddingBottom: 10,
                     }}
                   >
                     <LogoHeader {...props} />
                   </View>
                 ),
-                headerStyle: { height: 80, borderWidth: 1 },
+                headerStyle: { height: 90, borderWidth: 1 },
                 tabBarStyle: { visibility: "hidden" },
                 headerShadowVisible: false,
                 tabBarIcon: ({ color, size }) => (
@@ -144,6 +144,7 @@ const AppContent = () => {
               component={Profile}
               options={{
                 headerShadowVisible: false,
+                headerTitle: "",
                 tabBarIcon: ({ color, size }) => (
                   <Ionicons name="person" color={color} size={size} />
                 ),

@@ -14,6 +14,7 @@ import { useUser } from "../utils/UserContext";
 import { supabase } from "../utils/Supabase.js";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import Activity from "../components/Activity";
 
 export default function Profile() {
   const { state, dispatch } = useUser();
@@ -106,20 +107,7 @@ export default function Profile() {
       )}
       <ScrollView style={styles.contentArea}>
         {activities.map((activity, index) => (
-          <View key={index} style={styles.activityCard}>
-            <Image
-              source={{ uri: activity.photo_url }}
-              style={styles.activityImage}
-            />
-            <Text style={styles.activityCaption}>{activity.caption}</Text>
-            <Text style={styles.activityDetails}>
-              Type: {activity.activity_type} - Duration: {activity.duration}{" "}
-              mins - Distance: {activity.distance} mi.
-            </Text>
-            <Text style={styles.activityTimestamp}>
-              {new Date(activity.timestamp).toLocaleString()}
-            </Text>
-          </View>
+          <Activity item={activity}></Activity>
         ))}
       </ScrollView>
       <StatusBar style="auto" />
@@ -130,13 +118,11 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f2f2f2", // Light grey background for the whole screen
+    backgroundColor: "#ffffff", // Light grey background for the whole screen
   },
   profileHeader: {
     width: "100%", // Full width
     alignItems: "center",
-    marginTop: 60,
-    marginBottom: 20,
     paddingVertical: 20,
     backgroundColor: "#fff", // White background for the header
     borderBottomWidth: 1,
