@@ -15,8 +15,8 @@ export default function FeedItem({ name, icon, onPress = undefined }) {
       onPress={onPress}
     >
       <Image
-        style={{ height: "80%", width: 50 }}
-        resizeMode="contain"
+        style={{ height: 50, width: 50, borderRadius: 8 }}
+        resizeMode="cover"
         source={icon}
       ></Image>
       <View>
