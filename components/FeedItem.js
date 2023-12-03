@@ -1,9 +1,9 @@
-import { Image } from "react-native";
+import { Image, Pressable } from "react-native";
 import { Text, View } from "react-native";
 
-export default function Community({ name, icon }) {
+export default function FeedItem({ name, icon, onPress = undefined }) {
   return (
-    <View
+    <Pressable
       style={{
         display: "flex",
         flexDirection: "row",
@@ -12,6 +12,7 @@ export default function Community({ name, icon }) {
         borderBottomWidth: 1,
         borderBottomColor: "#e8e8e8",
       }}
+      onPress={onPress}
     >
       <Image
         style={{ height: "80%", width: 50 }}
@@ -21,6 +22,6 @@ export default function Community({ name, icon }) {
       <View>
         <Text style={{ marginLeft: 15, fontWeight: "bold" }}>{name}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 }

@@ -98,6 +98,7 @@ const AppContent = () => {
                 ></Communities>
               )}
               options={{
+                tabBarLabel: "Communities",
                 headerShown: false,
                 tabBarIcon: ({ color, size }) => (
                   <Ionicons name="people" color={color} size={size} />
