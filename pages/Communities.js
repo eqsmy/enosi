@@ -8,7 +8,7 @@ import {
   Image,
 } from "react-native";
 import { enosiStyles } from "./styles";
-import Community from "../components/Community";
+import FeedItem from "../components/FeedItem";
 import { BasicButton } from "../components/Buttons";
 import { Pressable } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -17,6 +17,8 @@ import NewCommunities, { PrivacySettings } from "./NewCommunities";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../utils/Supabase";
 import { useUser } from "../utils/UserContext";
+import PeopleFeed from "./People";
+import Profile from "./Profile";
 
 const Stack = createStackNavigator();
 
@@ -65,7 +67,13 @@ function CommunitiesFeed({
               ></BasicButton>
             </View>
             <View style={{ flex: 1, paddingRight: 20, paddingLeft: 10 }}>
-              <BasicButton text={"Add a Friend"}></BasicButton>
+              <BasicButton
+                text={"Add a Friend"}
+                onPress={() => {
+                  setAddFriendOrCommModal(false);
+                  props.navigation.push("People");
+                }}
+              ></BasicButton>
             </View>
           </View>
         </>
@@ -87,13 +95,13 @@ function CommunitiesFeed({
         >
           {communities.map((community, key) => {
             return (
-              <Community
+              <FeedItem
                 key={key}
                 name={community.name}
                 icon={{
                   url: community.photo_url,
                 }}
-              ></Community>
+              ></FeedItem>
             );
           })}
         </ScrollView>
@@ -184,6 +192,8 @@ export default function Communities({
         }}
         component={PrivacySettings}
       />
+      <Stack.Screen name="People" component={PeopleFeed} />
+      <Stack.Screen name="Profile" component={Profile} />
     </Stack.Navigator>
   );
 }

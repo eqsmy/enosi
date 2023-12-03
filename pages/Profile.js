@@ -16,15 +16,17 @@ import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import Activity from "../components/Activity";
 
-export default function Profile() {
+export default function Profile({ route = undefined }) {
   const { state, dispatch } = useUser();
   const navigation = useNavigation();
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState(route?.params?.user ?? null);
   const [activities, setActivities] = useState([]);
 
   useEffect(() => {
-    fetchProfile();
-    fetchActivities();
+    if (!route?.params?.user) {
+      fetchProfile();
+      fetchActivities();
+    }
   }, []);
 
   const fetchProfile = async () => {
@@ -60,18 +62,20 @@ export default function Profile() {
   };
 
   useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <View style={{ marginRight: 10 }}>
-          <TouchableOpacity onPress={handleLogout}>
-            <Feather name="settings" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
-      ),
-      headerRightContainerStyle: {
-        marginRight: -10,
-      },
-    });
+    if (!route?.params?.user) {
+      navigation.setOptions({
+        headerRight: () => (
+          <View style={{ marginRight: 10 }}>
+            <TouchableOpacity onPress={handleLogout}>
+              <Feather name="settings" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+        ),
+        headerRightContainerStyle: {
+          marginRight: -10,
+        },
+      });
+    }
   }, [navigation]);
 
   const handleLogout = async () => {
