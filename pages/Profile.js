@@ -111,7 +111,7 @@ export default function Profile({ route = undefined }) {
       )}
       <ScrollView style={styles.contentArea}>
         {activities.map((activity, index) => (
-          <Activity item={activity}></Activity>
+          <Activity key={index} item={activity}></Activity>
         ))}
       </ScrollView>
       <StatusBar style="auto" />

@@ -6,8 +6,8 @@ export function LogoHeader() {
       <Image
         style={{
           margin: "auto",
-          marginTop: 10,
-          height: 50,
+          marginTop: 20,
+          height: 60,
           width: "70%",
         }}
         source={require("../assets/logo.png")}
