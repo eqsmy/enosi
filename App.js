@@ -75,13 +75,13 @@ const AppContent = () => {
                 headerTitle: (props) => (
                   <View
                     style={{
-                      paddingBottom: 10,
+                      paddingBottom: 40,
                     }}
                   >
                     <LogoHeader {...props} />
                   </View>
                 ),
-                headerStyle: { height: 90, borderWidth: 1 },
+                headerStyle: { height: 120, borderWidth: 1 },
                 tabBarStyle: { visibility: "hidden" },
                 headerShadowVisible: false,
                 tabBarIcon: ({ color, size }) => (
