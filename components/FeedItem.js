@@ -11,6 +11,7 @@ export default function FeedItem({ name, icon, onPress = undefined }) {
         alignItems: "center",
         borderBottomWidth: 1,
         borderBottomColor: "#e8e8e8",
+        fontfamily: "Avenir",
       }}
       onPress={onPress}
     >

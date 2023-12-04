@@ -1,10 +1,8 @@
 import { Image, StyleSheet, Text, View, Pressable } from "react-native";
-import { createStackNavigator } from "@react-navigation/stack";
 
-const Stack = createStackNavigator();
-export default function UserChallenges({ item, onPress = undefined }) {
+export default function UserChallenges({ item, onPress, showUser }) {
   return (
-    <Pressable onPress={onPress} style={styles.challengeCard}>
+    <View style={styles.challengeCard}>
       <View style={styles.challengeInfo}>
         <Image
           source={{ uri: item.challenges.photo_url }}
@@ -22,7 +20,7 @@ export default function UserChallenges({ item, onPress = undefined }) {
           <Text style={styles.logbookButtonText}>Log Book</Text>
         </Pressable>
       </View>
-    </Pressable>
+    </View>
   );
 }
 
@@ -39,6 +37,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginRight: 10,
+    fontFamily: "Avenir",
   },
   challengeImage: {
     width: 50,
@@ -50,11 +49,13 @@ const styles = StyleSheet.create({
     flex: 3,
     justifyContent: "center",
     paddingRight: 10,
+    fontFamily: "Avenir",
   },
   challengeTitle: {
     fontWeight: "bold",
     fontSize: 16,
     marginBottom: 4,
+    fontFamily: "Avenir",
   },
   challengeDetails: {
     fontSize: 14,

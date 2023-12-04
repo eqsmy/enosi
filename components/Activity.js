@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
+    fontFamily: "Avenir",
   },
   avatar: {
     width: 40,
@@ -54,6 +55,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontWeight: "bold",
+    fontFamily: "Avenir",
   },
   activityImage: {
     width: "100%",
@@ -64,15 +66,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginTop: 5,
+    fontFamily: "Avenir",
   },
   activityDetails: {
     fontSize: 14,
     color: "gray",
     marginTop: 5,
+    fontFamily: "Avenir",
   },
   activityTimestamp: {
     fontSize: 12,
     color: "gray",
     marginTop: 5,
+    fontFamily: "Avenir",
   },
 });
