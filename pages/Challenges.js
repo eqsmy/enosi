@@ -11,10 +11,12 @@ import {
 } from "react-native";
 import { supabase } from "../utils/Supabase";
 import { useUser } from "../utils/UserContext";
+import { useNavigation } from "@react-navigation/native";
 import UserChallenges from "../components/UserChallenges";
 import { StatusBar } from "expo-status-bar";
 
-function Challenges({ navigation, challenges }) {
+function Challenges({}) {
+  const navigation = useNavigation();
   const { state } = useUser(); // Accessing the user context
   const [allChallenges, setAllChallenges] = useState([]);
   const [userChallenges, setUserChallenges] = useState([]);
@@ -37,15 +39,13 @@ function Challenges({ navigation, challenges }) {
 
   const fetchUserChallenges = async () => {
     try {
-      let { data, error } = await supabase
-        .from("user_challenges")
-        .select(
-          `
+      let { data, error } = await supabase.from("user_challenges").select(
+        `
         *,
         profiles (first_name, last_name, avatar_url),
         challenges (photo_url, description, name)
       `
-        );
+      );
       if (error) throw error;
       setUserChallenges(data);
     } catch (error) {
@@ -53,22 +53,32 @@ function Challenges({ navigation, challenges }) {
     }
   };
 
+  const nagvigateToLogbook = (challengeId) => {
+    navigation.navigate("LogBook", { challengeId });
+  };
+
   const renderUserChallenges = ({ item }) => {
-    return <UserChallenges showUser item={item}></UserChallenges>;
+    return (
+      <UserChallenges
+        item={item}
+        onPress={() => nagvigateToLogbook(item.id)}
+        showUser
+      ></UserChallenges>
+    );
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <TextInput placeholder="Search Challenges" style={styles.searchBar} />
+      <TextInput placeholder="Search" style={styles.searchBar} />
       <Text style={styles.headingText}> Available Challenges </Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.horizontalScroll}
       >
-        {allChallenges.map((challenge, index) => (
-          <View style={styles.challengePreview}>
-            <View key={index} style={styles.challengeCard}>
+        {allChallenges.map((challenge) => (
+          <View key={challenge.id} style={styles.challengePreview}>
+            <View style={styles.challengeCard}>
               <Image
                 source={{ uri: challenge.photo_url }}
                 style={styles.challengeImage}
@@ -82,7 +92,7 @@ function Challenges({ navigation, challenges }) {
       <Text style={styles.headingText}> Your Challenges </Text>
       <View style={styles.containerFeed}>
         <FlatList
-          data={userChallenges} 
+          data={userChallenges}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderUserChallenges}
           contentContainerStyle={styles.contentArea}
@@ -96,23 +106,28 @@ export default Challenges;
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     width: "100%",
     backgroundColor: "#ffffff",
     alignItems: "center",
     justifyContent: "flex-start",
+    paddingHorizontal: 10,
+    fontFamily: "Avenir",
   },
   searchBar: {
-    width: "90%",
+    width: "97%",
     padding: 10,
     marginVertical: 10,
     borderRadius: 20,
     backgroundColor: "#f6f6f6",
     borderWidth: 1,
     borderColor: "#e8e8e8",
+    fontFamily: "Avenir",
   },
   horizontalScroll: {
     paddingHorizontal: 10,
     height: 200,
+    width: "100%",
   },
   challengePreview: {
     width: 150,
@@ -128,16 +143,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
+    fontFamily: "Avenir",
   },
   headingText: {
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "left",
-    width: "90%",
+    width: "100%",
     padding: 10,
     marginVertical: 10,
+    fontFamily: "Avenir",
   },
   containerFeed: {
+    flex: 80,
     width: "100%",
     backgroundColor: "#ffffff",
   },
