@@ -1,77 +1,79 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View, Pressable } from "react-native";
+import { createStackNavigator } from "@react-navigation/stack";
 
-export default function UserChallenges({ item, showUser = false }) {
+const Stack = createStackNavigator();
+export default function UserChallenges({ item, onPress = undefined }) {
   return (
-    <View style={styles.activityCard}>
-      {showUser ? (
-        <View style={styles.userInfo}>
-          <Image
-            source={{ uri: item.profiles.avatar_url }}
-            style={styles.avatar}
-          />
-          <Text style={styles.userName}>
-            {item.profiles.first_name} {item.profiles.last_name}
-          </Text>
-        </View>
-      ) : null}
-      <Image
-        source={{ uri: item.challenges.photo_url }}
-        style={styles.activityImage}
-      />
-      <Text style={styles.activityCaption}>{item.challenges.name}</Text>
-      <Text style={styles.activityDetails}>
-        Info: {item.challenges.description}
-      </Text>
-    </View>
+    <Pressable onPress={onPress} style={styles.challengeCard}>
+      <View style={styles.challengeInfo}>
+        <Image
+          source={{ uri: item.challenges.photo_url }}
+          style={styles.challengeImage}
+        />
+      </View>
+      <View style={styles.textContainer}>
+        <Text style={styles.challengeTitle}>{item.challenges.name}</Text>
+        <Text style={styles.challengeDetails}>
+          Info: {item.challenges.description}
+        </Text>
+      </View>
+      <View style={styles.buttonContainer}>
+        <Pressable onPress={onPress} style={styles.logbookButton}>
+          <Text style={styles.logbookButtonText}>Log Book</Text>
+        </Pressable>
+      </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-  },
-  contentArea: {
-    paddingHorizontal: 10,
-  },
-  activityCard: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 15,
-    marginVertical: 8,
-  },
-  userInfo: {
+  challengeCard: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#e8e8e8",
+    padding: 10,
   },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  challengeInfo: {
+    flexDirection: "row",
+    alignItems: "center",
     marginRight: 10,
   },
-  userName: {
+  challengeImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 8,
+    marginRight: 10,
+  },
+  textContainer: {
+    flex: 3,
+    justifyContent: "center",
+    paddingRight: 10,
+  },
+  challengeTitle: {
     fontWeight: "bold",
-  },
-  activityImage: {
-    width: "100%",
-    height: 200,
-    borderRadius: 10,
-  },
-  activityCaption: {
     fontSize: 16,
-    fontWeight: "bold",
-    marginTop: 5,
+    marginBottom: 4,
   },
-  activityDetails: {
+  challengeDetails: {
     fontSize: 14,
     color: "gray",
-    marginTop: 5,
   },
-  activityTimestamp: {
-    fontSize: 12,
-    color: "gray",
-    marginTop: 5,
+  buttonContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "flex-end",
+  },
+  logbookButton: {
+    padding: 7,
+    borderRadius: 20,
+    backgroundColor: "#61B8C2",
+  },
+  logbookButtonText: {
+    fontSize: 11,
+    fontWeight: "bold",
+    color: "white",
+    fontFamily: "Avenir",
   },
 });

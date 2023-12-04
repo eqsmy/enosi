@@ -60,6 +60,7 @@ function Challenges({ navigation, challenges }) {
   return (
     <SafeAreaView style={styles.container}>
       <TextInput placeholder="Search Challenges" style={styles.searchBar} />
+      <Text style={styles.headingText}> Available Challenges </Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -78,6 +79,7 @@ function Challenges({ navigation, challenges }) {
         ))}
       </ScrollView>
       <StatusBar style="auto" />
+      <Text style={styles.headingText}> Your Challenges </Text>
       <View style={styles.containerFeed}>
         <FlatList
           data={userChallenges} 
@@ -94,7 +96,7 @@ export default Challenges;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    width: "100%",
     backgroundColor: "#ffffff",
     alignItems: "center",
     justifyContent: "flex-start",
@@ -127,8 +129,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
+  headingText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "left",
+    width: "90%",
+    padding: 10,
+    marginVertical: 10,
+  },
   containerFeed: {
-    flex: 1,
+    width: "100%",
     backgroundColor: "#ffffff",
   },
   contentArea: {
