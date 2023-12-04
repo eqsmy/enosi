@@ -193,7 +193,11 @@ export default function Communities({
         component={PrivacySettings}
       />
       <Stack.Screen name="People" component={PeopleFeed} />
-      <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen
+        name="Profile"
+        options={{ headerTitle: "" }}
+        component={Profile}
+      />
     </Stack.Navigator>
   );
 }

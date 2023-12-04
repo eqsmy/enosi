@@ -1,5 +1,7 @@
 import React, { useLayoutEffect, useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
+import { Ionicons } from "@expo/vector-icons";
+
 import {
   Text,
   SafeAreaView,
@@ -9,29 +11,35 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Pressable,
 } from "react-native";
 import { useUser } from "../utils/UserContext";
 import { supabase } from "../utils/Supabase.js";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import Activity from "../components/Activity";
+import FeedItem from "../components/FeedItem";
+import { BasicButton } from "../components/Buttons";
 
 export default function Profile({ route = undefined }) {
   const { state, dispatch } = useUser();
   const navigation = useNavigation();
-  const [profile, setProfile] = useState(route?.params?.user ?? null);
+  const [userId, setUserId] = useState(
+    route?.params?.user.id ?? state.session?.user?.id
+  );
+  const [profile, setProfile] = useState(null);
   const [activities, setActivities] = useState([]);
+  const [tabShow, setTabShow] = useState("activities");
+  const [communities, setCommunities] = useState([]);
 
   useEffect(() => {
-    if (!route?.params?.user) {
-      fetchProfile();
-      fetchActivities();
-    }
+    fetchProfile();
+    fetchActivities();
+    fetchCommunities();
   }, []);
 
   const fetchProfile = async () => {
     try {
-      const userId = state.session?.user?.id;
       if (!userId) throw new Error("User not found");
       const { data, error } = await supabase
         .from("profiles")
@@ -47,7 +55,6 @@ export default function Profile({ route = undefined }) {
 
   const fetchActivities = async () => {
     try {
-      const userId = state.session?.user?.id;
       if (!userId) throw new Error("User not found");
       let { data: activities, error } = await supabase
         .from("user_activities")
@@ -60,32 +67,52 @@ export default function Profile({ route = undefined }) {
       console.error("Error fetching activities:", error.message);
     }
   };
-
-  useLayoutEffect(() => {
-    if (!route?.params?.user) {
-      navigation.setOptions({
-        headerRight: () => (
-          <View style={{ marginRight: 10 }}>
-            <TouchableOpacity onPress={handleLogout}>
-              <Feather name="settings" size={24} color="black" />
-            </TouchableOpacity>
-          </View>
-        ),
-        headerRightContainerStyle: {
-          marginRight: -10,
-        },
-      });
+  async function fetchCommunities() {
+    try {
+      let { data: comms, error } = await supabase
+        .from("communities")
+        .select("*")
+        .contains("members", [userId]);
+      setCommunities(comms);
+      if (error) throw error;
+    } catch (error) {
+      alert(error.message);
     }
-  }, [navigation]);
+  }
 
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (!error) {
-      dispatch({ type: "SET_SESSION", payload: null });
-    } else {
-      console.error("Error logging out:", error);
+  async function addFriend() {
+    try {
+      let { error1 } = await supabase
+        .from("profiles")
+        .update({
+          friends: Array.from(
+            new Set([...profile.friends, state.session?.user?.id])
+          ),
+        })
+        .eq("id", route?.params?.user.id);
+      if (error1) throw error1;
+      await supabase
+        .from("profiles")
+        .select()
+        .eq("id", state.session?.user?.id)
+        .single()
+        .then(async (data) => {
+          let { error3 } = await supabase
+            .from("profiles")
+            .update({
+              friends: Array.from(
+                new Set([...data.data.friends, route?.params?.user.id])
+              ),
+            })
+            .eq("id", state.session?.user?.id);
+          console.log([...data.data.friends, route?.params?.user.id]);
+          if (error3) throw error3;
+        });
+    } catch (error) {
+      alert(error.message);
     }
-  };
+    fetchProfile();
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -102,24 +129,105 @@ export default function Profile({ route = undefined }) {
           {profile ? `${profile.first_name} ${profile.last_name}` : "Your Name"}
         </Text>
         <Text style={styles.bio}>{profile?.bio}</Text>
+        {userId == state.session?.user?.id ? null : (
+          <BasicButton
+            text={
+              profile?.friends.includes(state.session?.user?.id)
+                ? "Friend Added!"
+                : "Add Friend"
+            }
+            onPress={
+              profile?.friends.includes(state.session?.user?.id)
+                ? undefined
+                : addFriend
+            }
+            backgroundColor={
+              profile?.friends.includes(state.session?.user?.id)
+                ? "#d2d2d2"
+                : undefined
+            }
+          ></BasicButton>
+        )}
       </View>
-      {!profile && (
+      {!profile ? (
         <Button
           title="Create Profile"
           onPress={() => navigation.navigate("CreateProfile")}
         />
+      ) : (
+        <>
+          <View style={{ display: "flex", flexDirection: "row", height: 40 }}>
+            <Pressable
+              onPress={() => setTabShow("activities")}
+              style={[
+                styles.toggle,
+                {
+                  backgroundColor:
+                    tabShow == "activities" ? "#61B8C2" : "white",
+                },
+              ]}
+            >
+              <Ionicons
+                name="list"
+                style={{ fontSize: 35 }}
+                color={tabShow == "communities" ? "#61B8C2" : "white"}
+              />
+            </Pressable>
+            <Pressable
+              onPress={() => setTabShow("communities")}
+              style={[
+                styles.toggle,
+                {
+                  backgroundColor:
+                    tabShow == "communities" ? "#61B8C2" : "white",
+                },
+              ]}
+            >
+              <Ionicons
+                name="people"
+                style={{ fontSize: 35 }}
+                color={tabShow == "activities" ? "#61B8C2" : "white"}
+              />
+            </Pressable>
+          </View>
+          <ScrollView style={styles.contentArea}>
+            {tabShow == "activities"
+              ? activities?.map((activity, index) => (
+                  <Activity key={index} item={activity}></Activity>
+                ))
+              : communities?.map((community, key) => {
+                  return (
+                    <View style={{ marginHorizontal: "5%" }} key={key}>
+                      <FeedItem
+                        key={key}
+                        name={community.name}
+                        icon={{
+                          url: community.photo_url,
+                        }}
+                      ></FeedItem>
+                    </View>
+                  );
+                })}
+          </ScrollView>
+        </>
       )}
-      <ScrollView style={styles.contentArea}>
-        {activities.map((activity, index) => (
-          <Activity key={index} item={activity}></Activity>
-        ))}
-      </ScrollView>
       <StatusBar style="auto" />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  toggle: {
+    borderWidth: 2,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    borderColor: "#61B8C2",
+    width: "50%",
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   container: {
     flex: 1,
     backgroundColor: "#ffffff", // Light grey background for the whole screen

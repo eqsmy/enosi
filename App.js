@@ -15,6 +15,7 @@ import Svg, { Circle, Path } from "react-native-svg";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { LogoHeader } from "./components/Headers";
+import { supabase } from "./utils/Supabase";
 
 const Tab = createBottomTabNavigator();
 
@@ -54,13 +55,22 @@ function LogStack() {
 
 const AppContent = () => {
   //use 'useUser' custom hook directly
-  const { state } = useUser();
+  const { state, dispatch } = useUser();
   const [addFriendOrCommModal, setAddFriendOrCommModal] = useState(false);
 
   useEffect(() => {
     console.log("Logged In State Changed:", state.loggedIn);
     // You can add any logic here that should run when loggedIn state changes
   }, [state.loggedIn]);
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (!error) {
+      dispatch({ type: "SET_SESSION", payload: null });
+    } else {
+      console.error("Error logging out:", error);
+    }
+  };
 
   return (
     <NavigationContainer theme={Theme}>
@@ -154,6 +164,18 @@ const AppContent = () => {
               options={{
                 headerShadowVisible: false,
                 headerTitle: "",
+                headerRight: () => (
+                  <TouchableWithoutFeedback>
+                    <Ionicons
+                      onPress={() => {
+                        handleLogout();
+                      }}
+                      name="settings"
+                      size={35}
+                      style={{ right: 10 }}
+                    />
+                  </TouchableWithoutFeedback>
+                ),
                 tabBarIcon: ({ color, size }) => (
                   <Ionicons name="person" color={color} size={size} />
                 ),

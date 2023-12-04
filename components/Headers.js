@@ -10,6 +10,7 @@ export function LogoHeader() {
           height: 60,
           width: "70%",
         }}
+        resizeMode="contain"
         source={require("../assets/logo.png")}
       />
     </View>
