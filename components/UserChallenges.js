@@ -1,4 +1,5 @@
 import { Image, StyleSheet, Text, View, Pressable } from "react-native";
+import CircularProgress from "react-native-circular-progress-indicator";
 
 export default function UserChallenges({ item, onPress, showUser }) {
   return (
@@ -15,11 +16,22 @@ export default function UserChallenges({ item, onPress, showUser }) {
           Info: {item.challenges.description}
         </Text>
       </View>
-      <View style={styles.buttonContainer}>
-        <Pressable onPress={onPress} style={styles.logbookButton}>
-          <Text style={styles.logbookButtonText}>Log Book</Text>
-        </Pressable>
-      </View>
+      {item.progress < 100 ? (
+        <CircularProgress
+          radius={20}
+          value={item.progress}
+          inActiveStrokeColor={"#2ecc71"}
+          inActiveStrokeOpacity={0.2}
+          progressValueColor={"#fff"}
+          valueSuffix={"%"}
+        />
+      ) : (
+        <View style={styles.buttonContainer}>
+          <Pressable onPress={onPress} style={styles.logbookButton}>
+            <Text style={styles.logbookButtonText}>Log Book</Text>
+          </Pressable>
+        </View>
+      )}
     </View>
   );
 }

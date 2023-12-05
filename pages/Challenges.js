@@ -46,6 +46,32 @@ function Challenges({}) {
 
   const fetchUserChallenges = async () => {
     try {
+      await supabase
+        .from("communities")
+        .select("id")
+        .contains("members", [state.session.user.id])
+        .then(async (commsDict) => {
+          var commsList = [];
+          commsDict.data.forEach((value) => {
+            commsList.push(value.id);
+          });
+          let { data: data2, error2 } = await supabase
+            .from("user_challenges")
+            .select(
+              `
+              *,
+              profiles (first_name, last_name, avatar_url),
+              challenges (photo_url, description, name)
+            `
+            )
+            .in("community_id", commsList);
+          setUserChallenges(data2);
+        });
+    } catch (error) {
+      alert(error.message);
+    }
+
+    /*try {
       let { data, error } = await supabase.from("user_challenges").select(
         `
         *,
@@ -57,15 +83,19 @@ function Challenges({}) {
       setUserChallenges(data);
     } catch (error) {
       alert(error.message);
-    }
+    }*/
   };
 
-  const joinChallenge = async (challengeId) => {
+  const joinChallenge = async (challengeId, communityId) => {
     try {
       const userId = state.session?.user?.id;
-      const { error } = await supabase
-        .from("user_challenges")
-        .insert([{ user_id: userId, challenge_id: challengeId }]);
+      const { error } = await supabase.from("user_challenges").insert([
+        {
+          user_id: userId,
+          challenge_id: challengeId,
+          community_id: communityId,
+        },
+      ]);
       if (error) throw error;
       fetchUserChallenges();
     } catch (error) {
@@ -139,12 +169,13 @@ function Challenges({}) {
           contentContainerStyle={styles.contentArea}
         />
       </View>
-      <PreviewModal
-        challenge={selectedChallenge}
-        isVisible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onJoin={joinChallenge}
-      />
+      {modalVisible ? (
+        <PreviewModal
+          challenge={selectedChallenge}
+          onClose={() => setModalVisible(false)}
+          onJoin={joinChallenge}
+        />
+      ) : null}
     </SafeAreaView>
   );
 }
@@ -160,7 +191,7 @@ export function ChallengesStack({}) {
       }}
     >
       <Stack.Screen
-        name="ChallengesPage"
+        name="Challenges"
         style={{ headerTitle: "Challenges" }}
         component={Challenges}
       />
