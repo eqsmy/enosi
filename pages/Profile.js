@@ -230,37 +230,37 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#ffffff", 
+    backgroundColor: "#ffffff",
   },
   profileHeader: {
-    width: "100%", 
+    width: "100%",
     alignItems: "center",
     paddingVertical: 20,
-    backgroundColor: "#fff", 
+    backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
-    fontFamily: "Avenir"
+    fontFamily: "Avenir",
   },
   avatar: {
     width: 120,
     height: 120,
-    borderRadius: 60, // Circular avatar
+    borderRadius: 60,
     marginBottom: 10,
   },
   username: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 5,
-    color: "#333", 
-    fontFamily: "Avenir"
+    color: "#333",
+    fontFamily: "Avenir",
   },
   bio: {
     fontSize: 16,
-    color: "#666", 
-    textAlign: "center", 
-    paddingHorizontal: 30, 
-    marginBottom: 20, 
-    fontFamily: "Avenir"
+    color: "#666",
+    textAlign: "center",
+    paddingHorizontal: 30,
+    marginBottom: 20,
+    fontFamily: "Avenir",
   },
   contentArea: {
     flex: 1,
@@ -281,17 +281,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginTop: 5,
-    fontFamily: "Avenir"
+    fontFamily: "Avenir",
   },
   activityDetails: {
     fontSize: 14,
     color: "gray",
-    fontFamily: "Avenir"
+    fontFamily: "Avenir",
   },
   activityTimestamp: {
     fontSize: 12,
     color: "gray",
     marginTop: 5,
-    fontFamily: "Avenir"
+    fontFamily: "Avenir",
   },
 });
