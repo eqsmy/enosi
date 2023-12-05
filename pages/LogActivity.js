@@ -31,9 +31,8 @@ export function LogActivity1() {
   const userId = state.session.user.id ? state.session.user.id : null;
   const [activity, setActivity] = useState("");
   const [input, setInput] = useState("");
-  const [inputNum, setNum] = useState("0.0");
+  const [inputNum, setNum] = useState(null);
   const [val, setValue] = useState(null);
-  const [textColor, setTextColor] = useState("#C9C9C9");
 
   const [modalVisible, setModalVisible] = useState(false);
   const [caption, setCaption] = useState("");
@@ -191,15 +190,15 @@ export function LogActivity1() {
             <TextInput
               style={{
                 fontSize: 72,
-                color: textColor,
                 textAlign: "right",
               }}
               value={inputNum}
               onChangeText={(x) => {
                 setNum(x);
-                setTextColor("black");
               }}
               keyboardType="numeric"
+              placeholderTextColor={"#c9c9c9"}
+              placeholder={"0.0"}
             />
           </View>
         </View>
