@@ -96,6 +96,7 @@ export function LogActivity1() {
       distance: distance,
       caption: caption, // Assuming 'input' is for comments
       photo_url: photoUrl, // Update if collecting a photo URL
+      duration: 60,
       distance_units: val, // Ensure val is set correctly from dropdown
     };
 
@@ -436,6 +437,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   buttonContainer: {
+    marginTop: 10,
     flexDirection: "column",
     alignItems: "center",
     width: "120%",
