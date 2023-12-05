@@ -16,6 +16,8 @@ import { useUser } from "../utils/UserContext";
 import { useNavigation } from "@react-navigation/native";
 import UserChallenges from "../components/UserChallenges";
 import { StatusBar } from "expo-status-bar";
+import { createStackNavigator } from "@react-navigation/stack";
+import LogBook from "./LogBook";
 
 function Challenges({}) {
   const navigation = useNavigation();
@@ -72,14 +74,14 @@ function Challenges({}) {
   };
 
   const nagvigateToLogbook = (challengeId) => {
-    navigation.navigate("LogBook", { challengeId });
+    navigation.navigate("LogBook", { challengeId: challengeId });
   };
 
   const renderUserChallenges = ({ item }) => {
     return (
       <UserChallenges
         item={item}
-        onPress={() => nagvigateToLogbook(item.id)}
+        onPress={() => nagvigateToLogbook(item.challenge_id)}
         showUser
       ></UserChallenges>
     );
@@ -144,6 +146,34 @@ function Challenges({}) {
         onJoin={joinChallenge}
       />
     </SafeAreaView>
+  );
+}
+
+const Stack = createStackNavigator();
+
+export function ChallengesStack({}) {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShadowVisible: false,
+        headerBackTitle: "Back",
+      }}
+    >
+      <Stack.Screen
+        name="ChallengesPage"
+        style={{ headerTitle: "Challenges" }}
+        component={Challenges}
+      />
+      <Stack.Screen
+        name="LogBook"
+        component={LogBook}
+        options={{
+          headerTitle: "Log Book",
+          tabBarButton: () => null,
+          headerShadowVisible: false,
+        }}
+      />
+    </Stack.Navigator>
   );
 }
 
