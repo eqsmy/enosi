@@ -1,21 +1,71 @@
-import React from "react";
-import { View, Text, Image, StyleSheet, Pressable, Modal } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Pressable,
+  Modal,
+  FlatList,
+} from "react-native";
+import { supabase } from "../utils/Supabase";
+import { useUser } from "../utils/UserContext";
+import { RadioButton } from "react-native-paper";
+import { Ionicons } from "@expo/vector-icons";
 
-export default PreviewModal = ({ challenge, isVisible, onClose, onJoin }) => {
+export default PreviewModal = ({ challenge, onClose, onJoin }) => {
+  const [communities, setCommunities] = useState([]);
+  const { state, dispatch } = useUser();
+  const [selectedCommunity, setSelectedCommunity] = useState("");
+
+  async function fetchCommunities() {
+    try {
+      let { data: comms, error } = await supabase
+        .from("communities")
+        .select("*")
+        .contains("members", [state.session.user.id]);
+      setCommunities(comms);
+      if (error) throw error;
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+  useEffect(() => {
+    fetchCommunities();
+  }, []);
+
   const handleJoin = () => {
     if (challenge && challenge.id) {
-      onJoin(challenge.id);
+      onJoin(challenge.id, selectedCommunity);
       onClose();
     }
   };
 
+  const renderItem = ({ item }) => {
+    return (
+      <Pressable
+        style={{
+          paddingVertical: 5,
+          paddingHorizontal: 10,
+          display: "flex",
+          flexDirection: "row",
+          width: "100%",
+          alignItems: "center",
+        }}
+        onPress={() => setSelectedCommunity(item.id)}
+      >
+        {selectedCommunity == item.id ? (
+          <Ionicons size={20} color={"#61B8C2"} name="radio-button-on" />
+        ) : (
+          <Ionicons size={20} color={"grey"} name="radio-button-off" />
+        )}
+        <Text style={{ paddingLeft: 10 }}>{item.name}</Text>
+      </Pressable>
+    );
+  };
+
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={isVisible}
-      onRequestClose={onClose}
-    >
+    <Modal animationType="slide" transparent={true} onRequestClose={onClose}>
       <View style={styles.modalView}>
         <Text style={styles.modalTitle}>{challenge?.name}</Text>
         <Image
@@ -23,12 +73,57 @@ export default PreviewModal = ({ challenge, isVisible, onClose, onJoin }) => {
           style={styles.modalImage}
         />
         <Text style={styles.modalDescription}>{challenge?.description}</Text>
-        <Text>Total Goal Miles: {challenge?.total_goal}</Text>
+        <View style={{ display: "flex", flexDirection: "row" }}>
+          <Text style={{ fontWeight: "500" }}>Total Goal Miles: </Text>
+          <Text>{challenge?.total_goal}</Text>
+        </View>
+
+        <Text
+          style={{
+            fontWeight: "bold",
+            width: 300,
+            marginTop: 20,
+            fontSize: 16,
+          }}
+        >
+          Choose Community
+        </Text>
+        <View
+          style={{
+            height: 115,
+            marginTop: 10,
+            width: 300,
+            borderWidth: 2,
+            borderRadius: 20,
+            borderColor: "#ECECED",
+          }}
+        >
+          <FlatList
+            data={communities}
+            numColumns={1}
+            horizontal={false}
+            renderItem={renderItem}
+          ></FlatList>
+        </View>
 
         <View style={styles.buttonContainer}>
-          <Pressable onPress={handleJoin} style={styles.joinButton}>
-            <Text style={styles.joinButtonText}>Join Challenge</Text>
-          </Pressable>
+          {selectedCommunity == "" ? (
+            <Pressable
+              style={{
+                padding: 7,
+                borderRadius: 20,
+                backgroundColor: "#d2d2d2",
+                fontFamily: "Avenir",
+                color: "white",
+              }}
+            >
+              <Text style={styles.joinButtonText}>Join Challenge</Text>
+            </Pressable>
+          ) : (
+            <Pressable onPress={handleJoin} style={styles.joinButton}>
+              <Text style={styles.joinButtonText}>Join Challenge</Text>
+            </Pressable>
+          )}
           <Pressable style={styles.closeButton} onPress={onClose}>
             <Text style={styles.closeButtonText}>Close</Text>
           </Pressable>
@@ -70,20 +165,20 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "60%",
+    width: "55%",
     marginTop: 20,
   },
   closeButton: {
     padding: 7,
     borderRadius: 20,
-    backgroundColor: "#61B8C2",
+    backgroundColor: "white",
     fontFamily: "Avenir",
-    color: "white",
+    color: "#61B8C2",
   },
   closeButtonText: {
     fontSize: 15,
     fontWeight: "bold",
-    color: "white",
+    color: "#61B8C2",
     fontFamily: "Avenir",
     margin: 5,
   },

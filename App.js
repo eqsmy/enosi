@@ -150,11 +150,12 @@ const AppContent = () => {
               }}
             />
             <Tab.Screen
-              name="Challenges"
+              name="ChallengesStack"
               component={ChallengesStack}
               options={{
                 headerShadowVisible: false,
                 headerShown: false,
+                tabBarLabel: "Challenges",
                 tabBarIcon: ({ color, size }) => (
                   <Ionicons name="map" color={color} size={size} />
                 ),

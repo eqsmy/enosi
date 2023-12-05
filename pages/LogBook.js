@@ -45,7 +45,16 @@ export default function LogBook({ route }) {
   };
 
   return (
-    <SafeAreaView style={enosiStyles.feedContainer}>
+    <SafeAreaView
+      style={
+        posts.length == 0 ? enosiStyles.container : enosiStyles.feedContainer
+      }
+    >
+      {posts.length == 0 ? (
+        <Text style={{ fontSize: 15 }}>
+          No log book entries for this challenge yet!
+        </Text>
+      ) : null}
       <View
         style={{
           height: "100%",
@@ -53,10 +62,6 @@ export default function LogBook({ route }) {
           position: "absolute",
         }}
       >
-        <TextInput
-          placeholder="Search"
-          style={enosiStyles.searchBar}
-        ></TextInput>
         <FlatList data={posts} renderItem={renderPost} />
       </View>
     </SafeAreaView>
@@ -64,10 +69,6 @@ export default function LogBook({ route }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-  },
   activityCard: {
     backgroundColor: "#fff",
     borderRadius: 10,
