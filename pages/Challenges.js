@@ -8,7 +8,9 @@ import {
   FlatList,
   Image,
   StyleSheet,
+  Pressable,
 } from "react-native";
+import PreviewModal from "../components/PreviewModal";
 import { supabase } from "../utils/Supabase";
 import { useUser } from "../utils/UserContext";
 import { useNavigation } from "@react-navigation/native";
@@ -17,9 +19,12 @@ import { StatusBar } from "expo-status-bar";
 
 function Challenges({}) {
   const navigation = useNavigation();
-  const { state } = useUser(); // Accessing the user context
+  const { state } = useUser();
   const [allChallenges, setAllChallenges] = useState([]);
   const [userChallenges, setUserChallenges] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedChallenge, setSelectedChallenge] = useState(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchAllChallenges();
@@ -53,6 +58,19 @@ function Challenges({}) {
     }
   };
 
+  const joinChallenge = async (challengeId) => {
+    try {
+      const userId = state.session?.user?.id;
+      const { error } = await supabase
+        .from("user_challenges")
+        .insert([{ user_id: userId, challenge_id: challengeId }]);
+      if (error) throw error;
+      fetchUserChallenges();
+    } catch (error) {
+      alert("There was an error joining a challenge", error.message);
+    }
+  };
+
   const nagvigateToLogbook = (challengeId) => {
     navigation.navigate("LogBook", { challengeId });
   };
@@ -67,24 +85,45 @@ function Challenges({}) {
     );
   };
 
+  const openModal = (challenge) => {
+    setSelectedChallenge(challenge);
+    setModalVisible(true);
+  };
+
+  const handleSearch = (query) => {
+    setSearch(query.toLowerCase());
+  };
+
+  const filteredChallenges = allChallenges.filter((challenge) => {
+    return challenge.name.toLowerCase().includes(search);
+  });
+
   return (
     <SafeAreaView style={styles.container}>
-      <TextInput placeholder="Search" style={styles.searchBar} />
+      <TextInput
+        placeholder="Search"
+        style={styles.searchBar}
+        onChangeText={handleSearch}
+        value={search}
+      />
       <Text style={styles.headingText}> Available Challenges </Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.horizontalScroll}
       >
-        {allChallenges.map((challenge) => (
+        {filteredChallenges.map((challenge) => (
           <View key={challenge.id} style={styles.challengePreview}>
-            <View style={styles.challengeCard}>
-              <Image
-                source={{ uri: challenge.photo_url }}
-                style={styles.challengeImage}
-              />
-              <Text style={styles.challengeTitle}>{challenge.name}</Text>
-            </View>
+            <Pressable key={challenge.id} onPress={() => openModal(challenge)}>
+              <View style={styles.challengeCard}>
+                <Image
+                  source={{ uri: challenge.photo_url }}
+                  style={styles.challengeImage}
+                />
+
+                <Text style={styles.challengeTitle}>{challenge.name}</Text>
+              </View>
+            </Pressable>
           </View>
         ))}
       </ScrollView>
@@ -98,6 +137,12 @@ function Challenges({}) {
           contentContainerStyle={styles.contentArea}
         />
       </View>
+      <PreviewModal
+        challenge={selectedChallenge}
+        isVisible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onJoin={joinChallenge}
+      />
     </SafeAreaView>
   );
 }
