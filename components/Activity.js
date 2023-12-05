@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
     fontFamily: "Avenir",
+    fontSize: 19,
   },
   avatar: {
     width: 40,
@@ -56,6 +57,7 @@ const styles = StyleSheet.create({
   userName: {
     fontWeight: "bold",
     fontFamily: "Avenir",
+    fontSize: 19,
   },
   activityImage: {
     width: "100%",

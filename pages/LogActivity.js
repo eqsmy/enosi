@@ -6,6 +6,8 @@ import {
   Dimensions,
   TextInput,
   Alert,
+  Modal,
+  Button,
 } from "react-native";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -16,7 +18,7 @@ import {
   GestureHandlerRootView,
   TouchableOpacity,
 } from "react-native-gesture-handler";
-
+import * as ImagePicker from "expo-image-picker";
 import { supabase } from "../utils/Supabase";
 import { useUser } from "../utils/UserContext";
 
@@ -31,11 +33,56 @@ export function LogActivity1() {
   const [input, setInput] = useState("");
   const [inputNum, setNum] = useState("0.0");
   const [val, setValue] = useState(null);
-
   const [textColor, setTextColor] = useState("#C9C9C9");
 
-  //function to handle the sumibssion of the activity data
+  const [modalVisible, setModalVisible] = useState(false);
+  const [caption, setCaption] = useState("");
+  const [photoUri, setPhotoUri] = useState(null);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets) {
+      setPhotoUri(result.assets[0].uri);
+    }
+  };
+
+  const handlePhotoUpload = async () => {
+    if (!photoUri) {
+      console.error("No photo URI available. Cannot upload photo.");
+      return;
+    }
+
+    const imageName = `activity_${userId}_${new Date().getTime()}`;
+    let blob;
+    try {
+      const response = await fetch(photoUri);
+      blob = await response.blob();
+      console.log("Blob size: ", blob.size);
+    } catch (error) {
+      console.error("Error fetching image blob: ", error.message);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.storage
+        .from("activity_photos")
+        .upload(imageName, blob);
+      if (error) throw error;
+      console.log("Image uploaded successfully: ", imageName);
+      return imageName;
+    } catch (error) {
+      console.error("Error uploading image to storage: ", error.message);
+    }
+  };
+
   const handleSubmit = async () => {
+    const photoUrl = await handlePhotoUpload();
     const distance = parseFloat(inputNum);
     if (isNaN(distance)) {
       Alert.alert("Error", "Please enter a valid number for distance.");
@@ -47,21 +94,18 @@ export function LogActivity1() {
       user_id: userId,
       activity_type: activity,
       distance: distance,
-      time_spent: 0, // Update as needed
-      comments: input, // Assuming 'input' is for comments
-      photo_url: "", // Update if collecting a photo URL
-      distance_unit: val, // Ensure val is set correctly from dropdown
-      time_unit: "", // Update as needed
+      caption: caption, // Assuming 'input' is for comments
+      photo_url: photoUrl, // Update if collecting a photo URL
+      distance_units: val, // Ensure val is set correctly from dropdown
     };
 
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("user_activities")
         .insert([activityData])
         .select();
       if (error) throw error;
       Alert.alert("Success", "Activity logged successfully.");
-      // Reset form or navigate to another screen if necessary
     } catch (error) {
       console.error("Error logging activity:", error.message);
       Alert.alert("Error", "Failed to log activity.");
@@ -202,7 +246,7 @@ export function LogActivity1() {
               { alignItems: "center", justifyContent: "center" },
             ]}
           >
-            <TouchableOpacity onPress={handleSubmit}>
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
               <Text
                 style={{
                   color: "white",
@@ -215,6 +259,31 @@ export function LogActivity1() {
               </Text>
             </TouchableOpacity>
           </View>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(false)}
+            style={styles.modalWrapper}
+          >
+            <View style={styles.modalContent}>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter a caption..."
+                onChangeText={setCaption}
+                value={caption}
+              />
+              <Button title="Upload Photo" onPress={pickImage} />
+              {photoUri && (
+                <Image
+                  source={{ uri: photoUri }}
+                  style={styles.uploadedImage}
+                />
+              )}
+              <Button title="Submit" onPress={handleSubmit} />
+              <Button title="Cancel" onPress={() => setModalVisible(false)} />
+            </View>
+          </Modal>
         </View>
       </View>
     </GestureHandlerRootView>
@@ -308,5 +377,33 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 18,
     color: "grey",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 22,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
+    borderColor: "rgba(0, 0, 0, 0.1)",
+    alignSelf: "center", // Add this to ensure it aligns itself to the center
+    width: "80%",
+  },
+  input: {
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    width: "100%",
+    marginBottom: 10,
+  },
+  uploadedImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  modalWrapper: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

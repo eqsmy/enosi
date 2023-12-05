@@ -8,7 +8,6 @@ import Home from "./pages/Home";
 import Communities from "./pages/Communities";
 import Challenges from "./pages/Challenges";
 import Profile from "./pages/Profile";
-import LogBook from "./pages/LogBook";
 import { LogActivity1, LogActivity2 } from "./pages/LogActivity";
 import Login from "./pages/Login";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,7 +19,6 @@ import { supabase } from "./utils/Supabase";
 
 const Tab = createBottomTabNavigator();
 
-// This is not working right now but it would be cool if it did
 const customTextProps = {
   style: {
     fontFamily: "Avenir",
@@ -180,14 +178,6 @@ const AppContent = () => {
                 tabBarIcon: ({ color, size }) => (
                   <Ionicons name="person" color={color} size={size} />
                 ),
-              }}
-            />
-            <Tab.Screen
-              name="LogBook"
-              component={LogBook}
-              options={{
-                headerShown: false,
-                tabBarButton: () => null,
               }}
             />
           </>
