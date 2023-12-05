@@ -261,27 +261,48 @@ export function LogActivity1() {
           </View>
           <Modal
             animationType="slide"
-            transparent={true}
+            transparent={false}
             visible={modalVisible}
             onRequestClose={() => setModalVisible(false)}
-            style={styles.modalWrapper}
+            presentationStyle="fullScreen"
           >
             <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>
+                Optional: Add a caption and photo
+              </Text>
               <TextInput
                 style={styles.input}
-                placeholder="Enter a caption..."
+                placeholder="How'd it go? How are you feeling? Share more about your activity!"
                 onChangeText={setCaption}
                 value={caption}
+                multiline={true}
               />
-              <Button title="Upload Photo" onPress={pickImage} />
               {photoUri && (
                 <Image
                   source={{ uri: photoUri }}
                   style={styles.uploadedImage}
                 />
               )}
-              <Button title="Submit" onPress={handleSubmit} />
-              <Button title="Cancel" onPress={() => setModalVisible(false)} />
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={styles.upLoadButtons}
+                  onPress={pickImage}
+                >
+                  <Text style={styles.uploadButtonText}>Upload Photo</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.upLoadButtons}
+                  onPress={handleSubmit}
+                >
+                  <Text style={styles.uploadButtonText}>Post!</Text>
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity
+                style={styles.upLoadButtons}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.uploadButtonText}>Cancel</Text>
+              </TouchableOpacity>
             </View>
           </Modal>
         </View>
@@ -379,31 +400,60 @@ const styles = StyleSheet.create({
     color: "grey",
   },
   modalContent: {
+    flex: 1,
     backgroundColor: "white",
     padding: 22,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
-    borderRadius: 4,
+    borderRadius: 20,
     borderColor: "rgba(0, 0, 0, 0.1)",
-    alignSelf: "center", // Add this to ensure it aligns itself to the center
+    alignSelf: "center",
     width: "80%",
   },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    width: "100%",
+  modalTitle: {
+    marginTop: 150,
+    fontFamily: "Avenir",
+    fontWeight: "600",
+    fontSize: 17,
     marginBottom: 10,
+    alignSelf: "center",
+  },
+  input: {
+    height: "30%",
+    textAlign: "left",
+    borderColor: "#f6f6f6",
+    borderWidth: 1,
+    borderRadius: 10,
+    width: "110%",
+    backgroundColor: "#f6f6f6",
+    padding: 10,
   },
   uploadedImage: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
     borderRadius: 10,
     marginBottom: 10,
+    marginTop: 10,
   },
-  modalWrapper: {
-    flex: 1,
-    justifyContent: "center",
+  buttonContainer: {
+    flexDirection: "column",
     alignItems: "center",
+    width: "120%",
+    height: "18%",
+    gap: 10,
+  },
+  upLoadButtons: {
+    backgroundColor: "#61B8C2",
+    borderRadius: 25,
+    padding: 4,
+  },
+  uploadButtonText: {
+    color: "white",
+    fontWeight: "700",
+    fontSize: 16,
+    fontFamily: "Avenir",
+    // backgroundColor: "red",
+    padding: 8,
+    paddingHorizontal: 25,
   },
 });
