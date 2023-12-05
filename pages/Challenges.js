@@ -16,6 +16,8 @@ import { useUser } from "../utils/UserContext";
 import { useNavigation } from "@react-navigation/native";
 import UserChallenges from "../components/UserChallenges";
 import { StatusBar } from "expo-status-bar";
+import { createStackNavigator } from "@react-navigation/stack";
+import LogBook from "./LogBook";
 
 function Challenges({}) {
   const navigation = useNavigation();
@@ -44,6 +46,32 @@ function Challenges({}) {
 
   const fetchUserChallenges = async () => {
     try {
+      await supabase
+        .from("communities")
+        .select("id")
+        .contains("members", [state.session.user.id])
+        .then(async (commsDict) => {
+          var commsList = [];
+          commsDict.data.forEach((value) => {
+            commsList.push(value.id);
+          });
+          let { data: data2, error2 } = await supabase
+            .from("user_challenges")
+            .select(
+              `
+              *,
+              profiles (first_name, last_name, avatar_url),
+              challenges (photo_url, description, name)
+            `
+            )
+            .in("community_id", commsList);
+          setUserChallenges(data2);
+        });
+    } catch (error) {
+      alert(error.message);
+    }
+
+    /*try {
       let { data, error } = await supabase.from("user_challenges").select(
         `
         *,
@@ -55,15 +83,19 @@ function Challenges({}) {
       setUserChallenges(data);
     } catch (error) {
       alert(error.message);
-    }
+    }*/
   };
 
-  const joinChallenge = async (challengeId) => {
+  const joinChallenge = async (challengeId, communityId) => {
     try {
       const userId = state.session?.user?.id;
-      const { error } = await supabase
-        .from("user_challenges")
-        .insert([{ user_id: userId, challenge_id: challengeId }]);
+      const { error } = await supabase.from("user_challenges").insert([
+        {
+          user_id: userId,
+          challenge_id: challengeId,
+          community_id: communityId,
+        },
+      ]);
       if (error) throw error;
       fetchUserChallenges();
     } catch (error) {
@@ -72,14 +104,14 @@ function Challenges({}) {
   };
 
   const nagvigateToLogbook = (challengeId) => {
-    navigation.navigate("LogBook", { challengeId });
+    navigation.navigate("LogBook", { challengeId: challengeId });
   };
 
   const renderUserChallenges = ({ item }) => {
     return (
       <UserChallenges
         item={item}
-        onPress={() => nagvigateToLogbook(item.id)}
+        onPress={() => nagvigateToLogbook(item.challenge_id)}
         showUser
       ></UserChallenges>
     );
@@ -137,13 +169,42 @@ function Challenges({}) {
           contentContainerStyle={styles.contentArea}
         />
       </View>
-      <PreviewModal
-        challenge={selectedChallenge}
-        isVisible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onJoin={joinChallenge}
-      />
+      {modalVisible ? (
+        <PreviewModal
+          challenge={selectedChallenge}
+          onClose={() => setModalVisible(false)}
+          onJoin={joinChallenge}
+        />
+      ) : null}
     </SafeAreaView>
+  );
+}
+
+const Stack = createStackNavigator();
+
+export function ChallengesStack({}) {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShadowVisible: false,
+        headerBackTitle: "Back",
+      }}
+    >
+      <Stack.Screen
+        name="Challenges"
+        style={{ headerTitle: "Challenges" }}
+        component={Challenges}
+      />
+      <Stack.Screen
+        name="LogBook"
+        component={LogBook}
+        options={{
+          headerTitle: "Log Book",
+          tabBarButton: () => null,
+          headerShadowVisible: false,
+        }}
+      />
+    </Stack.Navigator>
   );
 }
 

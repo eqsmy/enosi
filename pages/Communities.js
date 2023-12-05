@@ -136,6 +136,7 @@ export default function Communities({
     <Stack.Navigator
       screenOptions={{
         headerShadowVisible: false,
+        headerBackTitle: "Back",
       }}
     >
       <Stack.Screen

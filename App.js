@@ -6,7 +6,7 @@ import { setCustomText } from "react-native-global-props";
 
 import Home from "./pages/Home";
 import Communities from "./pages/Communities";
-import Challenges from "./pages/Challenges";
+import Challenges, { ChallengesStack } from "./pages/Challenges";
 import Profile from "./pages/Profile";
 import { LogActivity1, LogActivity2 } from "./pages/LogActivity";
 import Login from "./pages/Login";
@@ -37,7 +37,7 @@ const Theme = {
 const Stack = createStackNavigator();
 function LogStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={{ headerBackTitle: "Back" }}>
       <Stack.Screen
         name="LogActivity1"
         options={{ headerShown: false }}
@@ -148,10 +148,12 @@ const AppContent = () => {
               }}
             />
             <Tab.Screen
-              name="Challenges"
-              component={Challenges}
+              name="ChallengesStack"
+              component={ChallengesStack}
               options={{
                 headerShadowVisible: false,
+                headerShown: false,
+                tabBarLabel: "Challenges",
                 tabBarIcon: ({ color, size }) => (
                   <Ionicons name="map" color={color} size={size} />
                 ),
@@ -186,7 +188,6 @@ const AppContent = () => {
             name="Login"
             component={Login}
             options={{
-              headerShown: false,
               tabBarButton: () => null,
             }}
           />
