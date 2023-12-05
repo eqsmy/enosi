@@ -15,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useUser } from "../utils/UserContext";
 import { supabase } from "../utils/Supabase";
 import { useMemo } from "react";
+import _ from "lodash";
 
 export function PrivacySettings() {
   const navigation = useNavigation();
@@ -26,9 +27,11 @@ export function PrivacySettings() {
   const defaultPrivacyOptions = [
     {
       name: "Private Community",
-      descriptionEnabled: "This community is private.",
-      descriptionDisabled: "This community is public.",
-      status: false,
+      descriptionEnabled:
+        "This community's challenges will only be visible to members.",
+      descriptionDisabled:
+        "This community's challenges will be visible to non-members.",
+      status: true,
     },
     {
       name: "Searchable",
@@ -38,15 +41,16 @@ export function PrivacySettings() {
     },
     {
       name: "Require Approval",
-      descriptionEnabled: "New members must be approved.",
+      descriptionEnabled:
+        "New members must be approved by a community administrator.",
       descriptionDisabled: "New members can join without approval.",
       status: false,
     },
     {
-      name: "Restrict Invitations",
-      descriptionEnabled: "Only community admins can send invites.",
+      name: "Restrict Group Invitations",
+      descriptionEnabled: "Only community administrators can send invites.",
       descriptionDisabled: "Anyone in the group can send invites.",
-      status: false,
+      status: true,
     },
   ];
   const [settings, setSettings] = useState(defaultPrivacyOptions);
@@ -66,9 +70,17 @@ export function PrivacySettings() {
             }}
             key={idx}
           >
-            <View>
-              <Text style={{ fontWeight: "bold" }}>{option.name}</Text>
-              <Text style={{ marginTop: 5 }}>
+            <View style={{ width: "80%" }}>
+              <Text style={{ fontWeight: "bold", fontSize: 16 }}>
+                {option.name}
+              </Text>
+              <Text
+                style={{
+                  marginTop: 5,
+                  fontSize: 12,
+                  color: "grey",
+                }}
+              >
                 {option.status
                   ? option.descriptionEnabled
                   : option.descriptionDisabled}
@@ -85,14 +97,24 @@ export function PrivacySettings() {
                 };
                 setSettings(tempOptions);
               }}
-              trackColor={{ true: "#FF4A00", false: undefined }}
+              trackColor={{ true: "#61B8C2", false: undefined }}
             ></Switch>
           </View>
         );
       })}
-      <View style={{ position: "absolute", bottom: 50, width: 150 }}>
-        <BasicButton onPress={setCommunitySettings} text={"Done"}></BasicButton>
+      <View style={{ position: "absolute", bottom: 50, width: "fit-content" }}>
+        <BasicButton
+          onPress={setCommunitySettings}
+          text={
+            _.isEqual(settings, defaultPrivacyOptions)
+              ? "Save Defaults"
+              : "Save"
+          }
+        ></BasicButton>
       </View>
+      <Text style={{ position: "absolute", bottom: 25, color: "grey" }}>
+        (These settings can be changed later)
+      </Text>
     </SafeAreaView>
   );
 }

@@ -176,19 +176,6 @@ export default function Communities({
         name="NewCommunityPrivacySettings"
         options={{
           title: "Community Settings",
-          headerRight: () => (
-            <TouchableWithoutFeedback>
-              <Ionicons
-                onPress={() => {
-                  setAddFriendOrCommModal(true);
-                }}
-                name="close"
-                size={35}
-                style={{ right: 10 }}
-                color="#FF4A00"
-              />
-            </TouchableWithoutFeedback>
-          ),
         }}
         component={PrivacySettings}
       />
