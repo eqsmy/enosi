@@ -39,6 +39,7 @@ export function LogActivity1() {
   const [modalVisible, setModalVisible] = useState(false);
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState();
+
   const photoUri = image;
 
   const pickImage = async () => {
@@ -53,75 +54,60 @@ export function LogActivity1() {
     }
   };
 
-  const handlePhotoUpload = async () => {
+  const handleSubmit = async () => {
     if (!photoUri) {
       console.error("No photo URI available. Cannot upload photo.");
       return null;
     }
-    try {
-      // Fetch the file blob from the local file system
-      const response = await fetch(photoUri);
-      const blob = await response.blob();
-      // Create a FileReader to read the blob as a base64 string
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-          const base64 = reader.result.split(",")[1];
-          const buffer = Uint8Array.from(base64Decode(base64), (c) =>
-            c.charCodeAt(0)
-          ).buffer;
-          const imageName = `activity_${userId}_${new Date().getTime()}.jpg`;
-          const { error } = await supabase.storage
-            .from("activity_photos")
-            .upload(imageName, buffer, {
-              contentType: "image/jpeg",
-            });
-          if (error) {
-            console.error("Error uploading image: ", error.message);
-            reject(null);
-          }
+    const response = await fetch(photoUri);
+    const blob = await response.blob();
+    const reader = new FileReader();
+
+    reader.readAsDataURL(blob);
+    reader.onloadend = async () => {
+      try {
+        const base64 = reader.result.split(",")[1];
+        const buffer = Uint8Array.from(base64Decode(base64), (c) =>
+          c.charCodeAt(0)
+        ).buffer;
+        const imageName = `activity_${userId}_${new Date().getTime()}.jpg`;
+        const resp = await supabase.storage
+          .from("activity_photos")
+          .upload(imageName, buffer, {
+            contentType: "image/jpeg",
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+        const publicUrl = `https://usnnwgiufohluhxdtvys.supabase.co/storage/v1/object/public/activity_photos/${resp.data.path}`;
+        const distance = parseFloat(inputNum);
+        if (isNaN(distance)) {
+          Alert.alert("Error", "Please enter a valid number for distance.");
+          return;
+        }
+        // Prepare data for submission
+        const activityData = {
+          user_id: userId,
+          activity_type: activity,
+          distance: distance,
+          caption: caption,
+          photo_url: publicUrl,
+          duration: 60,
+          distance_units: val,
         };
-        reader.onerror = (error) => reject(error);
-        reader.readAsDataURL(blob);
-      });
-    } catch (error) {
-      console.error("Error in handlePhotoUpload: ", error.message);
-      return null;
-    }
-  };
 
-  const handleSubmit = async () => {
-    const photoUrl = await handlePhotoUpload();
-    const distance = parseFloat(inputNum);
-    if (isNaN(distance)) {
-      Alert.alert("Error", "Please enter a valid number for distance.");
-      return;
-    }
-    // Prepare data for submission
-    const activityData = {
-      user_id: userId,
-      activity_type: activity,
-      distance: distance,
-      caption: caption,
-      photo_url: photoUrl,
-      duration: 60,
-      distance_units: val,
+        console.log("Inserting data:", activityData);
+        const { error } = await supabase
+          .from("user_activities")
+          .insert([activityData])
+          .select();
+        if (error) throw error;
+        Alert.alert("Success", "Activity logged successfully.");
+      } catch (error) {
+        console.error("Error logging activity:", error.message);
+        Alert.alert("Error", "Failed to log activity.");
+      }
     };
-
-    console.log("Inserting data:", activityData);
-
-
-    try {
-      const { error } = await supabase
-        .from("user_activities")
-        .insert([activityData])
-        .select();
-      if (error) throw error;
-      Alert.alert("Success", "Activity logged successfully.");
-    } catch (error) {
-      console.error("Error logging activity:", error.message);
-      Alert.alert("Error", "Failed to log activity.");
-    }
   };
 
   const updateActivity = (inputText) => {
