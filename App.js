@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { UserProvider, useUser } from "./utils/UserContext";
-import { Image, TouchableWithoutFeedback, View } from "react-native";
+import { Image, Pressable, TouchableWithoutFeedback, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { setCustomText } from "react-native-global-props";
 
@@ -121,7 +121,8 @@ const AppContent = () => {
                 title: "Log Activity",
                 headerShadowVisible: false,
                 tabBarButton: (props) => (
-                  <View
+                  <Pressable
+                    {...props}
                     style={{
                       width: "25%",
                       alignItems: "center",
@@ -137,7 +138,7 @@ const AppContent = () => {
                       resizeMode="contain"
                       source={require("./assets/addactivity.png")}
                     />
-                  </View>
+                  </Pressable>
                 ),
               }}
             />
