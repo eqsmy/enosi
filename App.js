@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { UserProvider, useUser } from "./utils/UserContext";
-import { TouchableWithoutFeedback, View } from "react-native";
+import { Image, TouchableWithoutFeedback, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { setCustomText } from "react-native-global-props";
 
@@ -121,29 +121,23 @@ const AppContent = () => {
                 title: "Log Activity",
                 headerShadowVisible: false,
                 tabBarButton: (props) => (
-                  <TouchableWithoutFeedback {...props}>
-                    <Svg
-                      width="20%"
-                      height="100%"
-                      viewBox="0 0 50 50"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <Circle cx="24.5" cy="24.5" r="20" fill="#61B8C2" />
-                      <Path
-                        d="M24 15V35"
-                        stroke="white"
-                        stroke-width="10"
-                        stroke-linecap="square"
-                      />
-                      <Path
-                        d="M14 25H34"
-                        stroke="white"
-                        stroke-width="10"
-                        stroke-linecap="square"
-                      />
-                    </Svg>
-                  </TouchableWithoutFeedback>
+                  <View
+                    style={{
+                      width: "25%",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Image
+                      style={{
+                        marginBottom: 20,
+                        width: "80%",
+                        height: 80,
+                      }}
+                      resizeMode="contain"
+                      source={require("./assets/addactivity.png")}
+                    />
+                  </View>
                 ),
               }}
             />
