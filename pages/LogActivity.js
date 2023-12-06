@@ -7,7 +7,6 @@ import {
   TextInput,
   Alert,
   Modal,
-  Button,
 } from "react-native";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -21,6 +20,8 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { supabase } from "../utils/Supabase";
 import { useUser } from "../utils/UserContext";
+import { FileOjbect } from "@supabase/storage-js";
+import { decode as base64Decode } from "base-64";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
@@ -37,7 +38,8 @@ export function LogActivity1() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [caption, setCaption] = useState("");
-  const [photoUri, setPhotoUri] = useState(null);
+  const [image, setImage] = useState();
+  const photoUri = image;
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -46,38 +48,45 @@ export function LogActivity1() {
       aspect: [4, 3],
       quality: 1,
     });
-
-    if (!result.canceled && result.assets) {
-      setPhotoUri(result.assets[0].uri);
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
     }
   };
 
   const handlePhotoUpload = async () => {
     if (!photoUri) {
       console.error("No photo URI available. Cannot upload photo.");
-      return;
+      return null;
     }
-
-    const imageName = `activity_${userId}_${new Date().getTime()}`;
-    let blob;
     try {
+      // Fetch the file blob from the local file system
       const response = await fetch(photoUri);
-      blob = await response.blob();
-      console.log("Blob size: ", blob.size);
+      const blob = await response.blob();
+      // Create a FileReader to read the blob as a base64 string
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const base64 = reader.result.split(",")[1];
+          const buffer = Uint8Array.from(base64Decode(base64), (c) =>
+            c.charCodeAt(0)
+          ).buffer;
+          const imageName = `activity_${userId}_${new Date().getTime()}.jpg`;
+          const { error } = await supabase.storage
+            .from("activity_photos")
+            .upload(imageName, buffer, {
+              contentType: "image/jpeg",
+            });
+          if (error) {
+            console.error("Error uploading image: ", error.message);
+            reject(null);
+          }
+        };
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(blob);
+      });
     } catch (error) {
-      console.error("Error fetching image blob: ", error.message);
-      return;
-    }
-
-    try {
-      const { error } = await supabase.storage
-        .from("activity_photos")
-        .upload(imageName, blob);
-      if (error) throw error;
-      console.log("Image uploaded successfully: ", imageName);
-      return imageName;
-    } catch (error) {
-      console.error("Error uploading image to storage: ", error.message);
+      console.error("Error in handlePhotoUpload: ", error.message);
+      return null;
     }
   };
 
@@ -88,17 +97,19 @@ export function LogActivity1() {
       Alert.alert("Error", "Please enter a valid number for distance.");
       return;
     }
-
     // Prepare data for submission
     const activityData = {
       user_id: userId,
       activity_type: activity,
       distance: distance,
-      caption: caption, // Assuming 'input' is for comments
-      photo_url: photoUrl, // Update if collecting a photo URL
+      caption: caption,
+      photo_url: photoUrl,
       duration: 60,
-      distance_units: val, // Ensure val is set correctly from dropdown
+      distance_units: val,
     };
+
+    console.log("Inserting data:", activityData);
+
 
     try {
       const { error } = await supabase
