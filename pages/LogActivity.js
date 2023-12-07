@@ -182,7 +182,7 @@ export function LogActivity1() {
             />
           </View>
         </View>
-
+        <Text style={styles.customBoxText}>Distance / Time</Text>
         <View style={styles.numBox}>
           <View>
             <TextInput
@@ -200,7 +200,6 @@ export function LogActivity1() {
             />
           </View>
         </View>
-        <Text style={styles.customBoxText}>Units</Text>
         <View style={styles.customBox}>
           <View
             style={{
@@ -234,7 +233,7 @@ export function LogActivity1() {
             alignItems: "center",
             justifyContent: "center",
             flex: 1,
-            marginTop: 45,
+            marginTop: 30,
           }}
         >
           <View
