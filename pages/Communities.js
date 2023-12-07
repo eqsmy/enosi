@@ -79,16 +79,27 @@ function CommunitiesFeed({
         </>
       ) : null}
       <View
-        style={{
-          height: "100%",
-          width: "90%",
-          position: "absolute",
-        }}
+        style={
+          communities.length == 0
+            ? enosiStyles.container
+            : {
+                height: "100%",
+                width: "90%",
+                position: "absolute",
+              }
+        }
       >
-        <TextInput
-          placeholder="Search"
-          style={enosiStyles.searchBar}
-        ></TextInput>
+        {communities.length == 0 ? (
+          <Text style={{ fontSize: 15, padding: 20 }}>
+            Communities you join will be listed here! Use the "+" icon in the
+            upper right to create a community
+          </Text>
+        ) : (
+          <TextInput
+            placeholder="Search"
+            style={enosiStyles.searchBar}
+          ></TextInput>
+        )}
         <ScrollView
           style={{ width: "100%" }}
           showsVerticalScrollIndicator={false}

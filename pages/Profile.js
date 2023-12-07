@@ -16,7 +16,7 @@ import {
 import { useUser } from "../utils/UserContext";
 import { supabase } from "../utils/Supabase.js";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import Activity from "../components/Activity";
 import FeedItem from "../components/FeedItem";
 import { BasicButton } from "../components/Buttons";
@@ -36,7 +36,7 @@ export default function Profile({ route = undefined }) {
     fetchProfile();
     fetchActivities();
     fetchCommunities();
-  }, []);
+  }, [useIsFocused()]);
 
   const fetchProfile = async () => {
     try {
@@ -73,10 +73,10 @@ export default function Profile({ route = undefined }) {
         .from("communities")
         .select("*")
         .contains("members", [userId]);
-      setCommunities(comms);
+      setCommunities(comms || []);
       if (error) throw error;
     } catch (error) {
-      alert(error.message);
+      console.error("Error fetching communities:", error.message);
     }
   }
 
@@ -86,7 +86,7 @@ export default function Profile({ route = undefined }) {
         .from("profiles")
         .update({
           friends: Array.from(
-            new Set([...profile.friends, state.session?.user?.id])
+            new Set([...(profile?.friends || []), state.session?.user?.id])
           ),
         })
         .eq("id", route?.params?.user.id);
@@ -101,15 +101,15 @@ export default function Profile({ route = undefined }) {
             .from("profiles")
             .update({
               friends: Array.from(
-                new Set([...data.data.friends, route?.params?.user.id])
+                new Set([...(data.data?.friends || []), route?.params?.user.id])
               ),
             })
             .eq("id", state.session?.user?.id);
-          console.log([...data.data.friends, route?.params?.user.id]);
+          console.log([...(data.data?.friends || []), route?.params?.user.id]);
           if (error3) throw error3;
         });
     } catch (error) {
-      alert(error.message);
+      console.error("Error adding friend:", error.message);
     }
     fetchProfile();
   }
@@ -128,89 +128,115 @@ export default function Profile({ route = undefined }) {
         <Text style={styles.username}>
           {profile ? `${profile.first_name} ${profile.last_name}` : "Your Name"}
         </Text>
-        <Text style={styles.bio}>{profile?.bio}</Text>
+        <Text style={styles.bio}>{profile?.bio ?? ""}</Text>
+
         {userId == state.session?.user?.id ? null : (
           <BasicButton
             text={
-              profile?.friends.includes(state.session?.user?.id)
+              profile?.friends?.includes(state.session?.user?.id)
                 ? "Friend Added!"
                 : "Add Friend"
             }
             onPress={
-              profile?.friends.includes(state.session?.user?.id)
+              profile?.friends?.includes(state.session?.user?.id)
                 ? undefined
                 : addFriend
             }
             backgroundColor={
-              profile?.friends.includes(state.session?.user?.id)
+              profile?.friends?.includes(state.session?.user?.id)
                 ? "#d2d2d2"
                 : undefined
             }
           ></BasicButton>
         )}
       </View>
-      {!profile ? (
-        <Button
-          title="Create Profile"
-          onPress={() => navigation.navigate("CreateProfile")}
-        />
-      ) : (
-        <>
-          <View style={{ display: "flex", flexDirection: "row", height: 40 }}>
-            <Pressable
-              onPress={() => setTabShow("activities")}
-              style={[
-                styles.toggle,
-                {
-                  backgroundColor:
-                    tabShow == "activities" ? "#61B8C2" : "white",
-                },
-              ]}
-            >
-              <Ionicons
-                name="list"
-                style={{ fontSize: 35 }}
-                color={tabShow == "communities" ? "#61B8C2" : "white"}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() => setTabShow("communities")}
-              style={[
-                styles.toggle,
-                {
-                  backgroundColor:
-                    tabShow == "communities" ? "#61B8C2" : "white",
-                },
-              ]}
-            >
-              <Ionicons
-                name="people"
-                style={{ fontSize: 35 }}
-                color={tabShow == "activities" ? "#61B8C2" : "white"}
-              />
-            </Pressable>
+      <View style={{ display: "flex", flexDirection: "row", height: 40 }}>
+        <Pressable
+          onPress={() => setTabShow("activities")}
+          style={[
+            styles.toggle,
+            {
+              backgroundColor: tabShow == "activities" ? "#61B8C2" : "white",
+            },
+          ]}
+        >
+          <Ionicons
+            name="list"
+            style={{ fontSize: 35 }}
+            color={tabShow == "communities" ? "#61B8C2" : "white"}
+          />
+        </Pressable>
+        <Pressable
+          onPress={() => setTabShow("communities")}
+          style={[
+            styles.toggle,
+            {
+              backgroundColor: tabShow == "communities" ? "#61B8C2" : "white",
+            },
+          ]}
+        >
+          <Ionicons
+            name="people"
+            style={{ fontSize: 35 }}
+            color={tabShow == "activities" ? "#61B8C2" : "white"}
+          />
+        </Pressable>
+      </View>
+      <ScrollView style={styles.contentArea}>
+        {tabShow == "activities" ? (
+          <View>
+            {activities?.length == 0 ? (
+              <View
+                style={{
+                  justifyContent: "center",
+                  paddingHorizontal: 10,
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ padding: 20 }}>
+                  No activities yet! Click the "+" icon below to add your first
+                  one.
+                </Text>
+              </View>
+            ) : (
+              activities?.map((activity, index) => (
+                <Activity key={index} item={activity}></Activity>
+              ))
+            )}
           </View>
-          <ScrollView style={styles.contentArea}>
-            {tabShow == "activities"
-              ? activities?.map((activity, index) => (
-                  <Activity key={index} item={activity}></Activity>
-                ))
-              : communities?.map((community, key) => {
-                  return (
-                    <View style={{ marginHorizontal: "5%" }} key={key}>
-                      <FeedItem
-                        key={key}
-                        name={community.name}
-                        icon={{
-                          url: community.photo_url,
-                        }}
-                      ></FeedItem>
-                    </View>
-                  );
-                })}
-          </ScrollView>
-        </>
-      )}
+        ) : (
+          <View>
+            {communities?.length == 0 ? (
+              <View
+                style={{
+                  justifyContent: "center",
+                  paddingHorizontal: 10,
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ padding: 20 }}>
+                  No communities yet! Navigate to the "Communities" tab to
+                  create your first one first one.
+                </Text>
+              </View>
+            ) : (
+              communities?.map((community, key) => {
+                return (
+                  <View style={{ marginHorizontal: "5%" }} key={key}>
+                    <FeedItem
+                      key={key}
+                      name={community.name}
+                      icon={{
+                        url: community.photo_url,
+                      }}
+                    ></FeedItem>
+                  </View>
+                );
+              })
+            )}
+          </View>
+        )}
+      </ScrollView>
       <StatusBar style="auto" />
     </SafeAreaView>
   );

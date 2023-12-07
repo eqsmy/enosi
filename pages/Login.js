@@ -44,15 +44,31 @@ export default function Login() {
   const signUp = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: { first_name: firstName, last_name: lastName }, // Passing additional data
-        },
-      });
-      if (error) throw error;
-      dispatch({ type: "SET_SESSION", payload: data });
+      await supabase.auth
+        .signUp({
+          email: email,
+          password: password,
+          options: {
+            data: { first_name: firstName, last_name: lastName }, // Passing additional data
+          },
+        })
+        .then(async (newUser) => {
+          console.log(newUser.data.user.id);
+          const { data: data2, error: error2 } = await supabase
+            .from("profiles")
+            .insert([
+              {
+                username: email,
+                first_name: firstName,
+                last_name: lastName,
+                id: newUser.data.user.id,
+              },
+            ])
+            .select();
+          if (error2) throw error2;
+          dispatch({ type: "SET_SESSION", payload: newUser.data });
+        });
+
       navigation.navigate("Profile"); // Navigate to Profile page
     } catch (error) {
       console.error("Signup Error:", error);

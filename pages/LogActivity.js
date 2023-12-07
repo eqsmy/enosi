@@ -7,6 +7,7 @@ import {
   TextInput,
   Alert,
   Modal,
+  ScrollView,
 } from "react-native";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -156,7 +157,7 @@ export function LogActivity1() {
   ];
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "white" }}>
-      <View
+      <ScrollView
         style={{
           marginHorizontal: "5%",
           width: "90%",
@@ -167,6 +168,7 @@ export function LogActivity1() {
             data={presetActivities}
             numColumns={3}
             horizontal={false}
+            scrollEnabled={false}
             renderItem={renderActivityType}
           ></FlatList>
         </View>
@@ -200,46 +202,50 @@ export function LogActivity1() {
             />
           </View>
         </View>
-        <View style={styles.customBox}>
-          <View
-            style={{
+        <View
+          style={[
+            styles.customBox,
+            {
               flex: 1,
               justifyContent: "center",
               paddingLeft: 15,
               paddingRight: 15,
+            },
+          ]}
+        >
+          <Dropdown
+            style={styles.dropdown}
+            data={data}
+            placeholder="Select Units"
+            placeholderStyle={{
+              color: "#c3c3c5",
+              fontWeight: "400",
+              fontFamily: "Arial",
+              fontSize: 15,
             }}
-          >
-            <Dropdown
-              style={styles.dropdown}
-              data={data}
-              placeholder="Select Units"
-              placeholderStyle={{
-                color: "#c3c3c5",
-                fontWeight: "400",
-                fontFamily: "Arial",
-                fontSize: 15,
-              }}
-              labelField="label"
-              valueField="value"
-              onChange={(item) => {
-                setValue(item.value); // Directly update the 'val' state with the selected item's value
-              }}
-            />
-          </View>
+            labelField="label"
+            valueField="value"
+            onChange={(item) => {
+              setValue(item.value); // Directly update the 'val' state with the selected item's value
+            }}
+          />
         </View>
 
         <View
           style={{
-            alignItems: "center",
+            width: "100%",
             justifyContent: "center",
-            flex: 1,
-            marginTop: 30,
+            alignItems: "center",
           }}
         >
           <View
             style={[
               styles.log,
-              { alignItems: "center", justifyContent: "center" },
+              {
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: 10,
+              },
             ]}
           >
             <TouchableOpacity onPress={() => setModalVisible(true)}>
@@ -255,6 +261,16 @@ export function LogActivity1() {
               </Text>
             </TouchableOpacity>
           </View>
+        </View>
+
+        <View
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            flex: 1,
+            marginTop: 30,
+          }}
+        >
           <Modal
             animationType="slide"
             transparent={false}
@@ -305,7 +321,7 @@ export function LogActivity1() {
             </View>
           </Modal>
         </View>
-      </View>
+      </ScrollView>
     </GestureHandlerRootView>
   );
 }

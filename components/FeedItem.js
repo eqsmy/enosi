@@ -1,7 +1,12 @@
 import { Image, Pressable } from "react-native";
 import { Text, View } from "react-native";
 
-export default function FeedItem({ name, icon, onPress = undefined }) {
+export default function FeedItem({
+  name,
+  icon,
+  onPress = undefined,
+  subtext = undefined,
+}) {
   return (
     <Pressable
       style={{
@@ -22,6 +27,18 @@ export default function FeedItem({ name, icon, onPress = undefined }) {
       ></Image>
       <View>
         <Text style={{ marginLeft: 15, fontWeight: "bold" }}>{name}</Text>
+        {subtext ? (
+          <Text
+            style={{
+              marginLeft: 15,
+              color: "grey",
+              fontSize: 12,
+              marginTop: 3,
+            }}
+          >
+            {subtext}
+          </Text>
+        ) : null}
       </View>
     </Pressable>
   );
