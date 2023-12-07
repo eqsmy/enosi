@@ -289,7 +289,10 @@ export function LogActivity1() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.upLoadButtons}
-                  onPress={handleSubmit}
+                  onPress={() => {
+                    handleSubmit();
+                    setModalVisible(false);
+                  }}
                 >
                   <Text style={styles.uploadButtonText}>Post!</Text>
                 </TouchableOpacity>
