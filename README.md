@@ -37,7 +37,7 @@ To get the application up and running on your local machine, follow these steps:
    ```bash
     npx expo start
    ```
-   This will start the Expo development server and open the application in your default web browser.
+   This will start the Expo development server and open the application in your chosen simulator or device.
 
 ## Technologies Used
 
