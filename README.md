@@ -29,13 +29,13 @@ To get the application up and running on your local machine, follow these steps:
 2. **Install Dependencies**
 
    ```bash
-   npx expo start
+   npm install
 
    ```
 
 3. **Start the Application**
    ```bash
-    npm start
+    npx expo start
    ```
    This will start the Expo development server and open the application in your default web browser.
 
