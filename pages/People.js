@@ -5,8 +5,9 @@ import FeedItem from "../components/FeedItem";
 import { enosiStyles } from "./styles";
 import { useUser } from "../utils/UserContext";
 import { useNavigation } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
 
-export default function PeopleFeed() {
+export default function PeopleFeed({ route }) {
   const { state, dispatch } = useUser();
   const [profiles, setProfiles] = useState([]);
   const [peopleSearch, setPeopleSearch] = useState("");
@@ -25,7 +26,7 @@ export default function PeopleFeed() {
       }
     }
     fetchUsers();
-  }, []);
+  }, [useIsFocused()]);
 
   const filteredUsers = useMemo(() => {
     return profiles.filter((person) => {
@@ -62,6 +63,11 @@ export default function PeopleFeed() {
                 icon={{
                   url: profile.avatar_url,
                 }}
+                subtext={
+                  profile.friends?.includes(state.session.user.id)
+                    ? "Friends"
+                    : undefined
+                }
                 onPress={() => {
                   navigation.push("Profile", { user: profile });
                 }}

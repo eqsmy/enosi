@@ -210,25 +210,33 @@ export default function NewCommunities({ fetchCommunities }) {
             onChangeText={setCommunityName}
           ></TextInput>
         </View>
-        <View>
-          <Text>Invite friends</Text>
-          <TextInput
-            placeholder="Search. . ."
-            style={enosiStyles.searchBar}
-            value={peopleSearch}
-            onChangeText={setPeopleSearch}
-          ></TextInput>
-          <View style={{ width: "100%", marginTop: 10 }}>
-            <FlatList
-              data={filteredUsers}
-              numColumns={2}
-              horizontal={false}
-              renderItem={renderItem}
-            ></FlatList>
+        <View style={{ height: "70%" }}>
+          <View>
+            <Text>Invite friends</Text>
+            <TextInput
+              placeholder="Search. . ."
+              style={enosiStyles.searchBar}
+              value={peopleSearch}
+              onChangeText={setPeopleSearch}
+            ></TextInput>
+            <View
+              style={{
+                width: "100%",
+                height: "80%",
+                paddingTop: 10,
+              }}
+            >
+              <FlatList
+                data={filteredUsers}
+                numColumns={2}
+                horizontal={false}
+                renderItem={renderItem}
+              ></FlatList>
+            </View>
           </View>
         </View>
 
-        <View style={{ width: "100%", alignItems: "center", paddingTop: 20 }}>
+        <View style={{ width: "100%", alignItems: "center" }}>
           <BasicButton
             backgroundColor={peopleToAdd.length > 0 ? undefined : "#BDBDBD"}
             onPress={createCommunity}
