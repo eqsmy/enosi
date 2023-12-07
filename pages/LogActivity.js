@@ -200,7 +200,7 @@ export function LogActivity1() {
             />
           </View>
         </View>
-
+        <Text style={styles.customBoxText}>Units</Text>
         <View style={styles.customBox}>
           <View
             style={{
