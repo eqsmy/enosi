@@ -29,7 +29,7 @@ To get the application up and running on your local machine, follow these steps:
 2. **Install Dependencies**
 
    ```bash
-   npm install
+   npx expo start
 
    ```
 
