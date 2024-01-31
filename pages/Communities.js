@@ -166,14 +166,7 @@ export default function Communities({
             </TouchableWithoutFeedback>
           ),
         }}
-        children={(props) => (
-          <CommunitiesFeed
-            props={props}
-            communities={communities}
-            addFriendOrCommModal={addFriendOrCommModal}
-            setAddFriendOrCommModal={setAddFriendOrCommModal}
-          />
-        )}
+        children={(props) => <CommunitiesFeed />}
       />
       <Stack.Screen
         name="NewCommunities"
