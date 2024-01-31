@@ -21,7 +21,6 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { supabase } from "../utils/Supabase";
 import { useUser } from "../utils/UserContext";
-import { FileOjbect } from "@supabase/storage-js";
 import { decode as base64Decode } from "base-64";
 
 const width = Dimensions.get("window").width;

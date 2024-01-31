@@ -6,12 +6,13 @@ import { setCustomText } from "react-native-global-props";
 
 import Home from "./pages/Home";
 import Communities from "./pages/Communities";
-import Challenges, { ChallengesStack } from "./pages/Challenges";
+import { ChallengesStack } from "./pages/Challenges";
 import Profile from "./pages/Profile";
 import { LogActivity1, LogActivity2 } from "./pages/LogActivity";
 import Login from "./pages/Login";
 import { Ionicons } from "@expo/vector-icons";
-import Svg, { Circle, Path } from "react-native-svg";
+import { FAB } from "@rneui/themed";
+
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { LogoHeader } from "./components/Headers";
@@ -120,25 +121,8 @@ const AppContent = () => {
               options={{
                 title: "Log Activity",
                 headerShadowVisible: false,
-                tabBarButton: (props) => (
-                  <Pressable
-                    {...props}
-                    style={{
-                      width: "25%",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Image
-                      style={{
-                        marginBottom: 20,
-                        width: "80%",
-                        height: 80,
-                      }}
-                      resizeMode="contain"
-                      source={require("./assets/addactivity.png")}
-                    />
-                  </Pressable>
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="add-outline" size={26} />
                 ),
               }}
             />
@@ -188,6 +172,16 @@ const AppContent = () => {
           />
         )}
       </Tab.Navigator>
+      <FAB
+        placement="right"
+        color="black"
+        icon={{ name: "add", color: "white" }}
+        size="small"
+        //navigate to the LogActivity screen
+        onPress={() => {
+
+        }}
+      />
     </NavigationContainer>
   );
 };
