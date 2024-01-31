@@ -1,7 +1,90 @@
+import { Text, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Dropdown } from "react-native-element-dropdown";
+import { StyleSheet } from "react-native";
+import { supabase } from "../utils/Supabase";
+import { useEffect, useState } from "react";
 
+export function LogActivity() {
+  const [activityTypes, setActivityTypes] = useState([]);
+  const [activityType, setActivityType] = useState(null);
 
+  async function fetchActivityTypes() {
+    try {
+      let { data: activity_types, error } = await supabase
+        .from("activity_types")
+        .select("*");
+      types_list = [];
+      activity_types.map((item, idx) => {
+        types_list.push({ label: item["name"], value: idx });
+      });
+      setActivityTypes(types_list);
+      if (error) throw error;
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+  useEffect(() => {
+    fetchActivityTypes();
+  }, []);
 
+  return (
+    <GestureHandlerRootView
+      style={{
+        flex: 1,
+        backgroundColor: "white",
+      }}
+    >
+      <View
+        style={[
+          styles.customBox,
+          {
+            flex: 1,
+            justifyContent: "center",
+            paddingLeft: 15,
+            paddingRight: 15,
+          },
+        ]}
+      >
+        <Dropdown
+          style={styles.dropdown}
+          data={activityTypes}
+          placeholder="Select Units"
+          placeholderStyle={{
+            color: "#c3c3c5",
+            fontWeight: "400",
+            fontFamily: "Arial",
+            fontSize: 15,
+          }}
+          labelField="label"
+          valueField="value"
+          onChange={(item) => {
+            setActivityType(item.value); // Directly update the 'val' state with the selected item's value
+          }}
+        />
+      </View>
+    </GestureHandlerRootView>
+  );
+}
 
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: "5%",
+  },
+  dropdown: {
+    color: "#61B8C2",
+    fontWeight: "500",
+  },
+  customBox: {
+    borderRadius: 25,
+    borderWidth: 5,
+    borderColor: "#61B8C2",
+    height: 20,
+    margin: 10,
+  },
+});
 
 // hey this is E$
 // import {
