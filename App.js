@@ -8,7 +8,7 @@ import Home from "./pages/Home";
 import Communities from "./pages/Communities";
 import { ChallengesStack } from "./pages/Challenges";
 import Profile from "./pages/Profile";
-import { LogActivity1, LogActivity2 } from "./pages/LogActivity";
+import { LogActivity } from "./pages/LogActivity";
 import Login from "./pages/Login";
 import { Ionicons } from "@expo/vector-icons";
 import { FAB } from "@rneui/themed";
@@ -35,23 +35,23 @@ const Theme = {
   },
 };
 
-const Stack = createStackNavigator();
-function LogStack() {
-  return (
-    <Stack.Navigator screenOptions={{ headerBackTitle: "Back" }}>
-      <Stack.Screen
-        name="LogActivity1"
-        options={{ headerShown: false }}
-        component={LogActivity1}
-      />
-      <Stack.Screen
-        name="LogActivity2"
-        options={{ headerShown: false }}
-        component={LogActivity2}
-      />
-    </Stack.Navigator>
-  );
-}
+// const Stack = createStackNavigator();
+// function LogStack() {
+//   return (
+//     <Stack.Navigator screenOptions={{ headerBackTitle: "Back" }}>
+//       <Stack.Screen
+//         name="LogActivity"
+//         options={{ headerShown: false }}
+//         component={LogActivity1}
+//       />
+//       <Stack.Screen
+//         name="LogActivity"
+//         options={{ headerShown: false }}
+//         component={LogActivity2}
+//       />
+//     </Stack.Navigator>
+//   );
+// }
 
 const AppContent = () => {
   //use 'useUser' custom hook directly
@@ -117,7 +117,7 @@ const AppContent = () => {
             />
             <Tab.Screen
               name="LogActivity"
-              component={LogStack}
+              component={LogActivity}
               options={{
                 title: "Log Activity",
                 headerShadowVisible: false,
@@ -178,9 +178,7 @@ const AppContent = () => {
         icon={{ name: "add", color: "white" }}
         size="small"
         //navigate to the LogActivity screen
-        onPress={() => {
-
-        }}
+        onPress={() => {}}
       />
     </NavigationContainer>
   );
