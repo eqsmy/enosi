@@ -1,7 +1,35 @@
 
+import React from "react";
+import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 
 
+const LogActivity = () => {
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.innerContainer}>
+        <Text style={styles.text}>Log Activity Page</Text>
+      </View>
+    </SafeAreaView>
+  );
+};
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1, 
+    alignItems: "center", 
+    justifyContent: "center", 
+  },
+  innerContainer: {
+  },
+  text: {
+    fontSize: 20, 
+    fontWeight: "bold", 
+
+  },
+});
+
+// Export the LogActivity component to be used in other parts of your app
+export default LogActivity;
 
 // hey this is E$
 // import {
