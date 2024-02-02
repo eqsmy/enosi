@@ -66,6 +66,7 @@ export function LogActivity() {
     fetchActivityTypes();
   }, []);
 
+
   const photoUri = image;
 
   const pickImage = async () => {
