@@ -38,7 +38,7 @@ const Theme = {
   },
 };
 
-function Tabs() { 
+function Tabs() {
   const [addFriendOrCommModal, setAddFriendOrCommModal] = useState(false);
   return (
     <Tab.Navigator>
@@ -135,13 +135,29 @@ function RootStack() {
 
   return (
     <Stack.Navigator>
-     {state.loggedIn ? (
+      {state.loggedIn ? (
         <>
-          <Stack.Screen name="Tabs" component={Tabs} options={{ headerShown: false }} />
-          <Stack.Screen name="LogActivity" component={LogActivity} options={{ headerShown: false }} />
+          <Stack.Screen
+            name="Tabs"
+            component={Tabs}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="LogActivity"
+            component={LogActivity}
+            options={{
+              headerShown: true,
+              headerShadowVisible: false,
+              headerTitle: "Log Activity",
+            }}
+          />
         </>
       ) : (
-        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{ headerShown: false }}
+        />
       )}
     </Stack.Navigator>
   );
@@ -151,7 +167,7 @@ const AppContent = () => {
   const navigationRef = useRef();
   return (
     <NavigationContainer theme={Theme} ref={navigationRef}>
-    <RootStack />
+      <RootStack />
       <FAB
         placement="right"
         color="black"
@@ -166,12 +182,12 @@ const AppContent = () => {
 
 const styles = StyleSheet.create({
   fabStyle: {
-    position: 'absolute',
+    position: "absolute",
     margin: 16,
     right: 10,
     bottom: 50,
   },
-})
+});
 
 export default function App() {
   return (
