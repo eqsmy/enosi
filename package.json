@@ -50,7 +50,7 @@
     "react-native-select-dropdown": "^3.4.0",
     "react-native-svg": "13.9.0",
     "react-native-url-polyfill": "^2.0.0",
-    "react-native-vector-icons": "^10.0.2",
+    "react-native-vector-icons": "^10.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
