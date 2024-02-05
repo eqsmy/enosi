@@ -2,18 +2,17 @@ import {
   Text,
   View,
   Image,
-  SafeAreaView,
   Dimensions,
   TextInput,
   Alert,
-  Modal,
   ScrollView,
 } from "react-native";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import SimplePicker from "react-native-simple-picker";
+import { Icon } from "react-native-elements";
 import {
-  FlatList,
   GestureHandlerRootView,
   TouchableOpacity,
 } from "react-native-gesture-handler";
@@ -25,23 +24,19 @@ import {
   AutocompleteDropdown,
   AutocompleteDropdownContextProvider,
 } from "react-native-autocomplete-dropdown";
-import { Picker } from "@react-native-picker/picker";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 
-export function LogActivity() {
+export default function LogActivity() {
   const navigation = useNavigation();
   //utilzie the user context to get user details and pass to activityData
   const { state } = useUser();
   const userId = state.session.user.id ? state.session.user.id : null;
-  const [activity, setActivity] = useState("");
+  const [activity, setActivity] = useState(null);
   const [input, setInput] = useState("");
   const [blurb, setBlurb] = useState("");
   const [inputNum, setNum] = useState(null);
-  const [val, setValue] = useState(null);
-
-  const [caption, setCaption] = useState("");
   const [image, setImage] = useState();
   const [activityTypes, setActivityTypes] = useState([
     { id: 0, title: "default" },
@@ -54,7 +49,7 @@ export function LogActivity() {
         .select("*");
       types_list = [];
       activity_types.map((item, idx) => {
-        types_list.push({ title: item["name"], id: idx });
+        types_list.push({ title: item["name"], id: idx + 1 });
       });
       setActivityTypes(types_list);
       if (error) throw error;
@@ -65,7 +60,6 @@ export function LogActivity() {
   useEffect(() => {
     fetchActivityTypes();
   }, []);
-
 
   const photoUri = image;
 
@@ -80,6 +74,7 @@ export function LogActivity() {
       setImage(result.assets[0].uri);
     }
   };
+  const picker = useRef(null);
 
   const handleSubmit = async () => {
     if (!photoUri) {
@@ -117,10 +112,10 @@ export function LogActivity() {
           user_id: userId,
           activity_type: activity,
           distance: distance,
-          caption: caption,
+          caption: blurb,
           photo_url: publicUrl,
           duration: 60,
-          distance_units: val,
+          distance_units: unit,
         };
 
         console.log("Inserting data:", activityData);
@@ -137,19 +132,11 @@ export function LogActivity() {
     };
   };
   const unitOptions = ["miles", "kilometers", "hours", "minutes"];
-
-  const updateActivity = (inputText) => {
-    setInput(inputText);
-  };
-
-  const updateBlurb = (value) => {
-    setBlurb(value);
-  };
-  const [selectedLanguage, setSelectedLanguage] = useState();
+  const [unit, setUnit] = useState("Pick unit");
 
   return (
-    <AutocompleteDropdownContextProvider headerOffset={100}>
-      <GestureHandlerRootView style={{ flex: 1, backgroundColor: "white" }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: "white" }}>
+      <AutocompleteDropdownContextProvider headerOffset={100}>
         <ScrollView
           style={{
             marginHorizontal: "5%",
@@ -160,7 +147,9 @@ export function LogActivity() {
             <TextInput
               placeholder="Activity Name"
               placeholderStyle={styles.textInputStyle}
-              onChangeText={updateActivity}
+              onChangeText={(value) => {
+                setInput(value);
+              }}
               value={input}
             />
           </View>
@@ -168,24 +157,47 @@ export function LogActivity() {
             <TextInput
               placeholder="How did it go?"
               placeholderStyle={styles.textInputStyle}
-              onChangeText={updateBlurb}
+              onChangeText={(value) => setBlurb(value)}
               value={blurb}
               multiline
               textAlignVertical="top"
             />
           </View>
           <Text style={styles.customBoxText}>Activity Details</Text>
-          <AutocompleteDropdown
-            clearOnFocus={false}
-            closeOnBlur={true}
-            closeOnSubmit={false}
-            initialValue={"0"}
-            onSelectItem={setActivity}
-            dataSet={activityTypes}
-            inputContainerStyle={[styles.inputBox, { padding: 2 }]}
-            emptyResultText="Set custom"
-            textInputProps={{
-              placeholder: "Select activity type",
+          <View style={{ justifyContent: "center", alignContent: "center" }}>
+            <AutocompleteDropdown
+              clearOnFocus={false}
+              closeOnBlur={true}
+              closeOnSubmit={false}
+              initialValue={"0"}
+              onChangeText={(value) => {
+                setActivity(value);
+              }}
+              onSelectItem={(value) => {
+                value && setActivity(value.title);
+              }}
+              dataSet={
+                activity
+                  ? [...activityTypes, { title: activity, id: 0 }]
+                  : activityTypes
+              }
+              inputContainerStyle={[styles.inputBox, { padding: 2 }]}
+              suggestionsListContainerStyle={{
+                shadowRadius: 0,
+                shadowOffset: 0,
+                borderWidth: 1,
+              }}
+              emptyResultText="Set custom"
+              textInputProps={{
+                placeholder: "Select activity type",
+              }}
+            />
+          </View>
+          <SimplePicker
+            ref={picker}
+            options={unitOptions}
+            onSubmit={(option) => {
+              setUnit(option);
             }}
           />
 
@@ -194,6 +206,9 @@ export function LogActivity() {
               display: "flex",
               flexDirection: "row",
               alignItems: "center",
+              justifyContent: "left",
+              marginTop: 10,
+              marginBottom: 10,
             }}
           >
             <View style={styles.numBox}>
@@ -213,19 +228,30 @@ export function LogActivity() {
                 />
               </View>
             </View>
-            <Picker
-              selectedValue={selectedLanguage}
-              onValueChange={(itemValue, itemIndex) =>
-                setSelectedLanguage(itemValue)
-              }
-              style={{ width: "40%" }}
-              itemStyle={{ fontSize: 14 }}
+            <TouchableOpacity
+              onPress={() => {
+                picker.current.show();
+              }}
             >
-              {unitOptions.map((value) => {
-                return <Picker.Item label={value} value={value}></Picker.Item>;
-              })}
-            </Picker>
+              <Text
+                style={{
+                  color: "#61B8C2",
+                  fontSize: 16,
+                  padding: 5,
+                  fontWeight: "500",
+                  textAlign: "right",
+                }}
+              >
+                {unit}{" "}
+                <Icon
+                  style={{ paddingLeft: 1 }}
+                  name="edit"
+                  color={"#61B8C2"}
+                ></Icon>
+              </Text>
+            </TouchableOpacity>
           </View>
+
           <View
             style={{
               display: "flex",
@@ -270,11 +296,16 @@ export function LogActivity() {
                 {
                   alignItems: "center",
                   justifyContent: "center",
-                  marginTop: 10,
+                  marginTop: 20,
                 },
               ]}
             >
-              <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+              <TouchableOpacity
+                onPress={() => {
+                  handleSubmit();
+                  navigation.navigate("Home");
+                }}
+              >
                 <Text
                   style={{
                     color: "white",
@@ -289,17 +320,8 @@ export function LogActivity() {
             </View>
           </View>
         </ScrollView>
-      </GestureHandlerRootView>
-    </AutocompleteDropdownContextProvider>
-  );
-}
-
-export function LogActivity2() {
-  return (
-    <SafeAreaView style={enosiStyles.container}>
-      <Text>Challenges</Text>
-      <StatusBar style="auto" />
-    </SafeAreaView>
+      </AutocompleteDropdownContextProvider>
+    </GestureHandlerRootView>
   );
 }
 
@@ -362,17 +384,15 @@ const styles = StyleSheet.create({
     fontSize: 100,
   },
   numBox: {
-    marginTop: 15,
-    marginBottom: 15,
-    paddingRight: 15,
+    padding: 10,
+    margin: 5,
     height: 120,
-    maxWidth: "70%",
     backgroundColor: "#f6f6f6",
     borderRadius: 20,
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "center",
-    width: "60%",
+    width: "65%",
   },
   textInputStyle: {
     fontFamily: "Avenir",
@@ -385,7 +405,7 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 10,
-    marginBottom: 10,
+    //marginBottom: 10,
   },
   buttonContainer: {
     marginTop: 10,
