@@ -152,14 +152,14 @@ const AppContent = () => {
   return (
     <NavigationContainer theme={Theme} ref={navigationRef}>
     <RootStack />
-      <FAB
+      {/* <FAB
         placement="right"
         color="black"
         icon={{ name: "add", color: "white" }}
         size="small"
         onPress={() => navigationRef.current?.navigate("LogActivity")}
         style={{ position: "absolute", margin: 16, right: 10, bottom: 70 }}
-      />
+      /> */}
     </NavigationContainer>
   );
 };
