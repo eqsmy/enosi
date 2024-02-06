@@ -19,6 +19,7 @@ import { useUser } from "../utils/UserContext";
 import PeopleFeed from "./People";
 import Profile from "./Profile";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { Icon } from "react-native-elements";
 
 const Stack = createStackNavigator();
 
@@ -168,7 +169,7 @@ function SearchFeed({ addFriendOrCommModal, setAddFriendOrCommModal, props }) {
                     fontSize: 20,
                     fontWeight: "bold",
                     marginVertical: 20,
-                    width: "80%",
+                    width: "60%",
                   }}
                 >
                   {section.title}
@@ -176,13 +177,12 @@ function SearchFeed({ addFriendOrCommModal, setAddFriendOrCommModal, props }) {
                 <Text
                   style={{
                     fontSize: 14,
-                    fontWeight: "light",
                     color:
                       maxQuantities[section.title] > section.data.length
                         ? "lightgrey"
                         : "#61B8C2",
                     marginVertical: 20,
-                    width: "20%",
+                    width: "30%",
                     textAlign: "right",
                     lineHeight: 20,
                     alignItems: "center",
@@ -204,6 +204,42 @@ function SearchFeed({ addFriendOrCommModal, setAddFriendOrCommModal, props }) {
                 >
                   See more
                 </Text>
+                <View
+                  style={{
+                    width: "10%",
+                    justifyContent: "right",
+                    flex: 1,
+                    alignItems: "center",
+                  }}
+                >
+                  <TouchableWithoutFeedback
+                    onPress={() =>
+                      setMaxQuantities(
+                        section.title == "People"
+                          ? {
+                              ...maxQuantities,
+                              People: maxQuantities[section.title] == 0 ? 5 : 0,
+                            }
+                          : {
+                              ...maxQuantities,
+                              Communities:
+                                maxQuantities[section.title] == 0 ? 5 : 0,
+                            }
+                      )
+                    }
+                  >
+                    <Icon
+                      style={{ marginVertical: 15 }}
+                      size={30}
+                      type="material"
+                      name={
+                        maxQuantities[section.title] == 0
+                          ? "expand-more"
+                          : "expand-less"
+                      }
+                    />
+                  </TouchableWithoutFeedback>
+                </View>
               </View>
             );
           }}
