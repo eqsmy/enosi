@@ -9,7 +9,7 @@ import { FAB } from "@rneui/themed";
 
 //import all the pages we have
 import Home from "./pages/Home";
-import Communities from "./pages/Communities";
+import Search from "./pages/Search";
 import { ChallengesStack } from "./pages/Challenges";
 import Profile from "./pages/Profile";
 import LogActivity from "./pages/LogActivity";
@@ -66,16 +66,16 @@ function Tabs() {
       <Tab.Screen
         name="CommunitiesTab"
         children={() => (
-          <Communities
+          <Search
             addFriendOrCommModal={addFriendOrCommModal}
             setAddFriendOrCommModal={setAddFriendOrCommModal}
-          ></Communities>
+          ></Search>
         )}
         options={{
-          tabBarLabel: "Communities",
+          tabBarLabel: "Search",
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people" color={color} size={size} />
+            <Ionicons name="search" color={color} size={size} />
           ),
         }}
       />
