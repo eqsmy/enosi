@@ -93,22 +93,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-  inputContainer: {
-    width: width - (16 * 2 + 16 + 48),
-    backgroundColor: "white",
-    height: 60,
-    flexDirection: "row",
-    borderRadius: 32,
-    alignItems: "center",
-    paddingRight: 12,
-    marginRight: 6,
-  },
-  input: {
-    flex: 1,
-    fontSize: 14,
-    color: "black",
-    marginHorizontal: 16,
-  },
   bottomContainer: {
     flexDirection: "column",
   },
