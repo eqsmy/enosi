@@ -63,6 +63,19 @@ export default function LogActivity() {
 
   const photoUri = image;
 
+  const updateUserChallenges = async () => {
+    try {
+      const response = await supabase.rpc("add_user_contribution", {
+        x: inputNum,
+        activity: activity,
+        unit: unit,
+        user_id: state.session.user.id,
+      });
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -81,6 +94,7 @@ export default function LogActivity() {
       console.error("No photo URI available. Cannot upload photo.");
       return null;
     }
+
     const response = await fetch(photoUri);
     const blob = await response.blob();
     const reader = new FileReader();
@@ -117,6 +131,7 @@ export default function LogActivity() {
           duration: 60,
           distance_units: unit,
         };
+        updateUserChallenges();
 
         console.log("Inserting data:", activityData);
         const { error } = await supabase
