@@ -6,7 +6,7 @@ import Activity from "../components/Activity";
 import { useUser } from "../utils/UserContext";
 import { useIsFocused } from "@react-navigation/native";
 import { enosiStyles } from "./styles";
-import { SpeedDial } from "@rneui/base/dist/SpeedDial/SpeedDial";
+import FloatingButton from "../components/FloatingButton";
 
 export default function Home() {
   const [activities, setActivities] = useState([]);
@@ -84,7 +84,7 @@ export default function Home() {
         contentContainerStyle={styles.contentArea}
       />
       <StatusBar style="auto" />
-      <SpeedDial />
+      <FloatingButton />
     </SafeAreaView>
   );
 }
