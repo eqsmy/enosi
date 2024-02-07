@@ -9,66 +9,73 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
+import React, { useState } from "react";
 import { enosiStyles } from "./styles";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
-import Carousel, { PaginationItem } from "react-native-reanimated-carousel";
 
 const Stack = createStackNavigator();
 
 function Dashboard() {
-  const width = Dimensions.get("window").width;
-
   return (
     <SafeAreaView style={enosiStyles.feedContainer}>
-      <View
+      <ScrollView
         style={{
           flexDirection: "column",
           flex: 1,
-          padding: 16,
           width: "100%",
         }}
       >
         <Header title={"Recent Challenges"} />
-        <View style={{ maxHeight: 180, marginBottom: 16 }}>
-          <Carousel
-            width={width * 0.7}
-            style={{ width: "100%" }}
-            loop={false}
-            data={exampleChallenges}
-            scrollAnimationDuration={1000}
-            renderItem={({ index }) => (
-              <View style={{ flex: 1, marginRight: "2.5%" }}>
-                <ChallengeCard
-                  key={index}
-                  challengeData={exampleChallenges[index]}
-                />
-              </View>
-            )}
-          />
-        </View>
+        <ScrollView
+          horizontal={true}
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 8,
+            paddingBottom: 10,
+            marginBottom: 16,
+          }}
+        >
+          {exampleChallenges.map((challenge, index) => (
+            <View
+              key={index}
+              style={{
+                marginRight: index !== exampleChallenges.length - 1 ? 12 : 0, // Add right margin to all but the last item
+              }}
+            >
+              <ChallengeCard key={index} challengeData={challenge} />
+            </View>
+          ))}
+          <View style={{ width: 32 }} />
+        </ScrollView>
         <Header title={"Your Communities"} />
-        <View style={{ maxHeight: 220, marginBottom: 16 }}>
-          <Carousel
-            width={width * 0.45}
-            style={{ width: "100%" }}
-            loop={false}
-            data={communityCardDataList}
-            scrollAnimationDuration={1000}
-            renderItem={({ index }) => (
-              <CommunityCard
-                key={index}
-                communityCardData={communityCardDataList[index]}
-              />
-            )}
-          />
-        </View>
-      </View>
+        <ScrollView
+          horizontal={true}
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 8,
+            paddingBottom: 10,
+            marginBottom: 16,
+          }}
+        >
+          {exampleCommunities.map((community, index) => (
+            <View
+              key={index}
+              style={{
+                marginRight: index !== exampleChallenges.length - 1 ? 12 : 0, // Add right margin to all but the last item
+              }}
+            >
+              <CommunityCard key={index} communityData={community} />
+            </View>
+          ))}
+          <View style={{ width: 32 }} />
+        </ScrollView>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
-const communityCardDataList = [
+const exampleCommunities = [
   {
     title: "CS 194H Squad",
     description:
@@ -76,7 +83,7 @@ const communityCardDataList = [
     members: "5",
     posts: "127",
     categoryTags: ["HCI", "Stanford", "Students"],
-    imageUrl:
+    headerImageUrl:
       "https://cdn.mos.cms.futurecdn.net/xaycNDmeyxpHDrPqU6LmaD-1200-80.jpg",
     profileUrl:
       "https://assets.weforum.org/article/image/XaHpf_z51huQS_JPHs-jkPhBp0dLlxFJwt-sPLpGJB0.jpg",
@@ -88,10 +95,10 @@ const communityCardDataList = [
     members: "12",
     posts: "38",
     categoryTags: ["Fitness", "Walking", "Community"],
-    imageUrl:
-      "https://cdn.mos.cms.futurecdn.net/xaycNDmeyxpHDrPqU6LmaD-1200-80.jpg",
+    headerImageUrl:
+      "https://previews.123rf.com/images/olku/olku1805/olku180500033/102259092-groupe-of-old-people-walking-with-walkers.jpg",
     profileUrl:
-      "https://assets.weforum.org/article/image/XaHpf_z51huQS_JPHs-jkPhBp0dLlxFJwt-sPLpGJB0.jpg",
+      "https://compote.slate.com/images/66168178-3547-4917-8ea9-12938af61a04.jpg",
   },
 ];
 
@@ -102,6 +109,7 @@ const Header = ({ title }) => {
         flexDirection: "row",
         alignItems: "center",
         marginBottom: 6,
+        paddingHorizontal: 16,
       }}
     >
       <Text style={{ fontSize: 16, fontWeight: "700" }}>{title}</Text>
@@ -172,6 +180,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "lightgrey",
+    width: 300,
   },
   communityName: {
     color: "grey",
@@ -278,50 +287,34 @@ const exampleChallenges = [
   },
 ];
 
-export default function DashboardView() {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShadowVisible: true,
-        headerBackTitle: "Back",
-        // header: () => null,
-      }}
-    >
-      <Stack.Screen name="Dashboard" component={Dashboard} />
-    </Stack.Navigator>
-  );
-}
-
-const CommunityCard = ({ communityCardData }) => (
+const CommunityCard = ({ communityData }) => (
   <View style={stylesCommunityCard.cardContainer}>
     <Image
-      source={{ uri: communityCardData.imageUrl }}
+      source={{ uri: communityData.headerImageUrl }}
       style={stylesCommunityCard.headerImage}
     />
     <Image
-      source={{ uri: communityCardData.profileUrl }}
+      source={{ uri: communityData.profileUrl }}
       style={stylesCommunityCard.profileImage}
     />
     <View style={stylesCommunityCard.contentContainer}>
       <Text style={stylesCommunityCard.title} numberOfLines={1}>
-        {communityCardData.title}
+        {communityData.title}
       </Text>
       <Text style={stylesCommunityCard.description} numberOfLines={2}>
-        {communityCardData.description}
+        {communityData.description}
       </Text>
       <View style={stylesCommunityCard.statsContainer}>
         {/* Insert IoIcon here */}
         <Ionicons name="people-outline" size={16} color="black" />
         <Text style={stylesCommunityCard.statText}>
-          {communityCardData.members}
+          {communityData.members}
         </Text>
         <Ionicons name="flash-outline" size={16} color="black" />
-        <Text style={stylesCommunityCard.statText}>
-          {communityCardData.posts}
-        </Text>
+        <Text style={stylesCommunityCard.statText}>{communityData.posts}</Text>
       </View>
       <ScrollView horizontal style={stylesCommunityCard.tagContainer}>
-        {communityCardData.categoryTags.map((tag, index) => (
+        {communityData.categoryTags.map((tag, index) => (
           <View key={index} style={stylesCommunityCard.tag}>
             <Text style={stylesCommunityCard.tagText}>{tag}</Text>
           </View>
@@ -338,6 +331,7 @@ const stylesCommunityCard = StyleSheet.create({
     backgroundColor: "white",
     borderWidth: 1,
     borderColor: "lightgrey",
+    width: 200,
   },
   headerImage: {
     width: "100%",
@@ -399,3 +393,17 @@ const stylesCommunityCard = StyleSheet.create({
     fontSize: 12,
   },
 });
+
+export default function DashboardView() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShadowVisible: true,
+        headerBackTitle: "Back",
+        header: () => null,
+      }}
+    >
+      <Stack.Screen name="Dashboard" component={Dashboard} />
+    </Stack.Navigator>
+  );
+}
