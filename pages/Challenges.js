@@ -46,44 +46,21 @@ function Challenges({}) {
 
   const fetchUserChallenges = async () => {
     try {
-      await supabase
-        .from("communities")
-        .select("id")
-        .contains("members", [state.session.user.id])
-        .then(async (commsDict) => {
-          var commsList = [];
-          commsDict.data.forEach((value) => {
-            commsList.push(value.id);
-          });
-          let { data: data2, error2 } = await supabase
-            .from("user_challenges")
-            .select(
-              `
-              *,
-              profiles (first_name, last_name, avatar_url),
-              challenges (photo_url, description, name)
-            `
-            )
-            .in("community_id", commsList);
-          setUserChallenges(data2);
-        });
-    } catch (error) {
-      alert(error.message);
-    }
-
-    /*try {
-      let { data, error } = await supabase.from("user_challenges").select(
-        `
+      let { data: challenges, error } = await supabase
+        .from("user_challenges")
+        .select(
+          `
         *,
         profiles (first_name, last_name, avatar_url),
         challenges (photo_url, description, name)
       `
-      );
-      if (error) throw error;
-      setUserChallenges(data);
+        )
+        .eq("user_id", state.session.user.id);
+      setUserChallenges(challenges);
+      console.log(challenges);
     } catch (error) {
       alert(error.message);
-    }*/
+    }
   };
 
   const joinChallenge = async (challengeId, communityId) => {
