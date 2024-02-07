@@ -39,7 +39,6 @@ const Theme = {
 };
 
 function Tabs() {
-  const [addFriendOrCommModal, setAddFriendOrCommModal] = useState(false);
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -65,12 +64,7 @@ function Tabs() {
       />
       <Tab.Screen
         name="CommunitiesTab"
-        children={() => (
-          <Search
-            addFriendOrCommModal={addFriendOrCommModal}
-            setAddFriendOrCommModal={setAddFriendOrCommModal}
-          ></Search>
-        )}
+        children={Search}
         options={{
           tabBarLabel: "Search",
           headerShown: false,

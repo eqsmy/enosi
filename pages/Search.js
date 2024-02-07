@@ -23,7 +23,7 @@ import { Icon } from "react-native-elements";
 
 const Stack = createStackNavigator();
 
-function SearchFeed({ addFriendOrCommModal, setAddFriendOrCommModal, props }) {
+function SearchFeed({ props }) {
   const [profiles, setProfiles] = useState([]);
   const { state, dispatch } = useUser();
   const [maxQuantities, setMaxQuantities] = useState({
@@ -87,54 +87,6 @@ function SearchFeed({ addFriendOrCommModal, setAddFriendOrCommModal, props }) {
 
   return (
     <SafeAreaView style={enosiStyles.feedContainer}>
-      {addFriendOrCommModal ? (
-        <>
-          <Pressable
-            onPress={() => setAddFriendOrCommModal(false)}
-            style={{
-              height: "100%",
-              width: "100%",
-              position: "absolute",
-              backgroundColor: addFriendOrCommModal
-                ? "rgba(128, 128, 128, .30)"
-                : "rgba(128, 128, 128, 0)",
-              zIndex: 50,
-            }}
-          ></Pressable>
-          <View
-            style={{
-              backgroundColor: "white",
-              paddingTop: 10,
-              height: 70,
-              borderBottomLeftRadius: 45,
-              borderBottomRightRadius: 45,
-              display: "flex",
-              flexDirection: "row",
-              with: "100%",
-              zIndex: 100,
-            }}
-          >
-            <View style={{ flex: 1, paddingLeft: 20, paddingRight: 10 }}>
-              <BasicButton
-                onPress={() => {
-                  setAddFriendOrCommModal(false);
-                  props.navigation.push("NewCommunities");
-                }}
-                text={"New Community"}
-              ></BasicButton>
-            </View>
-            <View style={{ flex: 1, paddingRight: 20, paddingLeft: 10 }}>
-              <BasicButton
-                text={"Add a Friend"}
-                onPress={() => {
-                  setAddFriendOrCommModal(false);
-                  props.navigation.push("People");
-                }}
-              ></BasicButton>
-            </View>
-          </View>
-        </>
-      ) : null}
       <View
         style={
           communities.length == 0
@@ -281,10 +233,7 @@ function SearchFeed({ addFriendOrCommModal, setAddFriendOrCommModal, props }) {
   );
 }
 
-export default function Search({
-  addFriendOrCommModal,
-  setAddFriendOrCommModal,
-}) {
+export default function Search({}) {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -294,27 +243,7 @@ export default function Search({
     >
       <Stack.Screen
         name="Search"
-        options={{
-          headerRight: () => (
-            <TouchableWithoutFeedback>
-              <Ionicons
-                onPress={() => {
-                  setAddFriendOrCommModal(true);
-                }}
-                name="add"
-                size={35}
-                style={{ right: 10 }}
-              />
-            </TouchableWithoutFeedback>
-          ),
-        }}
-        children={(props) => (
-          <SearchFeed
-            props={props}
-            addFriendOrCommModal={addFriendOrCommModal}
-            setAddFriendOrCommModal={setAddFriendOrCommModal}
-          />
-        )}
+        children={(props) => <SearchFeed props={props} />}
       />
       <Stack.Screen
         name="NewCommunities"

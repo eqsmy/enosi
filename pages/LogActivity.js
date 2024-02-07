@@ -41,6 +41,7 @@ export default function LogActivity() {
   const [activityTypes, setActivityTypes] = useState([
     { id: 0, title: "default" },
   ]);
+  const [error, showError] = useState(null);
 
   async function fetchActivityTypes() {
     try {
@@ -63,6 +64,19 @@ export default function LogActivity() {
 
   const photoUri = image;
 
+  const updateUserChallenges = async () => {
+    try {
+      const response = await supabase.rpc("add_user_contribution", {
+        x: inputNum,
+        activity: activity,
+        unit: unit,
+        user_: state.session.user.id,
+      });
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -79,8 +93,17 @@ export default function LogActivity() {
   const handleSubmit = async () => {
     if (!photoUri) {
       console.error("No photo URI available. Cannot upload photo.");
+      showError("Choose a photo");
       return null;
     }
+
+    if (!activity || !inputNum || !unit) {
+      console.error("Missing activity data");
+      showError("Activity information missing above");
+      return;
+    }
+    showError(processingMessage);
+
     const response = await fetch(photoUri);
     const blob = await response.blob();
     const reader = new FileReader();
@@ -112,11 +135,13 @@ export default function LogActivity() {
           user_id: userId,
           activity_type: activity,
           distance: distance,
-          caption: blurb,
+          blurb: blurb,
+          caption: input,
           photo_url: publicUrl,
           duration: 60,
           distance_units: unit,
         };
+        updateUserChallenges();
 
         console.log("Inserting data:", activityData);
         const { error } = await supabase
@@ -124,7 +149,8 @@ export default function LogActivity() {
           .insert([activityData])
           .select();
         if (error) throw error;
-        Alert.alert("Success", "Activity logged successfully.");
+        //Alert.alert("Success", "Activity logged successfully.");
+        navigation.navigate("Home");
       } catch (error) {
         console.error("Error logging activity:", error.message);
         Alert.alert("Error", "Failed to log activity.");
@@ -133,6 +159,7 @@ export default function LogActivity() {
   };
   const unitOptions = ["miles", "kilometers", "hours", "minutes"];
   const [unit, setUnit] = useState("Pick unit");
+  const processingMessage = "Processing...";
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "white" }}>
@@ -303,7 +330,6 @@ export default function LogActivity() {
               <TouchableOpacity
                 onPress={() => {
                   handleSubmit();
-                  navigation.navigate("Home");
                 }}
               >
                 <Text
@@ -319,6 +345,17 @@ export default function LogActivity() {
               </TouchableOpacity>
             </View>
           </View>
+          {error && (
+            <Text
+              style={{
+                textAlign: "center",
+                marginTop: 10,
+                color: error == processingMessage ? "grey" : "red",
+              }}
+            >
+              {error}
+            </Text>
+          )}
         </ScrollView>
       </AutocompleteDropdownContextProvider>
     </GestureHandlerRootView>
