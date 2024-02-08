@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
 
+
+
 export const enosiStyles = StyleSheet.create({
   container: {
     flex: 1,

@@ -7,6 +7,7 @@ import { useUser } from "../utils/UserContext";
 import { useIsFocused } from "@react-navigation/native";
 import { enosiStyles } from "./styles";
 import FloatingButton from "../components/FloatingButton";
+import {COLORS, FONTS} from "../constants.js"
 
 export default function Home() {
   const [activities, setActivities] = useState([]);

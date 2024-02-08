@@ -18,6 +18,7 @@ import UserChallenges from "../components/UserChallenges";
 import { StatusBar } from "expo-status-bar";
 import { createStackNavigator } from "@react-navigation/stack";
 import LogBook from "./LogBook";
+import {COLORS, FONTS} from "../constants.js"
 
 function Challenges({}) {
   const navigation = useNavigation();
@@ -205,7 +206,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f6f6f6",
     borderWidth: 1,
     borderColor: "#e8e8e8",
-    fontFamily: "Avenir",
+    fontFamily: FONTS.body,
   },
   horizontalScroll: {
     paddingHorizontal: 10,
@@ -235,7 +236,7 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 10,
     marginVertical: 10,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.bold,
   },
   containerFeed: {
     flex: 80,

@@ -12,6 +12,7 @@ import { supabase } from "../utils/Supabase";
 import { useUser } from "../utils/UserContext";
 import { RadioButton } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
+import {COLORS, FONTS} from "../constants.js"
 
 export default PreviewModal = ({ challenge, onClose, onJoin }) => {
   const [communities, setCommunities] = useState([]);
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.body,
   },
   modalImage: {
     width: 300,
@@ -159,7 +160,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     width: 280,
     marginBottom: 10,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.body,
     width: "80%",
   },
   buttonContainer: {
@@ -171,29 +172,25 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: 7,
     borderRadius: 20,
-    backgroundColor: "white",
-    fontFamily: "Avenir",
-    color: "#61B8C2",
   },
   closeButtonText: {
     fontSize: 15,
     fontWeight: "bold",
-    color: "#61B8C2",
-    fontFamily: "Avenir",
+    color: COLORS.primary,
+    fontFamily: FONTS.medium,
     margin: 5,
   },
   joinButton: {
     padding: 7,
     borderRadius: 20,
-    backgroundColor: "#61B8C2",
-    fontFamily: "Avenir",
+    backgroundColor: COLORS.primary,
     color: "white",
   },
   joinButtonText: {
     fontSize: 15,
     fontWeight: "bold",
     color: "white",
-    fontFamily: "Avenir",
+    fontFamily: FONTS.medium,
     margin: 5,
   },
 });

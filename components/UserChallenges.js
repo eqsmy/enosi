@@ -1,5 +1,6 @@
 import { Image, StyleSheet, Text, View, Pressable } from "react-native";
 import CircularProgress from "react-native-circular-progress-indicator";
+import {COLORS, FONTS} from "../constants.js"
 
 export default function UserChallenges({ item, onPress, showUser }) {
   return (
@@ -20,9 +21,9 @@ export default function UserChallenges({ item, onPress, showUser }) {
         <CircularProgress
           radius={20}
           value={item.progress}
-          inActiveStrokeColor={"#2ecc71"}
+          inActiveStrokeColor={COLORS.lightprimary}
           inActiveStrokeOpacity={0.2}
-          progressValueColor={"#fff"}
+          progressValueColor={COLORS.primary}
           valueSuffix={"%"}
         />
       ) : (
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginRight: 10,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.bold,
   },
   challengeImage: {
     width: 50,
@@ -61,13 +62,13 @@ const styles = StyleSheet.create({
     flex: 3,
     justifyContent: "center",
     paddingRight: 10,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.medium,
   },
   challengeTitle: {
     fontWeight: "bold",
     fontSize: 16,
     marginBottom: 4,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.bold,
   },
   challengeDetails: {
     fontSize: 14,
@@ -81,12 +82,12 @@ const styles = StyleSheet.create({
   logbookButton: {
     padding: 7,
     borderRadius: 20,
-    backgroundColor: "#61B8C2",
+    backgroundColor: COLORS.primary,
   },
   logbookButtonText: {
     fontSize: 11,
     fontWeight: "bold",
     color: "white",
-    fontFamily: "Avenir",
+    fontFamily: FONTS.medium,
   },
 });

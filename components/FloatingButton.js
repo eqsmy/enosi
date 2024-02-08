@@ -9,6 +9,7 @@ import {
 import React, { useRef, useState } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import {COLORS, FONTS} from "../constants.js"
 
 const { width, height } = Dimensions.get("window");
 
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
     },
   },
   menu: {
-    backgroundColor: "#80BD6B",
+    backgroundColor: COLORS.primary,
   },
   secondary: {
     height: 48,
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#80BD6B",
+    backgroundColor: COLORS.primary,
   },
 });
 

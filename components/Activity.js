@@ -1,4 +1,5 @@
 import { Image, StyleSheet, Text, View } from "react-native";
+import {COLORS, FONTS} from "../constants.js";
 
 export default function Activity({ item, showUser = false }) {
   return (
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.bold,
     fontSize: 19,
   },
   avatar: {
@@ -56,7 +57,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontWeight: "bold",
-    fontFamily: "Avenir",
+    fontFamily: FONTS.bold,
     fontSize: 19,
   },
   activityImage: {
@@ -68,18 +69,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginTop: 5,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.bold,
   },
   activityDetails: {
     fontSize: 14,
     color: "gray",
     marginTop: 5,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.body,
   },
   activityTimestamp: {
     fontSize: 12,
     color: "gray",
     marginTop: 5,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.body,
   },
 });
