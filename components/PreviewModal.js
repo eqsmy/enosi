@@ -73,11 +73,27 @@ export default PreviewModal = ({ challenge, onClose, onJoin }) => {
           source={{ uri: challenge?.photo_url }}
           style={styles.modalImage}
         />
-        <Text style={styles.modalDescription}>{challenge?.description}</Text>
+        <Text style={styles.modalDescription}>Info: {challenge?.description}</Text>
         <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={{ fontWeight: "500" }}>Total Goal Miles: </Text>
-          <Text>{challenge?.total_goal}</Text>
+          {/* <Text style={{ fontWeight: "500" }}> hello</Text> */}
+          {/* <Text>Active:{challenge?.total_goal}</Text> */}
+          {/* <Image
+            source={{ uri: challenge?.profiles?.avatar_url }}
+            style={styles.profileImage}
+          /> */}
+          {/* <Text>{challenge?.challenges.total_goal}</Text> */}
         </View>
+
+        {/* <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+          <Text>Active: {challenge?.challenges.total_goal}</Text>
+          {challenge?.profiles.map((profile, index) => (
+            <Image
+              key={index} // Ideally, use a unique ID if available
+              source={{ uri: profile.avatar_url }}
+              style={styles.profileImage}
+            />
+          ))}
+        </View> */}
 
         <Text
           style={{
@@ -155,6 +171,12 @@ const styles = StyleSheet.create({
     height: 300,
     marginBottom: 10,
     borderRadius: 20,
+  },
+  profileImage: {
+    width: 20,
+    height: 20,
+    marginBottom: 5,
+    borderRadius: 2,
   },
   modalDescription: {
     textAlign: "center",
