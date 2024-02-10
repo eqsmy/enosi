@@ -145,8 +145,8 @@ export default function Profile({ route = undefined }) {
             }
             backgroundColor={
               profile?.friends?.includes(state.session?.user?.id)
-                ? "#d2d2d2"
-                : undefined
+                ? "gray"
+                : COLORS.primary
             }
           ></BasicButton>
         )}

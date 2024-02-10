@@ -93,7 +93,7 @@ export default function Login() {
           width: "50%",
           paddingBottom: 80,
         }}
-        source={require("../assets/logosafe.png")}
+        source={require("../assets/logocray.png")}
         resizeMode="contain"
       />
       <TextInput
