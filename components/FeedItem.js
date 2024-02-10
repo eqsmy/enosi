@@ -1,5 +1,6 @@
 import { Image, Pressable } from "react-native";
 import { Text, View } from "react-native";
+import {COLORS, FONTS} from "../constants.js";
 
 export default function FeedItem({
   name,
@@ -16,7 +17,7 @@ export default function FeedItem({
         alignItems: "center",
         borderBottomWidth: 1,
         borderBottomColor: "#e8e8e8",
-        fontfamily: "Avenir",
+        fontfamily: FONTS.bold,
       }}
       onPress={onPress}
     >
@@ -26,7 +27,7 @@ export default function FeedItem({
         source={icon}
       ></Image>
       <View>
-        <Text style={{ marginLeft: 15, fontWeight: "bold" }}>{name}</Text>
+        <Text style={{ marginLeft: 15, fontWeight: "bold", fontFamily: FONTS.bold }}>{name}</Text>
         {subtext ? (
           <Text
             style={{

@@ -6,12 +6,12 @@ export function LogoHeader() {
       <Image
         style={{
           margin: "auto",
-          marginTop: 20,
+          marginTop: 40,
           height: 60,
-          width: "70%",
+          width: "80%",
         }}
         resizeMode="contain"
-        source={require("../assets/logo.png")}
+        source={require("../assets/logocray.png")}
       />
     </View>
   );

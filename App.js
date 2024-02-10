@@ -19,13 +19,32 @@ import Login from "./pages/Login";
 import { LogoHeader } from "./components/Headers";
 import { setCustomText } from "react-native-global-props";
 import { supabase } from "./utils/Supabase";
+import * as Font from 'expo-font';
+import {
+  COLORS,
+  FONTS,
+  FONT_SOURCE_HEADER,
+  FONT_SOURCE_BODY,
+  FONT_SOURCE_MEDIUM,
+  FONT_SOURCE_BOLD,
+} from './constants';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
+const loadFonts = async () => {
+  await Font.loadAsync({
+    [FONTS.header]: FONT_SOURCE_HEADER,
+    [FONTS.body]: FONT_SOURCE_BODY,
+    [FONTS.medium]: FONT_SOURCE_MEDIUM,
+    [FONTS.bold]: FONT_SOURCE_BOLD,
+  });
+};
+
+
 const customTextProps = {
   style: {
-    fontFamily: "Avenir",
+    fontFamily: FONTS.body,
   },
 };
 setCustomText(customTextProps);
@@ -33,8 +52,12 @@ setCustomText(customTextProps);
 const Theme = {
   ...DefaultTheme,
   colors: {
-    ...DefaultTheme.colors,
-    primary: "#61B8C2",
+    primary: COLORS.primary,
+    background: COLORS.lightprimary,
+    card: '#ffffff',
+    text: COLORS.defaultgray,
+    border: '#8B9C85',
+    notification: '#8B9C85',
   },
 };
 
@@ -116,6 +139,7 @@ function RootStack() {
   const { state, dispatch } = useUser();
   useEffect(() => {
     console.log("Logged In State Changed:", state.loggedIn);
+    loadFonts();
   }, [state.loggedIn]);
 
   const handleLogout = async () => {
