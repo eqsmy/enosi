@@ -53,7 +53,7 @@ const FloatingButton = () => {
     <SafeAreaView>
       <View style={styles.container}>
         <View style={styles.bottomContainer}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("Search")}>
             <Animated.View
               style={[styles.button, styles.secondary, getAnimatedStyle(-80)]}
             >
