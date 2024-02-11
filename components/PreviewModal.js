@@ -12,6 +12,7 @@ import { supabase } from "../utils/Supabase";
 import { useUser } from "../utils/UserContext";
 import { RadioButton } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
+import {COLORS, FONTS} from "../constants.js"
 
 export default PreviewModal = ({ challenge, onClose, onJoin }) => {
   const [communities, setCommunities] = useState([]);
@@ -72,11 +73,27 @@ export default PreviewModal = ({ challenge, onClose, onJoin }) => {
           source={{ uri: challenge?.photo_url }}
           style={styles.modalImage}
         />
-        <Text style={styles.modalDescription}>{challenge?.description}</Text>
+        <Text style={styles.modalDescription}>Info: {challenge?.description}</Text>
         <View style={{ display: "flex", flexDirection: "row" }}>
-          <Text style={{ fontWeight: "500" }}>Total Goal Miles: </Text>
-          <Text>{challenge?.total_goal}</Text>
+          {/* <Text style={{ fontWeight: "500" }}> hello</Text> */}
+          {/* <Text>Active:{challenge?.total_goal}</Text> */}
+          {/* <Image
+            source={{ uri: challenge?.profiles?.avatar_url }}
+            style={styles.profileImage}
+          /> */}
+          {/* <Text>{challenge?.challenges.total_goal}</Text> */}
         </View>
+
+        {/* <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+          <Text>Active: {challenge?.challenges.total_goal}</Text>
+          {challenge?.profiles.map((profile, index) => (
+            <Image
+              key={index} // Ideally, use a unique ID if available
+              source={{ uri: profile.avatar_url }}
+              style={styles.profileImage}
+            />
+          ))}
+        </View> */}
 
         <Text
           style={{
@@ -147,7 +164,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.body,
   },
   modalImage: {
     width: 300,
@@ -155,11 +172,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 20,
   },
+  profileImage: {
+    width: 20,
+    height: 20,
+    marginBottom: 5,
+    borderRadius: 2,
+  },
   modalDescription: {
     textAlign: "center",
     width: 280,
     marginBottom: 10,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.body,
     width: "80%",
   },
   buttonContainer: {
@@ -171,29 +194,25 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: 7,
     borderRadius: 20,
-    backgroundColor: "white",
-    fontFamily: "Avenir",
-    color: "#61B8C2",
   },
   closeButtonText: {
     fontSize: 15,
     fontWeight: "bold",
-    color: "#61B8C2",
-    fontFamily: "Avenir",
+    color: COLORS.primary,
+    fontFamily: FONTS.medium,
     margin: 5,
   },
   joinButton: {
     padding: 7,
     borderRadius: 20,
-    backgroundColor: "#61B8C2",
-    fontFamily: "Avenir",
+    backgroundColor: COLORS.primary,
     color: "white",
   },
   joinButtonText: {
     fontSize: 15,
     fontWeight: "bold",
     color: "white",
-    fontFamily: "Avenir",
+    fontFamily: FONTS.medium,
     margin: 5,
   },
 });

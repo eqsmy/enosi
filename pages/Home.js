@@ -6,6 +6,8 @@ import Activity from "../components/Activity";
 import { useUser } from "../utils/UserContext";
 import { useIsFocused } from "@react-navigation/native";
 import { enosiStyles } from "./styles";
+import FloatingButton from "../components/FloatingButton";
+import {COLORS, FONTS} from "../constants.js"
 
 export default function Home() {
   const [activities, setActivities] = useState([]);
@@ -83,6 +85,7 @@ export default function Home() {
         contentContainerStyle={styles.contentArea}
       />
       <StatusBar style="auto" />
+      <FloatingButton />
     </SafeAreaView>
   );
 }

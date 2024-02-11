@@ -2,45 +2,81 @@ import {
   Text,
   View,
   Image,
-  SafeAreaView,
   Dimensions,
   TextInput,
   Alert,
-  Modal,
   ScrollView,
 } from "react-native";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
-import { Dropdown } from "react-native-element-dropdown";
+import { useEffect, useState, useRef } from "react";
+import SimplePicker from "react-native-simple-picker";
+import { Icon } from "react-native-elements";
 import {
-  FlatList,
   GestureHandlerRootView,
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import * as ImagePicker from "expo-image-picker";
 import { supabase } from "../utils/Supabase";
 import { useUser } from "../utils/UserContext";
-import { FileOjbect } from "@supabase/storage-js";
 import { decode as base64Decode } from "base-64";
+import {
+  AutocompleteDropdown,
+  AutocompleteDropdownContextProvider,
+} from "react-native-autocomplete-dropdown";
+import {COLORS, FONTS} from "../constants.js";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 
-export function LogActivity1() {
+export default function LogActivity() {
+  const navigation = useNavigation();
   //utilzie the user context to get user details and pass to activityData
   const { state } = useUser();
   const userId = state.session.user.id ? state.session.user.id : null;
-  const [activity, setActivity] = useState("");
+  const [activity, setActivity] = useState(null);
   const [input, setInput] = useState("");
+  const [blurb, setBlurb] = useState("");
   const [inputNum, setNum] = useState(null);
-  const [val, setValue] = useState(null);
-
-  const [modalVisible, setModalVisible] = useState(false);
-  const [caption, setCaption] = useState("");
   const [image, setImage] = useState();
+  const [activityTypes, setActivityTypes] = useState([
+    { id: 0, title: "default" },
+  ]);
+  const [error, showError] = useState(null);
+
+  async function fetchActivityTypes() {
+    try {
+      let { data: activity_types, error } = await supabase
+        .from("activity_types")
+        .select("*");
+      types_list = [];
+      activity_types.map((item, idx) => {
+        types_list.push({ title: item["name"], id: idx + 1 });
+      });
+      setActivityTypes(types_list);
+      if (error) throw error;
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+  useEffect(() => {
+    fetchActivityTypes();
+  }, []);
 
   const photoUri = image;
+
+  const updateUserChallenges = async () => {
+    try {
+      const response = await supabase.rpc("add_user_contribution", {
+        x: inputNum,
+        activity: activity,
+        unit: unit,
+        user_: state.session.user.id,
+      });
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -53,12 +89,22 @@ export function LogActivity1() {
       setImage(result.assets[0].uri);
     }
   };
+  const picker = useRef(null);
 
   const handleSubmit = async () => {
     if (!photoUri) {
       console.error("No photo URI available. Cannot upload photo.");
+      showError("Choose a photo");
       return null;
     }
+
+    if (!activity || !inputNum || !unit) {
+      console.error("Missing activity data");
+      showError("Activity information missing above");
+      return;
+    }
+    showError(processingMessage);
+
     const response = await fetch(photoUri);
     const blob = await response.blob();
     const reader = new FileReader();
@@ -90,11 +136,13 @@ export function LogActivity1() {
           user_id: userId,
           activity_type: activity,
           distance: distance,
-          caption: caption,
+          blurb: blurb,
+          caption: input,
           photo_url: publicUrl,
           duration: 60,
-          distance_units: val,
+          distance_units: unit,
         };
+        updateUserChallenges();
 
         console.log("Inserting data:", activityData);
         const { error } = await supabase
@@ -102,236 +150,231 @@ export function LogActivity1() {
           .insert([activityData])
           .select();
         if (error) throw error;
-        Alert.alert("Success", "Activity logged successfully.");
+        //Alert.alert("Success", "Activity logged successfully.");
+        navigation.navigate("Home");
       } catch (error) {
         console.error("Error logging activity:", error.message);
         Alert.alert("Error", "Failed to log activity.");
       }
     };
   };
+  const unitOptions = ["miles", "kilometers", "hours", "minutes"];
+  const [unit, setUnit] = useState("Pick unit");
+  const processingMessage = "Processing...";
 
-  const updateActivity = (inputText) => {
-    setInput(inputText);
-  };
-
-  const data = [
-    { label: "Miles", value: "1" },
-    { label: "Kilometers", value: "2" },
-    { label: "Minutes", value: "3" },
-  ];
-  const navigation = useNavigation();
-  const handlePress = () => {
-    navigation.navigate("LogActivity2");
-    console.log("Text clicked!");
-  };
-
-  const renderActivityType = ({ item }) => (
-    <View style={{ marginBottom: 10, justifyContent: "space-around", flex: 1 }}>
-      <Text style={styles.boxText}>{item.type}</Text>
-      <TouchableOpacity
-        style={[
-          styles.box,
-          {
-            backgroundColor: item.type == activity ? "#61B8C2" : "transparent",
-          },
-        ]}
-        onPress={() => {
-          setActivity(item.type);
-        }}
-      >
-        <Image style={styles.imageBox} source={item.image} />
-      </TouchableOpacity>
-    </View>
-  );
-
-  const presetActivities = [
-    {
-      type: "Meditate",
-      image: require("../assets/activityIcons/meditate.png"),
-    },
-    { type: "Hike", image: require("../assets/activityIcons/hike.png") },
-    { type: "Swim", image: require("../assets/activityIcons/swim.png") },
-    { type: "Bike", image: require("../assets/activityIcons/bike.png") },
-    { type: "Run", image: require("../assets/activityIcons/run.png") },
-    { type: "Lift", image: require("../assets/activityIcons/lift.png") },
-  ];
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "white" }}>
-      <ScrollView
-        style={{
-          marginHorizontal: "5%",
-          width: "90%",
-        }}
-      >
-        <View style={styles.container}>
-          <FlatList
-            data={presetActivities}
-            numColumns={3}
-            horizontal={false}
-            scrollEnabled={false}
-            renderItem={renderActivityType}
-          ></FlatList>
-        </View>
-
-        <Text style={styles.customBoxText}>Custom Activity</Text>
-        <View style={styles.customBox}>
-          <View style={{ flex: 1, justifyContent: "center", paddingLeft: 15 }}>
+      <AutocompleteDropdownContextProvider headerOffset={100}>
+        <ScrollView
+          style={{
+            marginHorizontal: "5%",
+            width: "90%",
+          }}
+        >
+          <View style={styles.inputBox}>
             <TextInput
-              placeholder="My Activity"
+              placeholder="Activity Name"
               placeholderStyle={styles.textInputStyle}
-              onChangeText={updateActivity}
+              onChangeText={(value) => {
+                setInput(value);
+              }}
               value={input}
             />
           </View>
-        </View>
-        <Text style={styles.customBoxText}>Distance / Time</Text>
-        <View style={styles.numBox}>
-          <View>
+          <View style={styles.inputBox}>
             <TextInput
-              style={{
-                fontSize: 72,
-                textAlign: "right",
-              }}
-              value={inputNum}
-              onChangeText={(x) => {
-                setNum(x);
-              }}
-              keyboardType="numeric"
-              placeholderTextColor={"#c9c9c9"}
-              placeholder={"0.0"}
+              placeholder="How did it go?"
+              placeholderStyle={styles.textInputStyle}
+              onChangeText={(value) => setBlurb(value)}
+              value={blurb}
+              multiline
+              textAlignVertical="top"
             />
           </View>
-        </View>
-        <View
-          style={[
-            styles.customBox,
-            {
-              flex: 1,
-              justifyContent: "center",
-              paddingLeft: 15,
-              paddingRight: 15,
-            },
-          ]}
-        >
-          <Dropdown
-            style={styles.dropdown}
-            data={data}
-            placeholder="Select Units"
-            placeholderStyle={{
-              color: "#c3c3c5",
-              fontWeight: "400",
-              fontFamily: "Arial",
-              fontSize: 15,
-            }}
-            labelField="label"
-            valueField="value"
-            onChange={(item) => {
-              setValue(item.value); // Directly update the 'val' state with the selected item's value
+          <Text style={styles.customBoxText}>Activity Details</Text>
+          <View style={{ justifyContent: "center", alignContent: "center" }}>
+            <AutocompleteDropdown
+              clearOnFocus={false}
+              closeOnBlur={true}
+              closeOnSubmit={false}
+              initialValue={"0"}
+              onChangeText={(value) => {
+                setActivity(value);
+              }}
+              onSelectItem={(value) => {
+                value && setActivity(value.title);
+              }}
+              dataSet={
+                activity
+                  ? [...activityTypes, { title: activity, id: 0 }]
+                  : activityTypes
+              }
+              inputContainerStyle={[styles.inputBox, { padding: 2 }]}
+              suggestionsListContainerStyle={{
+                shadowRadius: 0,
+                shadowOffset: 0,
+                borderWidth: 1,
+              }}
+              emptyResultText="Set custom"
+              textInputProps={{
+                placeholder: "Select activity type",
+              }}
+            />
+          </View>
+          <SimplePicker
+            ref={picker}
+            options={unitOptions}
+            onSubmit={(option) => {
+              setUnit(option);
             }}
           />
-        </View>
 
-        <View
-          style={{
-            width: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
           <View
-            style={[
-              styles.log,
-              {
-                alignItems: "center",
-                justifyContent: "center",
-                marginTop: 10,
-              },
-            ]}
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              alignSelf: 'center',
+              marginTop: 10,
+              marginBottom: 10,
+            }}
           >
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
-              <Text
-                style={{
-                  color: "white",
-                  fontFamily: "Avenir",
-                  fontWeight: "800",
-                  fontSize: 18,
-                }}
-              >
-                Log
-              </Text>
+            <View style={styles.numBox}>
+              <View>
+                <TextInput
+                  style={{
+                    fontSize: 72,
+                    textAlign: "right",
+                  }}
+                  value={inputNum}
+                  onChangeText={(x) => {
+                    setNum(x);
+                  }}
+                  keyboardType="numeric"
+                  placeholderTextColor={"#c9c9c9"}
+                  placeholder={"0.0"}
+                />
+              </View>
+            </View>
+            <TouchableOpacity style={styles.pickUnitButton}
+              onPress={() => {
+                picker.current.show();
+              }}
+            >
+                <Text
+                  style={{
+                    color: COLORS.primary,
+                    fontSize: 16,
+                    padding: 5,
+                    fontWeight: "500",
+                    textAlign: "right",
+                    fontFamily: FONTS.bold,
+                    paddingTop: -5,
+                  }}
+                >
+                <Icon
+                  style={{ }}
+                  size={20}
+                  name="edit"
+                  color={COLORS.primary}
+                ></Icon>
+                {unit}{" "}
+                
+                </Text>
             </TouchableOpacity>
           </View>
-        </View>
 
-        <View
-          style={{
-            alignItems: "center",
-            justifyContent: "center",
-            flex: 1,
-            marginTop: 30,
-          }}
-        >
-          <Modal
-            animationType="slide"
-            transparent={false}
-            visible={modalVisible}
-            onRequestClose={() => setModalVisible(false)}
-            presentationStyle="fullScreen"
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
           >
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>
-                Optional: Add a caption and photo
-              </Text>
-              <TextInput
-                style={styles.input}
-                placeholder="How'd it go? How are you feeling? Share more about your activity!"
-                onChangeText={setCaption}
-                value={caption}
-                multiline={true}
-              />
-              {photoUri && (
+            <TouchableOpacity
+              style={[
+                {
+                  borderRadius: 25,
+                  borderWidth: 1,
+                  borderStyle: photoUri ? "solid" : "dashed",
+                  borderColor: COLORS.primary,
+                  justifyContent: "center",
+                  textAlign: "center",
+                },
+                styles.uploadedImage,
+              ]}
+              onPress={pickImage}
+            >
+              {photoUri ? (
                 <Image
                   source={{ uri: photoUri }}
                   style={styles.uploadedImage}
                 />
+              ) : (
+                <View style={{alignItems: "center"}}>
+                  <Icon
+                    style={{ }}
+                    size={50}
+                    name="add-photo-alternate"
+                    color={COLORS.primary}
+                  ></Icon>
+                  <Text style={styles.uploadButtonText}>Choose Photo</Text>
+                  
+                </View>
+                
               )}
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  style={styles.upLoadButtons}
-                  onPress={pickImage}
-                >
-                  <Text style={styles.uploadButtonText}>Upload Photo</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.upLoadButtons}
-                  onPress={() => {
-                    handleSubmit();
-                    setModalVisible(false);
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={[
+                styles.log,
+                {
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginTop: 20,
+                },
+              ]}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  handleSubmit();
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontFamily: FONTS.bold,
+                    fontWeight: "800",
+                    fontSize: 18,
                   }}
                 >
-                  <Text style={styles.uploadButtonText}>Post!</Text>
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity
-                style={styles.upLoadButtons}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.uploadButtonText}>Cancel</Text>
+                  Post
+                </Text>
               </TouchableOpacity>
             </View>
-          </Modal>
-        </View>
-      </ScrollView>
+          </View>
+          {error && (
+            <Text
+              style={{
+                textAlign: "center",
+                marginTop: 10,
+                color: error == processingMessage ? "grey" : "red",
+              }}
+            >
+              {error}
+            </Text>
+          )}
+        </ScrollView>
+      </AutocompleteDropdownContextProvider>
     </GestureHandlerRootView>
-  );
-}
-
-export function LogActivity2() {
-  return (
-    <SafeAreaView style={enosiStyles.container}>
-      <Text>Challenges</Text>
-      <StatusBar style="auto" />
-    </SafeAreaView>
   );
 }
 
@@ -358,22 +401,25 @@ const styles = StyleSheet.create({
   boxText: {
     position: "absolute",
     textAlign: "center",
-    fontFamily: "Avenir",
+    fontFamily: FONTS.bold,
     fontWeight: "600",
     fontSize: 18,
     top: 0,
     left: 0,
     right: 0,
   },
-  customBox: {
+  inputBox: {
     borderRadius: 25,
-    borderWidth: 5,
-    borderColor: "#61B8C2",
-    height: height * 0.05,
+    borderWidth: 3,
+    borderColor: COLORS.primary,
     margin: 10,
+    backgroundColor: "white",
+    flex: 1,
+    justifyContent: "center",
+    padding: 12,
   },
   customBoxText: {
-    fontFamily: "Avenir",
+    fontFamily: FONTS.bold,
     fontWeight: "600",
     fontSize: 18,
     marginTop: 15,
@@ -382,94 +428,57 @@ const styles = StyleSheet.create({
   log: {
     borderRadius: 25,
     borderWidth: 5,
-    borderColor: "#61B8C2",
+    borderColor: COLORS.primary,
     height: height * 0.05,
     width: width / 3,
-    backgroundColor: "#61B8C2",
-  },
-  imageBox: {
-    justifyContent: "center",
-    margin: "auto",
-    resizeMode: "cover",
+    backgroundColor: COLORS.primary,
   },
   numStyle: {
     fontSize: 100,
   },
   numBox: {
-    marginTop: 15,
-    marginBottom: 15,
-    marginLeft: width / 8,
-    paddingRight: 15,
-    height: height / 8,
-    maxWidth: "70%",
+    padding: 10,
+    margin: 5,
+    height: 120,
     backgroundColor: "#f6f6f6",
     borderRadius: 20,
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "center",
+    width: "65%",
   },
   textInputStyle: {
-    fontFamily: "Avenir",
+    fontFamily: FONTS.medium,
     fontWeight: "600",
     fontSize: 18,
     color: "grey",
   },
-  modalContent: {
-    flex: 1,
-    backgroundColor: "white",
-    padding: 22,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    borderRadius: 20,
-    borderColor: "rgba(0, 0, 0, 0.1)",
-    alignSelf: "center",
-    width: "80%",
-  },
-  modalTitle: {
-    marginTop: 150,
-    fontFamily: "Avenir",
-    fontWeight: "600",
-    fontSize: 17,
-    marginBottom: 10,
-    alignSelf: "center",
-  },
-  input: {
-    height: "30%",
-    textAlign: "left",
-    borderColor: "#f6f6f6",
-    borderWidth: 1,
-    borderRadius: 10,
-    width: "110%",
-    backgroundColor: "#f6f6f6",
-    padding: 10,
-  },
+
   uploadedImage: {
     width: 150,
     height: 150,
     borderRadius: 10,
-    marginBottom: 10,
-    marginTop: 10,
-  },
-  buttonContainer: {
-    marginTop: 10,
-    flexDirection: "column",
-    alignItems: "center",
-    width: "120%",
-    height: "18%",
-    gap: 10,
+    //marginBottom: 10,
   },
   upLoadButtons: {
-    backgroundColor: "#61B8C2",
+    backgroundColor: COLORS.primary,
     borderRadius: 25,
     padding: 4,
   },
   uploadButtonText: {
-    color: "white",
+    color: COLORS.primary,
     fontWeight: "700",
     fontSize: 16,
-    fontFamily: "Avenir",
-    // backgroundColor: "red",
+    fontFamily: FONTS.bold,
     padding: 8,
     paddingHorizontal: 25,
+    textAlign: "center",
   },
+  pickUnitButton: {
+    alignItems: "center",
+    padding: 5,
+    borderRadius: 25,
+    borderColor: COLORS.primary,
+    paddingTop: 0,
+  }
 });

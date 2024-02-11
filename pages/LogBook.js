@@ -12,6 +12,7 @@ import { enosiStyles } from "./styles";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../utils/Supabase";
+import {COLORS, FONTS} from "../constants.js"
 
 export default function LogBook({ route }) {
   const [posts, setPosts] = useState([]);
@@ -100,18 +101,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginTop: 5,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.bold,
   },
   activityDetails: {
     fontSize: 14,
     color: "black",
     marginTop: 5,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.body,
   },
   activityTimestamp: {
     fontSize: 12,
     color: "gray",
     marginTop: 5,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.body,
   },
 });

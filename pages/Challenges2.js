@@ -14,11 +14,10 @@ import PreviewModal from "../components/PreviewModal";
 import { supabase } from "../utils/Supabase";
 import { useUser } from "../utils/UserContext";
 import { useNavigation } from "@react-navigation/native";
-import UserChallenges from "../components/UserChallenges";
+import UserChallenges from "../components/NewChallenges";
 import { StatusBar } from "expo-status-bar";
 import { createStackNavigator } from "@react-navigation/stack";
 import LogBook from "./LogBook";
-import {COLORS, FONTS} from "../constants.js"
 
 function Challenges({}) {
   const navigation = useNavigation();
@@ -39,6 +38,7 @@ function Challenges({}) {
       let { data, error } = await supabase.from("challenges").select("*");
       if (error) throw error;
       setAllChallenges(data);
+      console.log("all cha:",allChallenges);
     } catch (error) {
       alert(error.message);
       console.error("Error fetching all challenges:", error.message);
@@ -58,7 +58,7 @@ function Challenges({}) {
         )
         .eq("user_id", state.session.user.id);
       setUserChallenges(challenges);
-      console.log(challenges);
+    //   console.log(challenges);
     } catch (error) {
       alert(error.message);
     }
@@ -89,14 +89,16 @@ function Challenges({}) {
     return (
       <UserChallenges
         item={item}
-        onPress={() => nagvigateToLogbook(item.challenge_id)}
+        onPress={() => openModal(item)}
         showUser
       ></UserChallenges>
     );
   };
 
-  const openModal = (challenge) => {
-    setSelectedChallenge(challenge);
+  const openModal = (item) => {
+    setSelectedChallenge(item);
+    // console.log("Selected Challenge: ", item);
+    // console.log("Selected Challenge: ", selectedChallenge);
     setModalVisible(true);
   };
 
@@ -116,7 +118,7 @@ function Challenges({}) {
         onChangeText={handleSearch}
         value={search}
       />
-      <Text style={styles.headingText}> Available Challenges </Text>
+      {/* <Text style={styles.headingText}> Available Challenges </Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -136,12 +138,12 @@ function Challenges({}) {
             </Pressable>
           </View>
         ))}
-      </ScrollView>
+      </ScrollView> */}
       <StatusBar style="auto" />
-      <Text style={styles.headingText}> Your Challenges </Text>
+      <Text style={styles.headingText}> Add New Challenges </Text>
       <View style={styles.containerFeed}>
         <FlatList
-          data={userChallenges}
+          data={allChallenges}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderUserChallenges}
           contentContainerStyle={styles.contentArea}
@@ -206,7 +208,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f6f6f6",
     borderWidth: 1,
     borderColor: "#e8e8e8",
-    fontFamily: FONTS.body,
+    fontFamily: "Avenir",
   },
   horizontalScroll: {
     paddingHorizontal: 10,
@@ -236,7 +238,7 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 10,
     marginVertical: 10,
-    fontFamily: FONTS.bold,
+    fontFamily: "Avenir",
   },
   containerFeed: {
     flex: 80,
