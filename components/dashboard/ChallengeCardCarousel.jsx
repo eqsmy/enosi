@@ -2,12 +2,12 @@ import { Text, View, Image, StyleSheet, ScrollView } from "react-native";
 import React from "react";
 import { Header } from "@components/dashboard/Header";
 
-function ChallengeCard({ challengeData }) {
-  const calculateProgress = (progressCount, goal) => {
-    if (!progressCount || !goal) return "0%";
-    return `${(progressCount / goal) * 100}%`;
-  };
+export const calculateProgress = (progressCount, goal) => {
+  if (!progressCount || !goal) return "0%";
+  return `${(progressCount / goal) * 100}%`;
+};
 
+function ChallengeCard({ challengeData }) {
   //   format the goal based on the units, add commas to the number
   const formattedGoal = `${challengeData.progressCount.toLocaleString()} / ${challengeData.goal.toLocaleString()} ${
     challengeData.units
@@ -136,18 +136,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
 });
+
 export const exampleChallenges = [
-  {
-    communityName: "Super long name testing community name",
-    challengeTitle: "Super long challenge name testing - Everest Climb",
-    progressCount: 26000,
-    goal: 29000500,
-    units: "ft",
-    status: "active",
-    contributors: 99999,
-    communityLogo:
-      "https://assets.weforum.org/article/image/XaHpf_z51huQS_JPHs-jkPhBp0dLlxFJwt-sPLpGJB0.jpg",
-  },
   {
     communityName: "CS 194H Squad",
     challengeTitle: "Everest Climb",

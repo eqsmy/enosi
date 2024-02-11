@@ -1,4 +1,4 @@
-import { SafeAreaView, ScrollView } from "react-native";
+import { SafeAreaView, ScrollView, Text } from "react-native";
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ChallengeCardCarousel } from "@components/dashboard/ChallengeCardCarousel";
@@ -27,7 +27,7 @@ export function Dashboard() {
         {/* <Header title={"Your Communities"} /> */}
         {/* <CommunityCardCarosel /> */}
 
-        {/* <Header title={"Your Feed"} /> */}
+        {/* <Header title={"Feed"} /> */}
         <ActivityFeed />
       </ScrollView>
     </SafeAreaView>
