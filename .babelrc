@@ -10,7 +10,8 @@
           "@screens": "./screens",
           "@utils": "./utils",
           "@styles": "./styles",
-          "@stores": "./stores"
+          "@stores": "./stores",
+          "@pages": "./pages"
         }
       }
     ]
