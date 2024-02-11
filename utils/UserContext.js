@@ -1,4 +1,5 @@
-import React, { createContext, useReducer, useContext } from "react";
+import React, { createContext, useReducer, useContext, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // or import * as SecureStore from 'expo-secure-store' if using Expo
 
 // Initial state
 const initialState = {
@@ -13,13 +14,11 @@ const SET_SESSION = "SET_SESSION";
 const reducer = (state, action) => {
   switch (action.type) {
     case SET_SESSION:
-      //console.log("Dispatched SET_SESSION with data:", action.payload);
       const newState = {
         ...state,
         session: action.payload,
         loggedIn: !!action.payload,
       };
-      //console.log("New State after dispatch:", newState);
       return newState;
     default:
       return state;
@@ -32,6 +31,32 @@ const UserContext = createContext();
 // Context provider
 export const UserProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    // Load the session when the app starts
+    const loadSession = async () => {
+      const sessionData = await AsyncStorage.getItem("userSession"); // Use SecureStore.getItemAsync if using Expo
+      if (sessionData) {
+        dispatch({ type: SET_SESSION, payload: JSON.parse(sessionData) });
+      }
+    };
+    loadSession();
+  }, []);
+
+  useEffect(() => {
+    // Save the session whenever it changes
+    const saveSession = async () => {
+      if (state.session) {
+        await AsyncStorage.setItem(
+          "userSession",
+          JSON.stringify(state.session)
+        ); // Use SecureStore.setItemAsync if using Expo
+      } else {
+        await AsyncStorage.removeItem("userSession"); // Use SecureStore.deleteItemAsync if using Expo
+      }
+    };
+    saveSession();
+  }, [state.session]);
 
   return (
     <UserContext.Provider value={{ state, dispatch }}>
