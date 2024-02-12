@@ -13,6 +13,7 @@ import { supabase } from "../utils/Supabase";
 import { useNavigation } from "@react-navigation/native";
 import { enosiStyles } from "./styles";
 import { useUser } from "../utils/UserContext";
+import {COLORS, FONTS} from "../constants.js";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -92,7 +93,7 @@ export default function Login() {
           width: "50%",
           paddingBottom: 80,
         }}
-        source={require("../assets/logo.png")}
+        source={require("../assets/logocray.png")}
         resizeMode="contain"
       />
       <TextInput
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
     margin: 10,
     borderRadius: 20,
     elevation: 3,
-    backgroundColor: "#61B8C2",
+    backgroundColor: COLORS.primary,
   },
   login_signup: {
     fontSize: 16,
@@ -164,6 +165,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     letterSpacing: 0.25,
     color: "white",
-    fontFamily: "Avenir",
+    fontFamily: FONTS.bold,
   },
 });

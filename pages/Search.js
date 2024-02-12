@@ -20,6 +20,7 @@ import PeopleFeed from "./People";
 import Profile from "./Profile";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { Icon } from "react-native-elements";
+import {COLORS, FONTS} from "../constants.js"
 
 const Stack = createStackNavigator();
 
@@ -132,7 +133,7 @@ function SearchFeed({ props }) {
                     color:
                       maxQuantities[section.title] > section.data.length
                         ? "lightgrey"
-                        : "#61B8C2",
+                        : COLORS.accent,
                     marginVertical: 20,
                     width: "30%",
                     textAlign: "right",

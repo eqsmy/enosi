@@ -1,0 +1,16 @@
+{
+  "presets": ["module:metro-react-native-babel-preset"],
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": ["."], //  This says the root of your project folder
+        "alias": {
+          "@components": "./components",
+          "@pages": "./pages",
+          "@utils": "./utils"
+        }
+      }
+    ]
+  ]
+}

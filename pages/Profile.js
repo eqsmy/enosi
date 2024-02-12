@@ -20,6 +20,7 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import Activity from "../components/Activity";
 import FeedItem from "../components/FeedItem";
 import { BasicButton } from "../components/Buttons";
+import {COLORS, FONTS} from "../constants.js"
 
 export default function Profile({ route = undefined }) {
   const { state, dispatch } = useUser();
@@ -144,8 +145,8 @@ export default function Profile({ route = undefined }) {
             }
             backgroundColor={
               profile?.friends?.includes(state.session?.user?.id)
-                ? "#d2d2d2"
-                : undefined
+                ? "gray"
+                : COLORS.primary
             }
           ></BasicButton>
         )}
@@ -156,14 +157,14 @@ export default function Profile({ route = undefined }) {
           style={[
             styles.toggle,
             {
-              backgroundColor: tabShow == "activities" ? "#61B8C2" : "white",
+              backgroundColor: tabShow == "activities" ? COLORS.primary : "white",
             },
           ]}
         >
           <Ionicons
             name="list"
             style={{ fontSize: 35 }}
-            color={tabShow == "communities" ? "#61B8C2" : "white"}
+            color={tabShow == "communities" ? COLORS.primary : "white"}
           />
         </Pressable>
         <Pressable
@@ -171,14 +172,14 @@ export default function Profile({ route = undefined }) {
           style={[
             styles.toggle,
             {
-              backgroundColor: tabShow == "communities" ? "#61B8C2" : "white",
+              backgroundColor: tabShow == "communities" ? COLORS.primary : "white",
             },
           ]}
         >
           <Ionicons
             name="people"
             style={{ fontSize: 35 }}
-            color={tabShow == "activities" ? "#61B8C2" : "white"}
+            color={tabShow == "activities" ? COLORS.primary : "white"}
           />
         </Pressable>
       </View>
@@ -247,7 +248,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderLeftWidth: 0,
     borderRightWidth: 0,
-    borderColor: "#61B8C2",
+    borderColor: COLORS.primary,
     width: "50%",
     flex: 1,
     flexDirection: "column",
@@ -265,7 +266,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
-    fontFamily: "Avenir",
+    fontFamily: FONTS.bold,
   },
   avatar: {
     width: 120,
@@ -278,7 +279,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 5,
     color: "#333",
-    fontFamily: "Avenir",
+    fontFamily: FONTS.bold,
   },
   bio: {
     fontSize: 16,
@@ -286,7 +287,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingHorizontal: 30,
     marginBottom: 20,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.body,
   },
   contentArea: {
     flex: 1,
@@ -307,17 +308,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginTop: 5,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.bold,
   },
   activityDetails: {
     fontSize: 14,
     color: "gray",
-    fontFamily: "Avenir",
+    fontFamily: FONTS.body,
   },
   activityTimestamp: {
     fontSize: 12,
     color: "gray",
     marginTop: 5,
-    fontFamily: "Avenir",
+    fontFamily: FONTS.body,
   },
 });

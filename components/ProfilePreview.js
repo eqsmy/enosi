@@ -1,6 +1,7 @@
 import { Button, Image, View } from "react-native";
 import { Text } from "react-native-paper";
 import { BasicButton } from "./Buttons";
+import {COLORS, FONTS} from "../constants.js"
 
 export function ProfilePreview({
   name,
@@ -41,7 +42,7 @@ export function ProfilePreview({
             fontSize={12}
             text={added ? "Remove" : "Add"}
             onPress={() => toggleAddPerson(id)}
-            backgroundColor={added ? "#BDBDBD" : undefined}
+            backgroundColor={added ? COLORS.lightprimary : undefined}
           ></BasicButton>
         </View>
         <Text
@@ -55,6 +56,7 @@ export function ProfilePreview({
         </Text>
         <Text
           style={{
+            fontFamily: FONTS.bold,
             marginHorizontal: 15,
             color: "#50555C",
             marginBottom: 5,

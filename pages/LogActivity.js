@@ -24,6 +24,7 @@ import {
   AutocompleteDropdown,
   AutocompleteDropdownContextProvider,
 } from "react-native-autocomplete-dropdown";
+import {COLORS, FONTS} from "../constants.js";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
@@ -233,7 +234,8 @@ export default function LogActivity() {
               display: "flex",
               flexDirection: "row",
               alignItems: "center",
-              justifyContent: "left",
+              justifyContent: "center",
+              alignSelf: 'center',
               marginTop: 10,
               marginBottom: 10,
             }}
@@ -255,27 +257,31 @@ export default function LogActivity() {
                 />
               </View>
             </View>
-            <TouchableOpacity
+            <TouchableOpacity style={styles.pickUnitButton}
               onPress={() => {
                 picker.current.show();
               }}
             >
-              <Text
-                style={{
-                  color: "#61B8C2",
-                  fontSize: 16,
-                  padding: 5,
-                  fontWeight: "500",
-                  textAlign: "right",
-                }}
-              >
-                {unit}{" "}
+                <Text
+                  style={{
+                    color: COLORS.primary,
+                    fontSize: 16,
+                    padding: 5,
+                    fontWeight: "500",
+                    textAlign: "right",
+                    fontFamily: FONTS.bold,
+                    paddingTop: -5,
+                  }}
+                >
                 <Icon
-                  style={{ paddingLeft: 1 }}
+                  style={{ }}
+                  size={20}
                   name="edit"
-                  color={"#61B8C2"}
+                  color={COLORS.primary}
                 ></Icon>
-              </Text>
+                {unit}{" "}
+                
+                </Text>
             </TouchableOpacity>
           </View>
 
@@ -292,7 +298,7 @@ export default function LogActivity() {
                   borderRadius: 25,
                   borderWidth: 1,
                   borderStyle: photoUri ? "solid" : "dashed",
-                  borderColor: "#61B8C2",
+                  borderColor: COLORS.primary,
                   justifyContent: "center",
                   textAlign: "center",
                 },
@@ -306,7 +312,17 @@ export default function LogActivity() {
                   style={styles.uploadedImage}
                 />
               ) : (
-                <Text style={styles.uploadButtonText}>Choose Photo</Text>
+                <View style={{alignItems: "center"}}>
+                  <Icon
+                    style={{ }}
+                    size={50}
+                    name="add-photo-alternate"
+                    color={COLORS.primary}
+                  ></Icon>
+                  <Text style={styles.uploadButtonText}>Choose Photo</Text>
+                  
+                </View>
+                
               )}
             </TouchableOpacity>
           </View>
@@ -335,7 +351,7 @@ export default function LogActivity() {
                 <Text
                   style={{
                     color: "white",
-                    fontFamily: "Avenir",
+                    fontFamily: FONTS.bold,
                     fontWeight: "800",
                     fontSize: 18,
                   }}
@@ -385,7 +401,7 @@ const styles = StyleSheet.create({
   boxText: {
     position: "absolute",
     textAlign: "center",
-    fontFamily: "Avenir",
+    fontFamily: FONTS.bold,
     fontWeight: "600",
     fontSize: 18,
     top: 0,
@@ -395,7 +411,7 @@ const styles = StyleSheet.create({
   inputBox: {
     borderRadius: 25,
     borderWidth: 3,
-    borderColor: "#61B8C2",
+    borderColor: COLORS.primary,
     margin: 10,
     backgroundColor: "white",
     flex: 1,
@@ -403,7 +419,7 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   customBoxText: {
-    fontFamily: "Avenir",
+    fontFamily: FONTS.bold,
     fontWeight: "600",
     fontSize: 18,
     marginTop: 15,
@@ -412,10 +428,10 @@ const styles = StyleSheet.create({
   log: {
     borderRadius: 25,
     borderWidth: 5,
-    borderColor: "#61B8C2",
+    borderColor: COLORS.primary,
     height: height * 0.05,
     width: width / 3,
-    backgroundColor: "#61B8C2",
+    backgroundColor: COLORS.primary,
   },
   numStyle: {
     fontSize: 100,
@@ -432,7 +448,7 @@ const styles = StyleSheet.create({
     width: "65%",
   },
   textInputStyle: {
-    fontFamily: "Avenir",
+    fontFamily: FONTS.medium,
     fontWeight: "600",
     fontSize: 18,
     color: "grey",
@@ -444,27 +460,25 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     //marginBottom: 10,
   },
-  buttonContainer: {
-    marginTop: 10,
-    flexDirection: "column",
-    alignItems: "center",
-    width: "120%",
-    height: "18%",
-    gap: 10,
-  },
   upLoadButtons: {
-    backgroundColor: "#61B8C2",
+    backgroundColor: COLORS.primary,
     borderRadius: 25,
     padding: 4,
   },
   uploadButtonText: {
-    color: "#61B8C2",
+    color: COLORS.primary,
     fontWeight: "700",
     fontSize: 16,
-    fontFamily: "Avenir",
-    // backgroundColor: "red",
+    fontFamily: FONTS.bold,
     padding: 8,
     paddingHorizontal: 25,
     textAlign: "center",
   },
+  pickUnitButton: {
+    alignItems: "center",
+    padding: 5,
+    borderRadius: 25,
+    borderColor: COLORS.primary,
+    paddingTop: 0,
+  }
 });
