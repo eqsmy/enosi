@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { UserProvider, useUser } from "./utils/UserContext";
-import { TouchableWithoutFeedback, View, StyleSheet } from "react-native";
+import { Text, TouchableWithoutFeedback, View, StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
@@ -19,45 +19,27 @@ import Login from "./pages/Login";
 import { LogoHeader } from "./components/Headers";
 import { setCustomText } from "react-native-global-props";
 import { supabase } from "./utils/Supabase";
-import * as Font from 'expo-font';
+import * as Font from "expo-font";
 import {
   COLORS,
-  FONTS,
   FONT_SOURCE_HEADER,
   FONT_SOURCE_BODY,
   FONT_SOURCE_MEDIUM,
   FONT_SOURCE_BOLD,
-} from './constants';
+} from "./constants";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
-
-const loadFonts = async () => {
-  await Font.loadAsync({
-    [FONTS.header]: FONT_SOURCE_HEADER,
-    [FONTS.body]: FONT_SOURCE_BODY,
-    [FONTS.medium]: FONT_SOURCE_MEDIUM,
-    [FONTS.bold]: FONT_SOURCE_BOLD,
-  });
-};
-
-
-const customTextProps = {
-  style: {
-    fontFamily: FONTS.body,
-  },
-};
-setCustomText(customTextProps);
 
 const Theme = {
   ...DefaultTheme,
   colors: {
     primary: COLORS.primary,
     background: COLORS.lightprimary,
-    card: '#ffffff',
+    card: "#ffffff",
     text: COLORS.defaultgray,
-    border: '#8B9C85',
-    notification: '#8B9C85',
+    border: "#8B9C85",
+    notification: "#8B9C85",
   },
 };
 
@@ -139,7 +121,6 @@ function RootStack() {
   const { state, dispatch } = useUser();
   useEffect(() => {
     console.log("Logged In State Changed:", state.loggedIn);
-    loadFonts();
   }, [state.loggedIn]);
 
   const handleLogout = async () => {
@@ -183,7 +164,28 @@ function RootStack() {
 
 const AppContent = () => {
   const navigationRef = useRef();
-  return (
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  useEffect(() => {
+    async function loadFonts() {
+      try {
+        await Font.loadAsync({
+          "OdorMeanChey-Regular": FONT_SOURCE_HEADER,
+          "Inter-Regular": FONT_SOURCE_BODY,
+          "Inter-Medium": FONT_SOURCE_MEDIUM,
+          "Inter-Bold": FONT_SOURCE_BOLD,
+        });
+        setCustomText({ style: { fontFamily: "Inter-Regular" } });
+        setFontsLoaded(true);
+      } catch (error) {
+        console.log("Error loading fonts", error);
+      }
+    }
+
+    loadFonts();
+  }, []);
+
+  return fontsLoaded ? (
     <NavigationContainer theme={Theme} ref={navigationRef}>
       <RootStack />
       {/* <FAB
@@ -195,6 +197,11 @@ const AppContent = () => {
         style={{ position: "absolute", margin: 16, right: 10, bottom: 70 }}
       /> */}
     </NavigationContainer>
+  ) : (
+    // Return null or some loading indicator while fonts are loading
+    <View style={styles.loadingContainer}>
+      <Text>Loading...</Text>
+    </View>
   );
 };
 
