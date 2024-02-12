@@ -27,6 +27,7 @@ import {
   FONT_SOURCE_MEDIUM,
   FONT_SOURCE_BOLD,
 } from "./constants";
+import NewCommunityFlow from "./pages/NewCommunities";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -68,7 +69,7 @@ function Tabs() {
         }}
       />
       <Tab.Screen
-        name="CommunitiesTab"
+        name="SearchTab"
         children={Search}
         options={{
           tabBarLabel: "Search",
@@ -149,6 +150,13 @@ function RootStack() {
               headerShadowVisible: false,
               headerTitle: "Log Activity",
             }}
+          />
+          <Stack.Screen
+            name="NewCommunityFlow"
+            options={{
+              headerShown: false,
+            }}
+            component={NewCommunityFlow}
           />
         </>
       ) : (

@@ -1,6 +1,7 @@
 import { Button } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text } from "react-native";
+import { COLORS } from "../constants";
 
 export function CancelButton({ navigation }) {
   return (
@@ -17,7 +18,7 @@ export function BasicButton({ onPress, text, fontSize, backgroundColor }) {
       textColor={"white"}
       style={{
         color: "#ff04d",
-        backgroundColor: backgroundColor ?? "#61B8C2",
+        backgroundColor: backgroundColor ?? COLORS.primary,
       }}
       labelStyle={{ fontSize: fontSize }}
     >

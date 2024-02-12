@@ -7,8 +7,12 @@
         "root": ["."], //  This says the root of your project folder
         "alias": {
           "@components": "./components",
+          "@screens": "./screens",
+          "@utils": "./utils",
+          "@styles": "./styles",
+          "@stores": "./stores",
           "@pages": "./pages",
-          "@utils": "./utils"
+          "@constants": "./constants"
         }
       }
     ]
