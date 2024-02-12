@@ -1,119 +1,38 @@
-import React, { useLayoutEffect, useState, useEffect } from "react";
+import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
-
 import {
   Text,
   SafeAreaView,
   View,
   Image,
-  Button,
   StyleSheet,
-  TouchableOpacity,
   ScrollView,
   Pressable,
 } from "react-native";
 import { useUser } from "../utils/UserContext";
 import { supabase } from "../utils/Supabase.js";
-import { Feather } from "@expo/vector-icons";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import Activity from "../components/Activity";
 import FeedItem from "../components/FeedItem";
 import { BasicButton } from "../components/Buttons";
-import {COLORS, FONTS} from "../constants.js"
+import { COLORS, FONTS } from "../constants.js";
+
+import { useFriendStore, useCommunitiesStore } from "../stores/stores.js";
+
+import { CommunityCard } from "../components/dashboard/CommunityCardCarousel";
 
 export default function Profile({ route = undefined }) {
   const { state, dispatch } = useUser();
-  const navigation = useNavigation();
   const [userId, setUserId] = useState(
     route?.params?.user.id ?? state.session?.user?.id
   );
   const [profile, setProfile] = useState(null);
   const [activities, setActivities] = useState([]);
   const [tabShow, setTabShow] = useState("activities");
-  const [communities, setCommunities] = useState([]);
 
-  useEffect(() => {
-    fetchProfile();
-    fetchActivities();
-    fetchCommunities();
-  }, [useIsFocused()]);
-
-  const fetchProfile = async () => {
-    try {
-      if (!userId) throw new Error("User not found");
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .single();
-      if (error) throw error;
-      setProfile(data);
-    } catch (error) {
-      console.error("Error fetching profile:", error.message);
-    }
-  };
-
-  const fetchActivities = async () => {
-    try {
-      if (!userId) throw new Error("User not found");
-      let { data: activities, error } = await supabase
-        .from("user_activities")
-        .select("*")
-        .eq("user_id", userId)
-        .order("timestamp", { ascending: false });
-      if (error) throw error;
-      setActivities(activities || []);
-    } catch (error) {
-      console.error("Error fetching activities:", error.message);
-    }
-  };
-  async function fetchCommunities() {
-    try {
-      let { data: comms, error } = await supabase
-        .from("communities")
-        .select("*")
-        .contains("members", [userId]);
-      setCommunities(comms || []);
-      if (error) throw error;
-    } catch (error) {
-      console.error("Error fetching communities:", error.message);
-    }
-  }
-
-  async function addFriend() {
-    try {
-      let { error1 } = await supabase
-        .from("profiles")
-        .update({
-          friends: Array.from(
-            new Set([...(profile?.friends || []), state.session?.user?.id])
-          ),
-        })
-        .eq("id", route?.params?.user.id);
-      if (error1) throw error1;
-      await supabase
-        .from("profiles")
-        .select()
-        .eq("id", state.session?.user?.id)
-        .single()
-        .then(async (data) => {
-          let { error3 } = await supabase
-            .from("profiles")
-            .update({
-              friends: Array.from(
-                new Set([...(data.data?.friends || []), route?.params?.user.id])
-              ),
-            })
-            .eq("id", state.session?.user?.id);
-          console.log([...(data.data?.friends || []), route?.params?.user.id]);
-          if (error3) throw error3;
-        });
-    } catch (error) {
-      console.error("Error adding friend:", error.message);
-    }
-    fetchProfile();
-  }
+  const { friends } = useFriendStore();
+  const { communities } = useCommunitiesStore();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -157,7 +76,8 @@ export default function Profile({ route = undefined }) {
           style={[
             styles.toggle,
             {
-              backgroundColor: tabShow == "activities" ? COLORS.primary : "white",
+              backgroundColor:
+                tabShow == "activities" ? COLORS.primary : "white",
             },
           ]}
         >
@@ -172,7 +92,8 @@ export default function Profile({ route = undefined }) {
           style={[
             styles.toggle,
             {
-              backgroundColor: tabShow == "communities" ? COLORS.primary : "white",
+              backgroundColor:
+                tabShow == "communities" ? COLORS.primary : "white",
             },
           ]}
         >
@@ -224,13 +145,7 @@ export default function Profile({ route = undefined }) {
               communities?.map((community, key) => {
                 return (
                   <View style={{ marginHorizontal: "5%" }} key={key}>
-                    <FeedItem
-                      key={key}
-                      name={community.name}
-                      icon={{
-                        url: community.photo_url,
-                      }}
-                    ></FeedItem>
+                    <CommunityCard communityData={community} />
                   </View>
                 );
               })

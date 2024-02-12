@@ -28,19 +28,19 @@ export function CommunityCardCarosel() {
   );
 }
 
-const CommunityCard = ({ communityData }) => (
+export const CommunityCard = ({ communityData }) => (
   <View style={stylesCommunityCard.cardContainer}>
     <Image
-      source={{ uri: communityData.headerImageUrl }}
+      source={{ uri: communityData.header_photo_url }}
       style={stylesCommunityCard.headerImage}
     />
     <Image
-      source={{ uri: communityData.profileUrl }}
+      source={{ uri: communityData.profile_photo_url }}
       style={stylesCommunityCard.profileImage}
     />
     <View style={stylesCommunityCard.contentContainer}>
       <Text style={stylesCommunityCard.title} numberOfLines={1}>
-        {communityData.title}
+        {communityData.name}
       </Text>
       <Text style={stylesCommunityCard.description} numberOfLines={2}>
         {communityData.description}
@@ -49,18 +49,18 @@ const CommunityCard = ({ communityData }) => (
         {/* Insert IoIcon here */}
         <Ionicons name="people-outline" size={16} color="black" />
         <Text style={stylesCommunityCard.statText}>
-          {communityData.members}
+          {communityData.members.length}
         </Text>
         <Ionicons name="flash-outline" size={16} color="black" />
-        <Text style={stylesCommunityCard.statText}>{communityData.posts}</Text>
+        <Text style={stylesCommunityCard.statText}>{communityData.challenges.length}</Text>
       </View>
-      <ScrollView horizontal style={stylesCommunityCard.tagContainer}>
+      {/* <ScrollView horizontal style={stylesCommunityCard.tagContainer}>
         {communityData.categoryTags.map((tag, index) => (
           <View key={index} style={stylesCommunityCard.tag}>
             <Text style={stylesCommunityCard.tagText}>{tag}</Text>
           </View>
         ))}
-      </ScrollView>
+      </ScrollView> */}
     </View>
   </View>
 );
@@ -72,7 +72,6 @@ const stylesCommunityCard = StyleSheet.create({
     backgroundColor: "white",
     borderWidth: 1,
     borderColor: "lightgrey",
-    width: 200,
   },
   headerImage: {
     width: "100%",

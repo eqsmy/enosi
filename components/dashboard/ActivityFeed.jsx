@@ -1,6 +1,8 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { calculateProgress } from "@components/dashboard/ChallengeCardCarousel";
+import { useFeedStore } from "@stores/stores";
+// import { COLORS, FONTS } from "@constants";
 
 const timeAgo = (timestamp) => {
   timestamp = new Date(timestamp).getTime();
@@ -54,8 +56,8 @@ const PostCard = ({ post }) => {
 };
 
 const ContributionCard = ({ contribution }) => {
-  const formattedGoal = `${contribution.challenge.progressCount.toLocaleString()} / ${contribution.challenge.goal.toLocaleString()} ${
-    contribution.challenge.units
+  const formattedGoal = `${contribution.challenge.current_total?.toLocaleString()} / ${contribution.challenge.goal_total?.toLocaleString()} ${
+    contribution.challenge.unit
   }`;
   return (
     <View style={styles.contributionContainer}>
@@ -84,7 +86,7 @@ const ContributionCard = ({ contribution }) => {
           {`Contributed ${contribution.contribution} ${contribution.unit} for `}
           <Text
             style={styles.challengeName}
-          >{`"${contribution.challenge?.challengeTitle}"`}</Text>
+          >{`"${contribution.challenge?.name}"`}</Text>
         </Text>
         <View style={styles.progressBarContainer}>
           <View style={styles.progressBarBackground}>
@@ -92,8 +94,8 @@ const ContributionCard = ({ contribution }) => {
               style={{
                 ...styles.progressBarFill,
                 width: calculateProgress(
-                  contribution.challenge.progressCount,
-                  contribution.challenge.goal
+                  contribution.challenge.current_total,
+                  contribution.challenge.goal_total
                 ), // Dynamic based on progress
               }}
             />
@@ -108,141 +110,42 @@ const ContributionCard = ({ contribution }) => {
   );
 };
 
-const feedData = [
-  {
-    type: "contribution",
-    id: "779e72c3-e517-485b-ba46-a551b5b",
-    community: {
-      community_id: "c1ec7eda-8bff-4a5c-92d8-2a0b8858b8e7",
-      name: "Walkers United",
-      profile_photo_url:
-        "https://s3.amazonaws.com/images.gearjunkie.com/uploads/2016/12/people-walker-3.jpg",
-    },
-    challenge: {
-      challengeTitle: "Climb Mount Everest",
-      progressCount: 16000,
-      goal: 29500,
-      units: "ft",
-      status: "active",
-      contributors: 12,
-    },
-    image_url: null,
-    contribution: 2000,
-    unit: "ft",
-    comment: "Just climbed 2000 feet on the stairmaster. Let's go!",
-    created_at: "2024-02-07T03:04:37.391144+00:00",
-    creator: {
-      first_name: "Tristan",
-      last_name: "Sinclair",
-      avatar_url:
-        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    },
-  },
-  {
-    type: "feed",
-    id: "b062c232-2518-41cf-a7d2-53493edce123",
-    community: {
-      community_id: "c1ec7eda-8bff-4a5c-92d8-2a0b8858b8e7",
-      name: "Walkers United",
-      profile_photo_url:
-        "https://s3.amazonaws.com/images.gearjunkie.com/uploads/2016/12/people-walker-3.jpg",
-    },
-    image_url: null,
-    contribution: null,
-    unit: null,
-    comment:
-      "So grateful for this community! I joined 2 weeks ago and I've walked 20 miles! I feel great!",
-    created_at: "2024-02-07T03:04:37.391144+00:00",
-    creator: {
-      first_name: "John",
-      last_name: "Cena",
-      avatar_url:
-        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    },
-  },
-  {
-    type: "feed",
-    id: "b062c232-2518-41cf-a7d2-53493edce2fd",
-    community: {
-      community_id: "c1ec7eda-8bff-4a5c-92d8-2a0b8858b8e7",
-      name: "Walkers United test",
-      profile_photo_url:
-        "https://s3.amazonaws.com/images.gearjunkie.com/uploads/2016/12/people-walker-3.jpg",
-    },
-    image_url:
-      "https://www.delta.edu/_resources/images/universal-1920x1282/walking-trail-001.jpg",
-    contribution: null,
-    unit: null,
-    comment: "Just walked 5 miles!",
-    created_at: "2024-02-07T03:04:37.391144+00:00",
-    creator: {
-      first_name: "Tristan",
-      last_name: "Sinclair",
-      avatar_url:
-        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    },
-  },
-  {
-    type: "contribution",
-    id: "779e72c3-e517-485b-ba46-a551b5b5a974",
-    challenge: {
-      challengeTitle: "Walk Across America",
-      progressCount: 1200,
-      goal: 3000,
-      units: "mi",
-      status: "active",
-      contributors: 12,
-    },
-    community: {
-      community_id: "c1ec7eda-8bff-4a5c-92d8-2a0b8858b8e7",
-      name: "Walkers United",
-      profile_photo_url:
-        "https://s3.amazonaws.com/images.gearjunkie.com/uploads/2016/12/people-walker-3.jpg",
-    },
-    image_url:
-      "https://images.pexels.com/photos/1032650/pexels-photo-1032650.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-    contribution: 5,
-    unit: "miles",
-    comment:
-      "Just got back from a 5 mile walk! Let's get this challenge complete!",
-    created_at: "2024-02-07T03:04:37.391144+00:00",
-    creator: {
-      first_name: "Taylor",
-      last_name: "Swift",
-      avatar_url:
-        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    },
-  },
-  {
-    type: "contribution",
-    id: "779e72c3-e517-485b-ba46-a551b5b5a9432",
-    community: {
-      community_id: "c1ec7eda-8bff-4a5c-92d8-2a0b8858b8e7",
-      name: "Walkers United",
-      profile_photo_url:
-        "https://s3.amazonaws.com/images.gearjunkie.com/uploads/2016/12/people-walker-3.jpg",
-    },
-    challenge: {
-      challengeTitle: "Walk Across America",
-      progressCount: 1200,
-      goal: 3000,
-      units: "mi",
-      status: "active",
-      contributors: 12,
-    },
-    image_url: null,
-    contribution: 8,
-    unit: "miles",
-    comment: "Felt great to contribute!",
-    created_at: "2024-02-07T03:04:37.391144+00:00",
-    creator: {
-      first_name: "Tristan",
-      last_name: "Sinclair",
-      avatar_url:
-        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-    },
-  },
-];
+export const ActivityFeed = () => {
+  const { feed } = useFeedStore();
+
+  const renderItem = ({ item, index }) => {
+    return (
+      <View key={item.id}>
+        {item.type === "feed" ? (
+          <PostCard post={item} />
+        ) : (
+          <ContributionCard contribution={item} />
+        )}
+        {/* Render the separator line if it's not the last item */}
+        {index !== feed.length - 1 && <View style={styles.separator} />}
+      </View>
+    );
+  };
+
+  return (
+    <>
+      <Text
+        style={{
+          fontSize: 24,
+          fontWeight: "bold",
+          marginHorizontal: 16,
+          marginTop: 12,
+          marginBottom: 8,
+        }}
+      >
+        Activity Feed
+      </Text>
+      <View style={{ marginBottom: 32 }}>
+        {feed.map((item, index) => renderItem({ item, index }))}
+      </View>
+    </>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -351,38 +254,3 @@ const styles = StyleSheet.create({
     color: "grey",
   },
 });
-
-export default ActivityFeed = () => {
-  const renderItem = ({ item, index }) => {
-    return (
-      <View key={item.id}>
-        {item.type === "feed" ? (
-          <PostCard post={item} />
-        ) : (
-          <ContributionCard contribution={item} />
-        )}
-        {/* Render the separator line if it's not the last item */}
-        {index !== feedData.length - 1 && <View style={styles.separator} />}
-      </View>
-    );
-  };
-
-  return (
-    <>
-      <Text
-        style={{
-          fontSize: 24,
-          fontWeight: "bold",
-          marginHorizontal: 16,
-          marginTop: 12,
-          marginBottom: 8,
-        }}
-      >
-        Activity Feed
-      </Text>
-      <View style={{ marginBottom: 32 }}>
-        {feedData.map((item, index) => renderItem({ item, index }))}
-      </View>
-    </>
-  );
-};

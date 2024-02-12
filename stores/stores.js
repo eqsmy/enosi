@@ -1,6 +1,13 @@
 import { create } from "zustand";
 
-// supabase: SupabaseClient
+/**
+ * useCommunitiesStore
+ *
+ * This store is used for managing a user's communities.
+ * - communities - all communities the user is a member of
+ * - fetchCommunitiesView - fetches the list of communities for the user
+ * - insertCommunity - ability to create a new community
+ */
 export const useCommunitiesStore = create()((set, get) => ({
   communities: [],
 
@@ -17,8 +24,44 @@ export const useCommunitiesStore = create()((set, get) => ({
       set({ communities: data.communities });
     }
   },
+
+  insertCommunity: async (
+    supabase,
+    user_id,
+    name,
+    description,
+    header_photo_url,
+    profile_photo_url
+  ) => {
+    const { data, error } = await supabase
+      .from("tristan_user_communities")
+      .insert([
+        { user_id, name, description, header_photo_url, profile_photo_url },
+      ])
+      .select()
+      .single();
+    if (error) {
+      console.log("Error creating community", error);
+    }
+    if (data) {
+      // data.id should be the new community id
+      // TODO: insert the user as an admin of the community
+      fetchCommunitiesView(supabase, user_id);
+    }
+  },
 }));
 
+/**
+ * useUserActivityStore
+ *
+ * This store is used for managing a user's activity.
+ * - userContributions - list of contributions the user has made
+ * - userPosts - list of posts the user has made
+ * - insertUserContribution - adds a contribution to the user's list
+ * - fetchUserContributions - fetches the list of contributions for the user
+ * - insertCommunityPost - adds a post to the user's list
+ * - fetchUsersCommunityPosts - fetches the list of posts for the user
+ */
 export const useUserActivityStore = create()((set, get) => ({
   userContributions: [],
   userPosts: [],
@@ -154,3 +197,56 @@ export const useFriendStore = create()((set, get) => ({
     }
   },
 }));
+
+export const useFeedStore = create()((set, get) => ({
+  feed: [],
+  activeChallenges: [],
+
+  fetchFeed: async (supabase, user_id) => {
+    let { data, error } = await supabase
+      .from("view_user_feed")
+      .select("*")
+      .eq("user_id", user_id)
+      .single();
+    if (error) {
+      console.log("Error fetching feed", error);
+    }
+    if (data) {
+      // console.log("pre prepare feed", data.contributions);
+      // console.log("pre prepare feed", data.feed);
+      set({ feed: prepareFeed(data) });
+    }
+  },
+
+  fetchActiveChallenges: async (supabase, user_id) => {
+    let { data, error } = await supabase
+      .from("view_user_active_challenges")
+      .select("*")
+      .eq("user_id", user_id)
+      .single();
+    if (error) {
+      console.log("Error fetching active challenges", error);
+    }
+    if (data) {
+      set({ activeChallenges: data.active_challenges });
+    }
+  },
+}));
+
+function prepareFeed(rawFeed) {
+  const feedItems = rawFeed.feed.map((item) => ({
+    ...item,
+    type: "feed", // Add type key
+  }));
+  const contributionItems = rawFeed.contributions.map((item) => ({
+    ...item,
+    type: "contribution", // Add type key
+  }));
+
+  // Merge the arrays
+  const mergedItems = [...feedItems, ...contributionItems];
+
+  // Sort by created_at, most recent first
+  mergedItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  return mergedItems;
+}

@@ -11,7 +11,8 @@
           "@utils": "./utils",
           "@styles": "./styles",
           "@stores": "./stores",
-          "@pages": "./pages"
+          "@pages": "./pages",
+          "@constants": "./constants"
         }
       }
     ]
