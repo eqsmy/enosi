@@ -5,11 +5,13 @@ import {
   Dimensions,
   Animated,
   SafeAreaView,
+  Text,
 } from "react-native";
 import React, { useRef, useState } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import {COLORS, FONTS} from "../constants.js"
+import { COLORS, FONTS } from "../constants.js";
+import { Icon } from "react-native-elements";
 
 const { width, height } = Dimensions.get("window");
 
@@ -53,19 +55,27 @@ const FloatingButton = () => {
     <SafeAreaView>
       <View style={styles.container}>
         <View style={styles.bottomContainer}>
-          <TouchableOpacity onPress={() => navigation.navigate("Search")}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("NewCommunityFlow")}
+          >
             <Animated.View
-              style={[styles.button, styles.secondary, getAnimatedStyle(-80)]}
+              style={[styles.button, styles.secondary, getAnimatedStyle(-70)]}
             >
-              <MaterialCommunityIcons name="magnify" size={24} color="white" />
+              <Icon type="material" name="group-add" color="white"></Icon>
+              <Text style={{ color: "white", marginLeft: 5 }}>
+                Create community
+              </Text>
             </Animated.View>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => navigation.navigate("LogActivity")}>
             <Animated.View
-              style={[styles.button, styles.secondary, getAnimatedStyle(-140)]}
+              style={[styles.button, styles.secondary, getAnimatedStyle(-130)]}
             >
-              <MaterialCommunityIcons name="pen-plus" size={24} color="white" />
+              <Icon type="material" name="add-box" color="white"></Icon>
+              <Text style={{ color: "white", marginLeft: 5 }}>
+                Log activity
+              </Text>
             </Animated.View>
           </TouchableOpacity>
 
@@ -87,30 +97,8 @@ const FloatingButton = () => {
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    // alignItems: "center",
-    bottom: 10,
-    right: 50,
-    width: 59,
-    height: 59,
-    //paddingHorizontal: 16,
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  inputContainer: {
-    width: width - (16 * 2 + 16 + 48),
-    backgroundColor: "white",
-    height: 60,
-    flexDirection: "row",
-    borderRadius: 32,
-    alignItems: "center",
-    //paddingRight: 12,
-    //marginRight: 6,
-  },
-  input: {
-    flex: 1,
-    fontSize: 14,
-    color: "black",
-    //marginHorizontal: 16,
+    bottom: 70,
+    right: 70,
   },
   bottomContainer: {
     flexDirection: "column",
@@ -122,6 +110,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: "center",
     justifyContent: "center",
+    padding: 10,
     shadowColor: "#80BD6B",
     shadowOffset: {
       width: 0,
@@ -133,11 +122,13 @@ const styles = StyleSheet.create({
   },
   secondary: {
     height: 48,
-    width: 48,
     borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
+    paddingLeft: 10,
+    width: "auto",
+    paddingRight: 10,
     backgroundColor: COLORS.primary,
+    flexDirection: "row",
+    right: -56,
   },
 });
 
