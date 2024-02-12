@@ -52,45 +52,33 @@ const FloatingButton = () => {
     ],
   });
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        <View style={styles.bottomContainer}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("NewCommunityFlow")}
-          >
-            <Animated.View
-              style={[styles.button, styles.secondary, getAnimatedStyle(-70)]}
-            >
-              <Icon type="material" name="group-add" color="white"></Icon>
-              <Text style={{ color: "white", marginLeft: 5 }}>
-                Create community
-              </Text>
-            </Animated.View>
-          </TouchableOpacity>
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => navigation.navigate("NewCommunityFlow")}>
+        <Animated.View
+          style={[styles.button, styles.secondary, getAnimatedStyle(-70)]}
+        >
+          <Icon type="material" name="group-add" color="white"></Icon>
+          <Text style={{ color: "white", marginLeft: 5 }}>
+            Create community
+          </Text>
+        </Animated.View>
+      </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => navigation.navigate("LogActivity")}>
-            <Animated.View
-              style={[styles.button, styles.secondary, getAnimatedStyle(-130)]}
-            >
-              <Icon type="material" name="add-box" color="white"></Icon>
-              <Text style={{ color: "white", marginLeft: 5 }}>
-                Log activity
-              </Text>
-            </Animated.View>
-          </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate("LogActivity")}>
+        <Animated.View
+          style={[styles.button, styles.secondary, getAnimatedStyle(-130)]}
+        >
+          <Icon type="material" name="add-box" color="white"></Icon>
+          <Text style={{ color: "white", marginLeft: 5 }}>Log activity</Text>
+        </Animated.View>
+      </TouchableOpacity>
 
-          <TouchableOpacity onPress={toggleMenu}>
-            <Animated.View style={[styles.button, styles.menu, rotation]}>
-              <MaterialCommunityIcons
-                name="plus-thick"
-                size={24}
-                color="white"
-              />
-            </Animated.View>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </SafeAreaView>
+      <TouchableOpacity onPress={toggleMenu}>
+        <Animated.View style={[styles.button, styles.menu, rotation]}>
+          <MaterialCommunityIcons name="plus-thick" size={24} color="white" />
+        </Animated.View>
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -99,9 +87,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 70,
     right: 70,
-  },
-  bottomContainer: {
-    flexDirection: "column",
   },
   button: {
     position: "absolute",
