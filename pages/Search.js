@@ -20,7 +20,7 @@ import PeopleFeed from "./People";
 import Profile from "./Profile";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { Icon } from "react-native-elements";
-import {COLORS, FONTS} from "../constants.js"
+import { COLORS, FONTS } from "../constants.js";
 
 const Stack = createStackNavigator();
 
@@ -36,6 +36,7 @@ function SearchFeed({ props }) {
   const [search, setSearch] = useState("");
 
   async function fetchCommunities() {
+    console.log("fetching");
     try {
       let { data: comms, error } = await supabase
         .from("communities")
@@ -47,9 +48,10 @@ function SearchFeed({ props }) {
       alert(error.message);
     }
   }
+
   useEffect(() => {
     fetchCommunities();
-  }, []);
+  }, [useIsFocused()]);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -245,22 +247,6 @@ export default function Search({}) {
       <Stack.Screen
         name="Search"
         children={(props) => <SearchFeed props={props} />}
-      />
-      <Stack.Screen
-        name="NewCommunities"
-        options={{
-          title: "New Community",
-        }}
-        children={(props) => (
-          <NewCommunities props={props} fetchCommunities={fetchCommunities} />
-        )}
-      />
-      <Stack.Screen
-        name="NewCommunityPrivacySettings"
-        options={{
-          title: "Community Settings",
-        }}
-        component={PrivacySettings}
       />
       <Stack.Screen name="People" component={PeopleFeed} />
       <Stack.Screen

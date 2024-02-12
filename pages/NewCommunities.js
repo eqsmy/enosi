@@ -16,12 +16,16 @@ import { useUser } from "../utils/UserContext";
 import { supabase } from "../utils/Supabase";
 import { useMemo } from "react";
 import _ from "lodash";
+import { createStackNavigator } from "@react-navigation/stack";
+import { COLORS } from "../constants";
+
+const Stack = createStackNavigator();
 
 export function PrivacySettings() {
   const navigation = useNavigation();
   function setCommunitySettings() {
     // TODO
-    navigation.navigate("Communities");
+    navigation.navigate("SearchTab");
   }
 
   const defaultPrivacyOptions = [
@@ -97,12 +101,12 @@ export function PrivacySettings() {
                 };
                 setSettings(tempOptions);
               }}
-              trackColor={{ true: "#61B8C2", false: undefined }}
+              trackColor={{ true: COLORS.primary, false: undefined }}
             ></Switch>
           </View>
         );
       })}
-      <View style={{ position: "absolute", bottom: 50, width: "fit-content" }}>
+      <View style={{ position: "absolute", bottom: 50 }}>
         <BasicButton
           onPress={setCommunitySettings}
           text={
@@ -119,7 +123,7 @@ export function PrivacySettings() {
   );
 }
 
-export default function NewCommunities({ fetchCommunities }) {
+export function NewCommunities() {
   const navigation = useNavigation();
   const [communityName, setCommunityName] = useState("");
   const [peopleSearch, setPeopleSearch] = useState("");
@@ -161,7 +165,6 @@ export default function NewCommunities({ fetchCommunities }) {
         .insert([communityData])
         .select();
       if (error) throw error;
-      fetchCommunities();
       navigation.navigate("NewCommunityPrivacySettings");
       // Reset form or navigate to another screen if necessary
     } catch (error) {
@@ -245,5 +248,31 @@ export default function NewCommunities({ fetchCommunities }) {
         </View>
       </View>
     </SafeAreaView>
+  );
+}
+
+export default function NewCommunityFlow({}) {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShadowVisible: false,
+        headerBackTitle: "Back",
+      }}
+    >
+      <Stack.Screen
+        name="NewCommunities"
+        options={{
+          title: "New Community",
+        }}
+        children={(props) => <NewCommunities props={props} />}
+      />
+      <Stack.Screen
+        name="NewCommunityPrivacySettings"
+        options={{
+          title: "Community Settings",
+        }}
+        component={PrivacySettings}
+      />
+    </Stack.Navigator>
   );
 }

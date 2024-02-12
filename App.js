@@ -19,7 +19,7 @@ import Login from "./pages/Login";
 import { LogoHeader } from "./components/Headers";
 import { setCustomText } from "react-native-global-props";
 import { supabase } from "./utils/Supabase";
-import * as Font from 'expo-font';
+import * as Font from "expo-font";
 import {
   COLORS,
   FONTS,
@@ -27,7 +27,8 @@ import {
   FONT_SOURCE_BODY,
   FONT_SOURCE_MEDIUM,
   FONT_SOURCE_BOLD,
-} from './constants';
+} from "./constants";
+import NewCommunityFlow from "./pages/NewCommunities";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -41,7 +42,6 @@ const loadFonts = async () => {
   });
 };
 
-
 const customTextProps = {
   style: {
     fontFamily: FONTS.body,
@@ -54,10 +54,10 @@ const Theme = {
   colors: {
     primary: COLORS.primary,
     background: COLORS.lightprimary,
-    card: '#ffffff',
+    card: "#ffffff",
     text: COLORS.defaultgray,
-    border: '#8B9C85',
-    notification: '#8B9C85',
+    border: "#8B9C85",
+    notification: "#8B9C85",
   },
 };
 
@@ -86,7 +86,7 @@ function Tabs() {
         }}
       />
       <Tab.Screen
-        name="CommunitiesTab"
+        name="SearchTab"
         children={Search}
         options={{
           tabBarLabel: "Search",
@@ -168,6 +168,13 @@ function RootStack() {
               headerShadowVisible: false,
               headerTitle: "Log Activity",
             }}
+          />
+          <Stack.Screen
+            name="NewCommunityFlow"
+            options={{
+              headerShown: false,
+            }}
+            component={NewCommunityFlow}
           />
         </>
       ) : (
