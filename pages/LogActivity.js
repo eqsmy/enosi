@@ -26,7 +26,6 @@ import {
 } from "react-native-autocomplete-dropdown";
 import { COLORS, FONTS } from "../constants.js";
 
-
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 
@@ -62,6 +61,7 @@ export default function LogActivity() {
   }
   useEffect(() => {
     fetchActivityTypes();
+    trackEvent("page_view", { page: "LogActivity" });
   }, []);
 
   const photoUri = image;
@@ -236,7 +236,7 @@ export default function LogActivity() {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
-              alignSelf: 'center',
+              alignSelf: "center",
               marginTop: 10,
               marginBottom: 10,
             }}
@@ -258,31 +258,31 @@ export default function LogActivity() {
                 />
               </View>
             </View>
-            <TouchableOpacity style={styles.pickUnitButton}
+            <TouchableOpacity
+              style={styles.pickUnitButton}
               onPress={() => {
                 picker.current.show();
               }}
             >
-                <Text
-                  style={{
-                    color: COLORS.primary,
-                    fontSize: 16,
-                    padding: 5,
-                    fontWeight: "500",
-                    textAlign: "right",
-                    fontFamily: FONTS.bold,
-                    paddingTop: -5,
-                  }}
-                >
+              <Text
+                style={{
+                  color: COLORS.primary,
+                  fontSize: 16,
+                  padding: 5,
+                  fontWeight: "500",
+                  textAlign: "right",
+                  fontFamily: FONTS.bold,
+                  paddingTop: -5,
+                }}
+              >
                 <Icon
-                  style={{ }}
+                  style={{}}
                   size={20}
                   name="edit"
                   color={COLORS.primary}
                 ></Icon>
                 {unit}{" "}
-                
-                </Text>
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -313,17 +313,15 @@ export default function LogActivity() {
                   style={styles.uploadedImage}
                 />
               ) : (
-                <View style={{alignItems: "center"}}>
+                <View style={{ alignItems: "center" }}>
                   <Icon
-                    style={{ }}
+                    style={{}}
                     size={50}
                     name="add-photo-alternate"
                     color={COLORS.primary}
                   ></Icon>
                   <Text style={styles.uploadButtonText}>Choose Photo</Text>
-                  
                 </View>
-                
               )}
             </TouchableOpacity>
           </View>
@@ -481,5 +479,5 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     borderColor: COLORS.primary,
     paddingTop: 0,
-  }
+  },
 });
