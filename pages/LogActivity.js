@@ -25,6 +25,7 @@ import {
   AutocompleteDropdownContextProvider,
 } from "react-native-autocomplete-dropdown";
 import { COLORS, FONTS } from "../constants.js";
+import { trackEvent } from "../utils/Analytics.js";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
