@@ -10,7 +10,7 @@ import { FAB } from "@rneui/themed";
 //import all the pages we have
 import Home from "./pages/Home";
 import Search from "./pages/Search";
-import { ChallengesStack } from "./pages/Challenges2";
+import { ChallengesStack } from "./pages/Challenges";
 import Profile from "./pages/Profile";
 import LogActivity from "./pages/LogActivity";
 import Login from "./pages/Login";
