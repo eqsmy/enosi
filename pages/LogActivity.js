@@ -24,7 +24,8 @@ import {
   AutocompleteDropdown,
   AutocompleteDropdownContextProvider,
 } from "react-native-autocomplete-dropdown";
-import {COLORS, FONTS} from "../constants.js";
+import { COLORS, FONTS } from "../constants.js";
+
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;

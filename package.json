@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@aptabase/react-native": "^0.3.9",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.16",
@@ -26,6 +27,7 @@
     "@ui-kitten/components": "^5.3.1",
     "base-64": "^1.0.0",
     "expo": "^49.0.22",
+    "expo-font": "~11.4.0",
     "expo-image-picker": "~14.3.2",
     "expo-status-bar": "~1.6.0",
     "expo-updates": "~0.18.19",
@@ -51,8 +53,7 @@
     "react-native-simple-picker": "^3.1.4",
     "react-native-svg": "^13.9.0",
     "react-native-url-polyfill": "^2.0.0",
-    "react-native-vector-icons": "^10.0.2",
-    "expo-font": "~11.4.0"
+    "react-native-vector-icons": "^10.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

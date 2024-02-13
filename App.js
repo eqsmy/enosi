@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import { FAB } from "@rneui/themed";
+import Aptabase from "@aptabase/react-native";
 
 //import all the pages we have
 import Home from "./pages/Home";
@@ -32,6 +32,9 @@ import NewCommunityFlow from "./pages/NewCommunities";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+// Initialize Aptabase with your App Key
+Aptabase.init("A-US-4209285865");
 
 const loadFonts = async () => {
   await Font.loadAsync({
