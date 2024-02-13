@@ -21,6 +21,7 @@ import Profile from "./Profile";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { Icon } from "react-native-elements";
 import { COLORS, FONTS } from "../constants.js";
+import { trackEvent } from "@aptabase/react-native";
 
 const Stack = createStackNavigator();
 
@@ -50,6 +51,7 @@ function SearchFeed({ props }) {
   }
 
   useEffect(() => {
+    trackEvent("page_view", { page: "Search" });
     fetchCommunities();
   }, [useIsFocused()]);
 
@@ -105,7 +107,14 @@ function SearchFeed({ props }) {
           placeholder="Search"
           style={enosiStyles.searchBar}
           value={search}
-          onChangeText={setSearch}
+          onChangeText={(value) => {
+            setSearch(value);
+            trackEvent("changing field", {
+              page: "search",
+              field: "search",
+              value: value,
+            });
+          }}
         ></TextInput>
 
         <SectionList
@@ -215,6 +224,11 @@ function SearchFeed({ props }) {
                       : undefined
                   }
                   onPress={() => {
+                    trackEvent("button press", {
+                      page: "search",
+                      action: "navigate to profile",
+                      profile: item.first_name + " " + item.last_name,
+                    });
                     navigation.push("Profile", { user: item });
                   }}
                 />

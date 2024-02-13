@@ -18,6 +18,7 @@ import { useMemo } from "react";
 import _ from "lodash";
 import { createStackNavigator } from "@react-navigation/stack";
 import { COLORS } from "../constants";
+import { trackEvent } from "@aptabase/react-native";
 
 const Stack = createStackNavigator();
 
@@ -27,6 +28,9 @@ export function PrivacySettings() {
     // TODO
     navigation.navigate("SearchTab");
   }
+  useEffect(() => {
+    trackEvent("page_view", { page: "PrivacySettings" });
+  }, []);
 
   const defaultPrivacyOptions = [
     {
@@ -100,6 +104,11 @@ export function PrivacySettings() {
                   status: !tempOptions[idx].status,
                 };
                 setSettings(tempOptions);
+                trackEvent("change group settings", {
+                  page: "community settings",
+                  option: tempOptions[idx],
+                  status: !tempOptions[idx].status,
+                });
               }}
               trackColor={{ true: COLORS.primary, false: undefined }}
             ></Switch>
@@ -108,7 +117,13 @@ export function PrivacySettings() {
       })}
       <View style={{ position: "absolute", bottom: 50 }}>
         <BasicButton
-          onPress={setCommunitySettings}
+          onPress={() => {
+            setCommunitySettings();
+            trackEvent("button press", {
+              page: "community settings",
+              action: "submit",
+            });
+          }}
           text={
             _.isEqual(settings, defaultPrivacyOptions)
               ? "Save Defaults"
@@ -143,6 +158,7 @@ export function NewCommunities() {
         alert(error.message);
       }
     }
+    trackEvent("page_view", { page: "NewCommunities" });
     fetchUsers();
   }, []);
 
@@ -187,8 +203,16 @@ export function NewCommunities() {
                 return person != item.id;
               })
             );
+            trackEvent("changing field", {
+              page: "create community",
+              action: "remove friend",
+            });
           } else {
             setPeopleToAdd([...peopleToAdd, person]);
+            trackEvent("changing field", {
+              page: "create community",
+              action: "add friend",
+            });
           }
         }}
       />
@@ -210,7 +234,14 @@ export function NewCommunities() {
             placeholder="Community Name"
             style={enosiStyles.searchBar}
             value={communityName}
-            onChangeText={setCommunityName}
+            onChangeText={(value) => {
+              setCommunityName(value);
+              trackEvent("changing field", {
+                page: "create community",
+                field: "community name",
+                value: value,
+              });
+            }}
           ></TextInput>
         </View>
         <View style={{ height: "70%" }}>
@@ -220,7 +251,14 @@ export function NewCommunities() {
               placeholder="Search. . ."
               style={enosiStyles.searchBar}
               value={peopleSearch}
-              onChangeText={setPeopleSearch}
+              onChangeText={(value) => {
+                setPeopleSearch(value);
+                trackEvent("changing field", {
+                  page: "create community",
+                  field: "invite friends",
+                  value: value,
+                });
+              }}
             ></TextInput>
             <View
               style={{
@@ -242,7 +280,13 @@ export function NewCommunities() {
         <View style={{ width: "100%", alignItems: "center" }}>
           <BasicButton
             backgroundColor={peopleToAdd.length > 0 ? undefined : "#BDBDBD"}
-            onPress={createCommunity}
+            onPress={() => {
+              createCommunity();
+              trackEvent("button press", {
+                page: "create community",
+                action: "submit",
+              });
+            }}
             text="Submit"
           ></BasicButton>
         </View>

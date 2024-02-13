@@ -18,7 +18,8 @@ import UserChallenges from "../components/UserChallenges";
 import { StatusBar } from "expo-status-bar";
 import { createStackNavigator } from "@react-navigation/stack";
 import LogBook from "./LogBook";
-import {COLORS, FONTS} from "../constants.js"
+import { COLORS, FONTS } from "../constants.js";
+import { trackEvent } from "@aptabase/react-native";
 
 function Challenges({}) {
   const navigation = useNavigation();
@@ -30,6 +31,7 @@ function Challenges({}) {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
+    trackEvent("page_view", { page: "Challenges" });
     fetchAllChallenges();
     fetchUserChallenges();
   }, []);

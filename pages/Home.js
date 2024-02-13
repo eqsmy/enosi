@@ -7,7 +7,8 @@ import { useUser } from "../utils/UserContext";
 import { useIsFocused } from "@react-navigation/native";
 import { enosiStyles } from "./styles";
 import FloatingButton from "../components/FloatingButton";
-import {COLORS, FONTS} from "../constants.js"
+import { COLORS, FONTS } from "../constants.js";
+import { trackEvent } from "@aptabase/react-native";
 
 export default function Home() {
   const [activities, setActivities] = useState([]);
@@ -15,6 +16,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchActivities();
+    trackEvent("page_view", { page: "Home" });
   }, [useIsFocused()]);
 
   const fetchActivities = async () => {

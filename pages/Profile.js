@@ -20,7 +20,8 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import Activity from "../components/Activity";
 import FeedItem from "../components/FeedItem";
 import { BasicButton } from "../components/Buttons";
-import {COLORS, FONTS} from "../constants.js"
+import { COLORS, FONTS } from "../constants.js";
+import { trackEvent } from "@aptabase/react-native";
 
 export default function Profile({ route = undefined }) {
   const { state, dispatch } = useUser();
@@ -34,6 +35,7 @@ export default function Profile({ route = undefined }) {
   const [communities, setCommunities] = useState([]);
 
   useEffect(() => {
+    trackEvent("page_view", { page: "Profile" });
     fetchProfile();
     fetchActivities();
     fetchCommunities();
@@ -141,7 +143,14 @@ export default function Profile({ route = undefined }) {
             onPress={
               profile?.friends?.includes(state.session?.user?.id)
                 ? undefined
-                : addFriend
+                : () => {
+                    addFriend();
+                    trackEvent("button press", {
+                      page: "friend",
+                      action: "add friend",
+                      profile: profile.first_name + " " + profile.last_name,
+                    });
+                  }
             }
             backgroundColor={
               profile?.friends?.includes(state.session?.user?.id)
@@ -157,7 +166,8 @@ export default function Profile({ route = undefined }) {
           style={[
             styles.toggle,
             {
-              backgroundColor: tabShow == "activities" ? COLORS.primary : "white",
+              backgroundColor:
+                tabShow == "activities" ? COLORS.primary : "white",
             },
           ]}
         >
@@ -172,7 +182,8 @@ export default function Profile({ route = undefined }) {
           style={[
             styles.toggle,
             {
-              backgroundColor: tabShow == "communities" ? COLORS.primary : "white",
+              backgroundColor:
+                tabShow == "communities" ? COLORS.primary : "white",
             },
           ]}
         >

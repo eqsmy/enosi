@@ -12,6 +12,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS, FONTS } from "../constants.js";
 import { Icon } from "react-native-elements";
+import { trackEvent } from "../utils/Analytics.js";
 
 const { width, height } = Dimensions.get("window");
 
@@ -56,7 +57,10 @@ const FloatingButton = () => {
       <View style={styles.container}>
         <View style={styles.bottomContainer}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("NewCommunityFlow")}
+            onPress={() => {
+              navigation.navigate("NewCommunityFlow");
+              trackEvent("navigate", { to: "new community flow" });
+            }}
           >
             <Animated.View
               style={[styles.button, styles.secondary, getAnimatedStyle(-70)]}
@@ -68,7 +72,12 @@ const FloatingButton = () => {
             </Animated.View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => navigation.navigate("LogActivity")}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("LogActivity");
+              trackEvent("navigate", { to: "log activity flow" });
+            }}
+          >
             <Animated.View
               style={[styles.button, styles.secondary, getAnimatedStyle(-130)]}
             >
