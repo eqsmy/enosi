@@ -89,14 +89,21 @@ export default function LogActivity() {
     });
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      trackEvent("image_uploaded", {});
     }
   };
   const picker = useRef(null);
 
   const handleSubmit = async () => {
+    trackEvent("submit_activity_attemp", {
+      activity: activity,
+      inputNum: inputNum,
+      unit: unit,
+    });
     if (!photoUri) {
       console.error("No photo URI available. Cannot upload photo.");
       showError("Choose a photo");
+      trackEvent("submit_activity_error", { error: "No photo URI" });
       return null;
     }
 
@@ -144,6 +151,9 @@ export default function LogActivity() {
           duration: 60,
           distance_units: unit,
         };
+        trackEvent("submit_activity_success", {});
+        trackEvent("activity_type_loged", { activity_type: activity });
+        trackEvent("activity_unit_type", { unit_type: unit });
         updateUserChallenges();
 
         console.log("Inserting data:", activityData);
@@ -157,6 +167,7 @@ export default function LogActivity() {
       } catch (error) {
         console.error("Error logging activity:", error.message);
         Alert.alert("Error", "Failed to log activity.");
+        trackEvent("log_activity_error", { error: error.message });
       }
     };
   };
@@ -205,6 +216,9 @@ export default function LogActivity() {
               }}
               onSelectItem={(value) => {
                 value && setActivity(value.title);
+                trackEvent("activty_type_from_drop_down", {
+                  activityType: value.title,
+                });
               }}
               dataSet={
                 activity
