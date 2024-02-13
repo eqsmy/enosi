@@ -216,9 +216,6 @@ export default function LogActivity() {
               }}
               onSelectItem={(value) => {
                 value && setActivity(value.title);
-                trackEvent("activty_type_from_drop_down", {
-                  activityType: value.title,
-                });
               }}
               dataSet={
                 activity
