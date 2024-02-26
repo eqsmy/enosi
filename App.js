@@ -60,7 +60,7 @@ function Tabs() {
               <LogoHeader {...props} />
             </View>
           ),
-          headerStyle: { height: 120, borderWidth: 1 },
+          headerStyle: { height: 120 },
           tabBarStyle: { visibility: "hidden" },
           headerShadowVisible: false,
           tabBarIcon: ({ color, size }) => (
