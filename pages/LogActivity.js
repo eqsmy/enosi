@@ -7,6 +7,7 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState, useRef } from "react";
@@ -94,14 +95,18 @@ export default function LogActivity() {
 
   const handleSubmit = async () => {
     if (!photoUri) {
-      console.error("No photo URI available. Cannot upload photo.");
-      showError("Choose a photo");
+      Toast.show({
+        type: "error",
+        text1: "Choose a photo",
+      });
       return null;
     }
 
     if (!activity || !inputNum || !unit) {
-      console.error("Missing activity data");
-      showError("Activity information missing above");
+      Toast.show({
+        type: "error",
+        text1: "Activity information missing above",
+      });
       return;
     }
     showError(processingMessage);
@@ -373,17 +378,6 @@ export default function LogActivity() {
               </TouchableOpacity>
             </View>
           </View>
-          {error && (
-            <Text
-              style={{
-                textAlign: "center",
-                marginTop: 10,
-                color: error == processingMessage ? "grey" : "red",
-              }}
-            >
-              {error}
-            </Text>
-          )}
         </ScrollView>
       </AutocompleteDropdownContextProvider>
     </GestureHandlerRootView>
