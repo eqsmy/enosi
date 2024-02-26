@@ -24,7 +24,8 @@ import {
   AutocompleteDropdown,
   AutocompleteDropdownContextProvider,
 } from "react-native-autocomplete-dropdown";
-import {COLORS, FONTS} from "../constants.js";
+import { COLORS, FONTS } from "../constants.js";
+import { enosiStyles } from "./styles.js";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
@@ -171,26 +172,30 @@ export default function LogActivity() {
             width: "90%",
           }}
         >
-          <View style={styles.inputBox}>
-            <TextInput
-              placeholder="Activity Name"
-              placeholderStyle={styles.textInputStyle}
-              onChangeText={(value) => {
-                setInput(value);
-              }}
-              value={input}
-            />
-          </View>
-          <View style={styles.inputBox}>
-            <TextInput
-              placeholder="How did it go?"
-              placeholderStyle={styles.textInputStyle}
-              onChangeText={(value) => setBlurb(value)}
-              value={blurb}
-              multiline
-              textAlignVertical="top"
-            />
-          </View>
+          <Text style={{ marginTop: 20 }}>Activity Name</Text>
+          <TextInput
+            placeholder="What did you do?"
+            style={enosiStyles.searchBar}
+            onChangeText={(value) => {
+              setInput(value);
+            }}
+            value={input}
+          />
+          <Text style={{ marginTop: 10 }}>Caption</Text>
+          <TextInput
+            placeholder="How did it go?"
+            style={[
+              enosiStyles.searchBar,
+              {
+                paddingTop: 10,
+                height: "auto",
+              },
+            ]}
+            onChangeText={(value) => setBlurb(value)}
+            value={blurb}
+            multiline
+            textAlignVertical="top"
+          />
           <Text style={styles.customBoxText}>Activity Details</Text>
           <View style={{ justifyContent: "center", alignContent: "center" }}>
             <AutocompleteDropdown
@@ -209,7 +214,12 @@ export default function LogActivity() {
                   ? [...activityTypes, { title: activity, id: 0 }]
                   : activityTypes
               }
-              inputContainerStyle={[styles.inputBox, { padding: 2 }]}
+              inputContainerStyle={[
+                enosiStyles.searchBar,
+                {
+                  padding: 0,
+                },
+              ]}
               suggestionsListContainerStyle={{
                 shadowRadius: 0,
                 shadowOffset: 0,
@@ -217,7 +227,11 @@ export default function LogActivity() {
               }}
               emptyResultText="Set custom"
               textInputProps={{
-                placeholder: "Select activity type",
+                placeholder: "Search for or add your own activity type",
+                style: {
+                  height: 38,
+                  fontSize: 14,
+                },
               }}
             />
           </View>
@@ -235,7 +249,7 @@ export default function LogActivity() {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
-              alignSelf: 'center',
+              alignSelf: "center",
               marginTop: 10,
               marginBottom: 10,
             }}
@@ -257,31 +271,31 @@ export default function LogActivity() {
                 />
               </View>
             </View>
-            <TouchableOpacity style={styles.pickUnitButton}
+            <TouchableOpacity
+              style={styles.pickUnitButton}
               onPress={() => {
                 picker.current.show();
               }}
             >
-                <Text
-                  style={{
-                    color: COLORS.primary,
-                    fontSize: 16,
-                    padding: 5,
-                    fontWeight: "500",
-                    textAlign: "right",
-                    fontFamily: FONTS.bold,
-                    paddingTop: -5,
-                  }}
-                >
+              <Text
+                style={{
+                  color: COLORS.primary,
+                  fontSize: 16,
+                  padding: 5,
+                  fontWeight: "500",
+                  textAlign: "right",
+                  fontFamily: FONTS.bold,
+                  paddingTop: -5,
+                }}
+              >
                 <Icon
-                  style={{ }}
+                  style={{}}
                   size={20}
                   name="edit"
                   color={COLORS.primary}
                 ></Icon>
                 {unit}{" "}
-                
-                </Text>
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -312,17 +326,15 @@ export default function LogActivity() {
                   style={styles.uploadedImage}
                 />
               ) : (
-                <View style={{alignItems: "center"}}>
+                <View style={{ alignItems: "center" }}>
                   <Icon
-                    style={{ }}
+                    style={{}}
                     size={50}
                     name="add-photo-alternate"
                     color={COLORS.primary}
                   ></Icon>
                   <Text style={styles.uploadButtonText}>Choose Photo</Text>
-                  
                 </View>
-                
               )}
             </TouchableOpacity>
           </View>
@@ -422,8 +434,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bold,
     fontWeight: "600",
     fontSize: 18,
-    marginTop: 15,
-    marginLeft: width * 0.03,
+    marginTop: 20,
   },
   log: {
     borderRadius: 25,
@@ -446,6 +457,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
     width: "65%",
+    borderWidth: 1,
+    borderColor: "#e8e8e8",
   },
   textInputStyle: {
     fontFamily: FONTS.medium,
@@ -480,5 +493,5 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     borderColor: COLORS.primary,
     paddingTop: 0,
-  }
+  },
 });
