@@ -6,6 +6,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { FAB } from "@rneui/themed";
+import Toast from "react-native-toast-message";
 
 //import all the pages we have
 import Home from "./pages/Home";
@@ -226,6 +227,7 @@ export default function App() {
   return (
     <UserProvider>
       <AppContent />
+      <Toast topOffset={100} />
     </UserProvider>
   );
 }
