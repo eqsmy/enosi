@@ -60,7 +60,7 @@ export default function Profile({ route = undefined }) {
             onPress={
               profile?.friends?.includes(state.session?.user?.id)
                 ? undefined
-                : addFriend
+                : undefined
             }
             backgroundColor={
               profile?.friends?.includes(state.session?.user?.id)
