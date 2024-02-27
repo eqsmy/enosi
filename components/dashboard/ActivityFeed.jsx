@@ -55,7 +55,7 @@ const PostCard = ({ post }) => {
   );
 };
 
-const ContributionCard = ({ contribution }) => {
+const ContributionCard = ({ contribution, showProgressBar = true }) => {
   const formattedGoal = `${contribution.challenge.current_total?.toLocaleString()} / ${contribution.challenge.goal_total?.toLocaleString()} ${
     contribution.challenge.unit
   }`;
@@ -81,30 +81,34 @@ const ContributionCard = ({ contribution }) => {
         />
       )}
       <View style={styles.contributionContent}>
-        <Text style={styles.contributionText}>{contribution.comment}</Text>
+        {contribution.comment && (
+          <Text style={styles.contributionText}>{contribution.comment}</Text>
+        )}
         <Text style={styles.contributionDetail}>
           {`Contributed ${contribution.contribution} ${contribution.unit} for `}
           <Text
             style={styles.challengeName}
           >{`"${contribution.challenge?.name}"`}</Text>
         </Text>
-        <View style={styles.progressBarContainer}>
-          <View style={styles.progressBarBackground}>
-            <View
-              style={{
-                ...styles.progressBarFill,
-                width: calculateProgress(
-                  contribution.challenge.current_total,
-                  contribution.challenge.goal_total
-                ), // Dynamic based on progress
-              }}
-            />
+        {showProgressBar && (
+          <View style={styles.progressBarContainer}>
+            <View style={styles.progressBarBackground}>
+              <View
+                style={{
+                  ...styles.progressBarFill,
+                  width: calculateProgress(
+                    contribution.challenge.current_total,
+                    contribution.challenge.goal_total
+                  ), // Dynamic based on progress
+                }}
+              />
+            </View>
+            <View style={styles.goalContainer}>
+              {/* <View /> */}
+              <Text style={styles.goalText}>{formattedGoal}</Text>
+            </View>
           </View>
-          <View style={styles.goalContainer}>
-            {/* <View /> */}
-            <Text style={styles.goalText}>{formattedGoal}</Text>
-          </View>
-        </View>
+        )}
       </View>
     </View>
   );
@@ -142,6 +146,79 @@ export const ActivityFeed = () => {
       </Text>
       <View style={{ marginBottom: 32 }}>
         {feed.map((item, index) => renderItem({ item, index }))}
+      </View>
+    </>
+  );
+};
+
+const ContributionCardChallengeDetail = ({ contribution }) => {
+  return (
+    <View style={styles.contributionContainerDetail}>
+      <View style={styles.contributionHeader}>
+        <Image
+          source={{ uri: contribution.contributor_info.avatar_url }}
+          style={styles.profileImage}
+        />
+        <Text style={styles.userName}>
+          {`${contribution.contributor_info.first_name} ${contribution.contributor_info.last_name}`}
+        </Text>
+        <Text style={styles.timeAgo}>{` · ${timeAgo(
+          contribution.created_at
+        )}`}</Text>
+        {/* <Text style={styles.communityName}>{contribution.community.name}</Text> */}
+      </View>
+      {contribution.image_url && (
+        <Image
+          source={{ uri: contribution.image_url }}
+          style={styles.contributionImage}
+        />
+      )}
+      <View style={styles.contributionContent}>
+        {contribution.comment && (
+          <Text style={styles.contributionText}>{contribution.comment}</Text>
+        )}
+        <Text style={styles.contributionDetail}>
+          {`Contributed ${contribution.contribution} ${contribution.unit}`}
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+export const ActivityFeedChallengeDetail = ({ contributions }) => {
+  const renderItem = ({ item, index }) => {
+    return (
+      <View key={index}>
+        <ContributionCardChallengeDetail contribution={item} />
+        {/* Render the separator line if it's not the last item */}
+        {index !== contributions.length - 1 && (
+          <View style={styles.separator} />
+        )}
+      </View>
+    );
+  };
+
+  return (
+    <>
+      <Text
+        style={{
+          fontSize: 24,
+          fontWeight: "bold",
+          // marginHorizontal: 16,
+          marginTop: 12,
+          marginBottom: 8,
+        }}
+      >
+        Contributions
+      </Text>
+      <View style={{ marginBottom: 32 }}>
+        {contributions && contributions.length > 0 ? (
+          contributions.map((item, index) => renderItem({ item, index }))
+        ) : (
+          <Text style={{ textAlign: "center", color: "gray" }}>
+            No contributions yet.
+          </Text>
+        )}
       </View>
     </>
   );
@@ -193,6 +270,9 @@ const styles = StyleSheet.create({
   contributionContainer: {
     backgroundColor: "#FFF",
     paddingHorizontal: 16,
+  },
+  contributionContainerDetail: {
+    backgroundColor: "#FFF",
   },
   contributionHeader: {
     flexDirection: "row",

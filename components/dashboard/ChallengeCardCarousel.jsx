@@ -1,7 +1,15 @@
-import { Text, View, Image, StyleSheet, ScrollView } from "react-native";
+import {
+  Text,
+  View,
+  Image,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import React from "react";
-import { Header } from "@components/dashboard/Header";
 import { useFeedStore } from "@stores/stores.js";
+import { useNavigation } from '@react-navigation/native';
+
 
 export const calculateProgress = (progressCount, goal) => {
   if (!progressCount || !goal) return "0%";
@@ -9,54 +17,62 @@ export const calculateProgress = (progressCount, goal) => {
 };
 
 function ChallengeCard({ challengeData }) {
+  const navigation = useNavigation();
+  const handlePress = () => {
+    console.log("challengeData", challengeData);
+    navigation.navigate("ChallengeDetail", { challengeId: challengeData.challenge_id });
+  };
+
   //   format the goal based on the units, add commas to the number
   const formattedGoal = `${challengeData.current_total.toLocaleString()} / ${challengeData.goal_total.toLocaleString()} ${
     challengeData.unit
   }`;
 
   return (
-    <View style={styles.cardContainer}>
-      <Text style={styles.communityNameText} numberOfLines={1}>
-        {challengeData.community.community_name}
-      </Text>
-      <Text style={styles.titleText} numberOfLines={1}>
-        {challengeData.challenge_name}
-      </Text>
-      <View style={styles.deliveryTimeContainer}>
-        <View style={styles.deliveryTimeBadge}>
-          <Text style={styles.deliveryTimeBadgeText}>
-            {challengeData.status.toUpperCase()}
+    <TouchableOpacity onPress={handlePress}>
+      <View style={styles.cardContainer}>
+        <Text style={styles.communityNameText} numberOfLines={1}>
+          {challengeData.community.community_name}
+        </Text>
+        <Text style={styles.titleText} numberOfLines={1}>
+          {challengeData.challenge_name}
+        </Text>
+        <View style={styles.deliveryTimeContainer}>
+          <View style={styles.deliveryTimeBadge}>
+            <Text style={styles.deliveryTimeBadgeText}>
+              {challengeData.status.toUpperCase()}
+            </Text>
+          </View>
+          <Text style={styles.contributorsText}>
+            {`${challengeData?.total_contributors} contributors`}
           </Text>
         </View>
-        <Text style={styles.contributorsText}>
-          {`${challengeData?.total_contributors} contributors`}
-        </Text>
-      </View>
-      <View style={styles.progressBarContainer}>
-        <View style={styles.progressBarBackground}>
-          <View
-            style={{
-              ...styles.progressBarFill,
-              width: calculateProgress(
-                challengeData.current_total,
-                challengeData.goal_total
-              ), // Dynamic based on progress
-            }}
-          />
+        <View style={styles.progressBarContainer}>
+          <View style={styles.progressBarBackground}>
+            <View
+              style={{
+                ...styles.progressBarFill,
+                width: calculateProgress(
+                  challengeData.current_total,
+                  challengeData.goal_total
+                ), // Dynamic based on progress
+              }}
+            />
+          </View>
+          <View style={styles.goalContainer}>
+            {/* <View /> */}
+            <Text style={styles.goalText}>{formattedGoal}</Text>
+          </View>
         </View>
-        <View style={styles.goalContainer}>
-          {/* <View /> */}
-          <Text style={styles.goalText}>{formattedGoal}</Text>
-        </View>
+        {/* Community Logo */}
+        <Image
+          style={styles.logo}
+          source={{
+            uri: challengeData.community.profile_photo_url,
+          }}
+        />
       </View>
-      {/* Community Logo */}
-      <Image
-        style={styles.logo}
-        source={{
-          uri: challengeData.community.profile_photo_url,
-        }}
-      />
-    </View>
+    </TouchableOpacity>
   );
 }
 
