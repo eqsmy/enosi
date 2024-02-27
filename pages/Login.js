@@ -34,7 +34,6 @@ export default function Login() {
       });
       if (error) throw error;
       dispatch({ type: "SET_SESSION", payload: data });
-      navigation.navigate("Home");
     } catch (error) {
       Alert.alert("Login Failed", error.message);
     } finally {
