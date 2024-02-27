@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { calculateProgress } from "@components/dashboard/ChallengeCardCarousel";
 import { useFeedStore } from "@stores/stores";
+import { useNavigation } from "@react-navigation/native";
 // import { COLORS, FONTS } from "@constants";
 
 const timeAgo = (timestamp) => {
@@ -56,6 +57,13 @@ const PostCard = ({ post }) => {
 };
 
 const ContributionCard = ({ contribution, showProgressBar = true }) => {
+  const navigation = useNavigation();
+  const handlePress = () => {
+    navigation.navigate("CommunityDetail", {
+      communityId: contribution.community.id,
+    });
+  };
+
   const formattedGoal = `${contribution.challenge.current_total?.toLocaleString()} / ${contribution.challenge.goal_total?.toLocaleString()} ${
     contribution.challenge.unit
   }`;
@@ -72,7 +80,11 @@ const ContributionCard = ({ contribution, showProgressBar = true }) => {
         <Text style={styles.timeAgo}>{` · ${timeAgo(
           contribution.created_at
         )}`}</Text>
-        <Text style={styles.communityName}>{contribution.community.name}</Text>
+        <TouchableOpacity style={{ marginLeft: "auto" }} onPress={handlePress}>
+          <Text style={styles.communityName}>
+            {contribution.community.name}
+          </Text>
+        </TouchableOpacity>
       </View>
       {contribution.image_url && (
         <Image
@@ -291,7 +303,6 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   communityName: {
-    marginLeft: "auto",
     fontWeight: "500",
   },
   contributionImage: {

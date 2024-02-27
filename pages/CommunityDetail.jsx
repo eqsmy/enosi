@@ -8,53 +8,24 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { supabase } from "../utils/Supabase";
-import { useChallengeStore } from "@stores/stores";
-import { AvatarStack } from "@components/Avatar";
-import ProgressBar from "@components/ProgressBar";
-import { ActivityFeedChallengeDetail } from "@components/dashboard/ActivityFeed";
+import { useCommunityDetailStore } from "@stores/stores";
 import { COLORS } from "../constants";
 import BackButton from "@components/BackButton";
 import { useNavigation } from "@react-navigation/native";
 
-export default function ChallengeDetail({ route }) {
-  const { challengeId } = route.params;
-  const { loading, challengeDetail, fetchChallengeDetail } =
-    useChallengeStore();
+export default function CommunityDetail({ route }) {
+  const { communityId } = route.params;
+  const { communityDetail, fetchCommunityDetail, loading, isMember } =
+    useCommunityDetailStore();
   const navigation = useNavigation();
 
   useEffect(() => {
-    fetchChallengeDetail(supabase, challengeId);
+    fetchCommunityDetail(supabase, communityId);
   }, []);
 
   if (loading) {
-    return <ChallengeDetailSkeleton />;
+    return <CommunityDetailSkeleton />;
   }
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    let month = date.getMonth() + 1;
-    let day = date.getDate();
-
-    // Pad the month and day with leading zeros, if necessary
-    month = month < 10 ? "0" + month : month;
-    day = day < 10 ? "0" + day : day;
-
-    return `${month}/${day}/${year}`;
-  };
-
-  contributors = (challengeDetail.contributions || []).map((contribution) => {
-    return {
-      image: contribution.contributor_info.avatar_url,
-      name: `${contribution.contributor_info.first_name} ${contribution.contributor_info.last_name}`,
-    };
-  });
-
-  const handleCommunityPress = () => {
-    navigation.navigate("CommunityDetail", {
-      communityId: challengeDetail.community.community_id,
-    });
-  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -69,86 +40,50 @@ export default function ChallengeDetail({ route }) {
         <BackButton onPress={() => navigation.goBack()} />
       </SafeAreaView>
       <Image
-        source={{ uri: challengeDetail.challenge_image }} // Replace with your subreddit icon
+        source={{ uri: communityDetail.header_photo_url }} // Replace with your subreddit icon
         style={styles.challengeImageHeader}
       />
       <View style={styles.screenContainer}>
-        <Text style={styles.challengeTitle}>
-          {challengeDetail.challenge_name}
-        </Text>
         <View
           style={{
             flexDirection: "row",
             alignItems: "center",
           }}
         >
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusBadgeText}>
-              {challengeDetail.status.toUpperCase()}
-            </Text>
-          </View>
-          <Text
+          <Image
+            source={{ uri: communityDetail.profile_photo_url }}
             style={{
-              marginLeft: 8,
-              color: COLORS.defaultgray,
+              width: 50,
+              height: 50,
+              borderRadius: 25,
+              marginRight: 8,
             }}
-          >{`${formatDate(challengeDetail.start_date)} - ${formatDate(
-            challengeDetail.end_date
-          )}`}</Text>
-        </View>
-        <Text style={styles.challengeDescription}>
-          {challengeDetail.challenge_description}
-        </Text>
-
-        <View style={{ marginTop: 16 }}>
-          <Text
-            style={{
-              fontWeight: "700",
-              fontSize: 16,
-            }}
-          >
-            Progress
-          </Text>
-          <ProgressBar
-            currentValue={challengeDetail.current_total}
-            goalValue={challengeDetail.goal_total}
-            size="large"
-            unit={challengeDetail.unit}
           />
-        </View>
-
-        <View style={{ marginTop: 16 }}>
-          <Text
-            style={{
-              fontWeight: "700",
-              fontSize: 16,
-              marginBottom: 4,
+          <View>
+            <Text style={styles.challengeTitle}>
+              {communityDetail.community_name}
+            </Text>
+            <Text
+              style={{
+                color: COLORS.defaultgray,
+              }}
+            >{`${communityDetail.members.length} Members`}</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.joinButton}
+            onPress={() => {
+              // toggleJoin(supabase, user_id, community_id);
             }}
           >
-            Community
-          </Text>
-          <TouchableOpacity onPress={handleCommunityPress}>
-            <View style={styles.communityArea}>
-              <Image
-                source={{ uri: challengeDetail.community.header_photo_url }} // Replace with your subreddit icon
-                style={styles.subredditIcon}
-              />
-
-              <View style={styles.headerTextContainer}>
-                <Text style={styles.subredditTitle}>
-                  {challengeDetail.community.name}
-                </Text>
-                <Text style={styles.postDetails}>
-                  {challengeDetail.community.description}
-                </Text>
-              </View>
-            </View>
+            <Text style={styles.joinButtonText}>
+              {isMember ? "Leave" : "Join"}
+            </Text>
           </TouchableOpacity>
         </View>
 
-        <ActivityFeedChallengeDetail
-          contributions={challengeDetail.contributions}
-        />
+        <Text style={styles.challengeDescription}>
+          {communityDetail.community_description}
+        </Text>
       </View>
     </View>
   );
@@ -207,7 +142,8 @@ const styles = StyleSheet.create({
     color: "grey",
   },
   joinButton: {
-    backgroundColor: "#blue",
+    marginLeft: "auto",
+    backgroundColor: "blue",
     borderRadius: 15,
     paddingVertical: 5,
     paddingHorizontal: 15,
@@ -349,7 +285,7 @@ const SkeletonLoader = ({ style }) => (
   <View style={[styles.skeletonLoader, style]} />
 );
 
-function ChallengeDetailSkeleton() {
+function CommunityDetailSkeleton() {
   return (
     <View style={{ flex: 1 }}>
       {/* Image header placeholder */}

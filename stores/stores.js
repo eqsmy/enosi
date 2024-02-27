@@ -254,7 +254,7 @@ function prepareFeed(rawFeed) {
 export const useChallengeStore = create()((set, get) => ({
   challengeDetail: null,
   loading: true,
-  
+
   fetchChallengeDetail: async (supabase, challenge_id) => {
     set({ loading: true });
     let { data, error } = await supabase
@@ -268,6 +268,40 @@ export const useChallengeStore = create()((set, get) => ({
     if (data) {
       console.log("challengeDetail", data);
       set({ challengeDetail: data, loading: false });
+    }
+  },
+}));
+
+export const useCommunityDetailStore = create()((set, get) => ({
+  communityDetail: null,
+  loading: true,
+  isMember: false,
+
+  fetchCommunityDetail: async (supabase, community_id) => {
+    set({ loading: true });
+    let { data, error } = await supabase
+      .from("view_community_details")
+      .select("*")
+      .eq("community_id", community_id)
+      .single();
+    if (error) {
+      console.log("Error fetching community", error);
+    }
+    if (data) {
+      set({ communityDetail: data, loading: false });
+    }
+  },
+
+  toggleJoin: async (supabase, user_id, community_id) => {
+    const { data, error } = await supabase
+      .from("tristan_user_communities")
+      .upsert([{ user_id, community_id }])
+      .select();
+    if (error) {
+      console.log("Error joining community", error);
+    }
+    if (data) {
+      fetchCommunityDetail(supabase, community_id);
     }
   },
 }));
