@@ -250,3 +250,24 @@ function prepareFeed(rawFeed) {
   mergedItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   return mergedItems;
 }
+
+export const useChallengeStore = create()((set, get) => ({
+  challengeDetail: null,
+  loading: true,
+  
+  fetchChallengeDetail: async (supabase, challenge_id) => {
+    set({ loading: true });
+    let { data, error } = await supabase
+      .from("view_active_challenge_details")
+      .select("*")
+      .eq("challenge_id", challenge_id)
+      .single();
+    if (error) {
+      console.log("Error fetching challenge", error);
+    }
+    if (data) {
+      console.log("challengeDetail", data);
+      set({ challengeDetail: data, loading: false });
+    }
+  },
+}));
