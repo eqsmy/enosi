@@ -17,7 +17,7 @@ const reducer = (state, action) => {
       const newState = {
         ...state,
         session: action.payload,
-        loggedIn: !!action.payload,
+        loggedIn: action.payload ? true : false,
       };
       return newState;
     default:
@@ -44,15 +44,14 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    // Save the session whenever it changes
     const saveSession = async () => {
       if (state.session) {
         await AsyncStorage.setItem(
           "userSession",
           JSON.stringify(state.session)
-        ); // Use SecureStore.setItemAsync if using Expo
+        );
       } else {
-        await AsyncStorage.removeItem("userSession"); // Use SecureStore.deleteItemAsync if using Expo
+        await AsyncStorage.removeItem("userSession");
       }
     };
     saveSession();

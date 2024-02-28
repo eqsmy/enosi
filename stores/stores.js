@@ -212,8 +212,6 @@ export const useFeedStore = create()((set, get) => ({
       console.log("Error fetching feed", error);
     }
     if (data) {
-      // console.log("pre prepare feed", data.contributions);
-      // console.log("pre prepare feed", data.feed);
       set({ feed: prepareFeed(data) });
     }
   },
