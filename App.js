@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { Icon } from "react-native-elements";
 import { FAB } from "@rneui/themed";
 
 //import all the pages we have
@@ -14,6 +15,8 @@ import { ChallengesStack } from "./pages/Challenges2";
 import Profile from "./pages/Profile";
 import LogActivity from "./pages/LogActivity";
 import Login from "./pages/Login";
+import NewCommunityFlow from "./pages/NewCommunities";
+import MyCommunities from "./pages/MyCommunities";
 
 //other imports we need
 import { LogoHeader } from "./components/Headers";
@@ -27,7 +30,6 @@ import {
   FONT_SOURCE_MEDIUM,
   FONT_SOURCE_BOLD,
 } from "./constants";
-import NewCommunityFlow from "./pages/NewCommunities";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -60,7 +62,7 @@ function Tabs() {
               <LogoHeader {...props} />
             </View>
           ),
-          headerStyle: { height: 120, borderWidth: 1 },
+          headerStyle: { height: 120, borderWidth: 0 },
           tabBarStyle: { visibility: "hidden" },
           headerShadowVisible: false,
           tabBarIcon: ({ color, size }) => (
@@ -79,7 +81,7 @@ function Tabs() {
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="ChallengesStack"
         component={ChallengesStack}
         options={{
@@ -88,6 +90,17 @@ function Tabs() {
           tabBarLabel: "Challenges",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="map" color={color} size={size} />
+          ),
+        }}
+      /> */}
+      <Tab.Screen
+        name="My Communities"
+        component={MyCommunities}
+        options={{
+          headerShadowVisible: false,
+          headerTitle: "My Communities",
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="tree" type="entypo" color={color} size={size} />
           ),
         }}
       />
