@@ -85,6 +85,7 @@ const BlankFeedScreen = () => {
         title="Find Communities & Friends"
         onPress={() => navigation.navigate("SearchTab")} // Replace 'SearchScreen' with the actual route name
       />
+      <FloatingButton />
     </View>
   );
 };

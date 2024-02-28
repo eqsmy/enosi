@@ -36,7 +36,7 @@ function SearchFeed({ props }) {
   const [search, setSearch] = useState("");
 
   async function fetchCommunities() {
-    console.log("fetching");
+    // console.log("fetching");
     try {
       let { data: comms, error } = await supabase
         .from("communities")

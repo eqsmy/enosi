@@ -48,7 +48,6 @@ const Theme = {
 
 function Tabs() {
   const { state, dispatch } = useUser();
-
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (!error) {
@@ -136,7 +135,6 @@ function RootStack() {
   useEffect(() => {
     console.log("Logged In State Changed:", state.loggedIn);
   }, [state.loggedIn]);
-
 
   return (
     <Stack.Navigator>
