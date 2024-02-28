@@ -22,6 +22,7 @@ import FeedItem from "../components/FeedItem";
 import { BasicButton } from "../components/Buttons";
 import { COLORS, FONTS } from "../constants.js";
 import { trackEvent } from "@aptabase/react-native";
+import { useFriendStore } from "../stores/stores.js";
 
 export default function Profile({ route = undefined }) {
   const { state, dispatch } = useUser();
@@ -33,13 +34,14 @@ export default function Profile({ route = undefined }) {
   const [activities, setActivities] = useState([]);
   const [tabShow, setTabShow] = useState("activities");
   const [communities, setCommunities] = useState([]);
+  const { insertFriend, removeFriend, friends } = useFriendStore();
 
   useEffect(() => {
     trackEvent("page_view", { page: "Profile" });
     fetchProfile();
     fetchActivities();
     fetchCommunities();
-  }, [useIsFocused()]);
+  }, [useIsFocused(), friends]);
 
   const fetchProfile = async () => {
     try {
@@ -83,40 +85,6 @@ export default function Profile({ route = undefined }) {
     }
   }
 
-  async function addFriend() {
-    try {
-      let { error1 } = await supabase
-        .from("profiles")
-        .update({
-          friends: Array.from(
-            new Set([...(profile?.friends || []), state.session?.user?.id])
-          ),
-        })
-        .eq("id", route?.params?.user.id);
-      if (error1) throw error1;
-      await supabase
-        .from("profiles")
-        .select()
-        .eq("id", state.session?.user?.id)
-        .single()
-        .then(async (data) => {
-          let { error3 } = await supabase
-            .from("profiles")
-            .update({
-              friends: Array.from(
-                new Set([...(data.data?.friends || []), route?.params?.user.id])
-              ),
-            })
-            .eq("id", state.session?.user?.id);
-          console.log([...(data.data?.friends || []), route?.params?.user.id]);
-          if (error3) throw error3;
-        });
-    } catch (error) {
-      console.error("Error adding friend:", error.message);
-    }
-    fetchProfile();
-  }
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.profileHeader}>
@@ -136,15 +104,22 @@ export default function Profile({ route = undefined }) {
         {userId == state.session?.user?.id ? null : (
           <BasicButton
             text={
-              profile?.friends?.includes(state.session?.user?.id)
-                ? "Friend Added!"
+              friends.some((friend) => friend.id == userId)
+                ? "Remove Friend"
                 : "Add Friend"
             }
             onPress={
-              profile?.friends?.includes(state.session?.user?.id)
-                ? undefined
+              friends.some((friend) => friend.id == userId)
+                ? () => {
+                    removeFriend(supabase, state.session.user.id, userId);
+                    trackEvent("button press", {
+                      page: "friend",
+                      action: "remove friend",
+                      profile: profile.first_name + " " + profile.last_name,
+                    });
+                  }
                 : () => {
-                    addFriend();
+                    insertFriend(supabase, state.session.user.id, userId);
                     trackEvent("button press", {
                       page: "friend",
                       action: "add friend",
@@ -153,7 +128,7 @@ export default function Profile({ route = undefined }) {
                   }
             }
             backgroundColor={
-              profile?.friends?.includes(state.session?.user?.id)
+              friends.some((friend) => friend.id == userId)
                 ? "gray"
                 : COLORS.primary
             }

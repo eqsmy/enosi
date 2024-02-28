@@ -170,16 +170,16 @@ export const useFriendStore = create()((set, get) => ({
     }
   },
 
-  insertFriend: async (supabase, user_id, friend_id) => {
+  insertFriend: async (supabase, user_id, friend_user_id) => {
     const { data, error } = await supabase
       .from("tristan_user_friends")
-      .insert([{ user_id, friend_id }])
+      .insert([{ user_id, friend_user_id }])
       .select();
     if (error) {
       console.log("Error inserting friend", error);
     }
     if (data) {
-      fetchFriendsView(supabase, user_id);
+      get().fetchFriendsView(supabase, user_id);
     }
   },
 
@@ -188,12 +188,11 @@ export const useFriendStore = create()((set, get) => ({
       .from("tristan_user_friends")
       .delete()
       .eq("user_id", user_id)
-      .eq("friend_id", friend_id);
+      .eq("friend_user_id", friend_id);
     if (error) {
       console.log("Error removing friend", error);
-    }
-    if (data) {
-      fetchFriendsView(supabase, user_id);
+    } else {
+      get().fetchFriendsView(supabase, user_id);
     }
   },
 }));
@@ -252,7 +251,7 @@ function prepareFeed(rawFeed) {
 export const useChallengeStore = create()((set, get) => ({
   challengeDetail: null,
   loading: true,
-  
+
   fetchChallengeDetail: async (supabase, challenge_id) => {
     set({ loading: true });
     let { data, error } = await supabase
