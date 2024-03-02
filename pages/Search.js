@@ -47,10 +47,8 @@ function SearchFeed({ props }) {
       console.error("Error fetching membership info:", memberError.message);
       return;
     }
-
     // Extract community IDs
     const communityIds = memberEntries.map((entry) => entry.community_id);
-
     // Fetch communities based on those IDs
     if (communityIds.length > 0) {
       const { data: communities, error: communitiesError } = await supabase
