@@ -20,7 +20,6 @@ import NewCommunityFlow from "./pages/NewCommunities";
 import CommunitiesList from "./pages/CommunitiesList";
 import ChallengeDetail from "@pages/ChallengeDetail";
 
-
 //other imports we need
 import { LogoHeader } from "./components/Headers";
 import { setCustomText } from "react-native-global-props";
@@ -33,7 +32,6 @@ import {
   FONT_SOURCE_MEDIUM,
   FONT_SOURCE_BOLD,
 } from "./constants";
-import CommunitiesList from "./pages/CommunitiesList";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
