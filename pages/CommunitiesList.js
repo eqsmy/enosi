@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import CommunityCard from "../components/CommunityCard";
 import { supabase } from "../utils/Supabase";
+import FloatingButton from "../components/FloatingButton";
 import { COLORS, FONTS } from "../constants";
 
 const CommunitiesList = () => {
@@ -36,11 +37,12 @@ const CommunitiesList = () => {
             community_name={item.community_name}
             community_description={item.community_description}
             location={item.location}
-            members={item.member_count}
+            member_count={item.member_count}
             profile_photo_url={item.profile_photo_url}
           />
         )}
       />
+      <FloatingButton />
     </View>
   );
 };

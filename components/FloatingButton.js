@@ -58,9 +58,7 @@ const FloatingButton = () => {
           style={[styles.button, styles.secondary, getAnimatedStyle(-70)]}
         >
           <Icon type="material" name="group-add" color="white"></Icon>
-          <Text style={{ color: "white", marginLeft: 5 }}>
-            Create community
-          </Text>
+          <Text style={{ color: "white", marginLeft: 5 }}>Community</Text>
         </Animated.View>
       </TouchableOpacity>
 
@@ -69,7 +67,7 @@ const FloatingButton = () => {
           style={[styles.button, styles.secondary, getAnimatedStyle(-130)]}
         >
           <Icon type="material" name="add-box" color="white"></Icon>
-          <Text style={{ color: "white", marginLeft: 5 }}>Log activity</Text>
+          <Text style={{ color: "white", marginLeft: 5 }}>Challenge</Text>
         </Animated.View>
       </TouchableOpacity>
 
