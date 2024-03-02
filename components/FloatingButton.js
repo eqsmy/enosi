@@ -4,7 +4,6 @@ import {
   TouchableOpacity,
   Dimensions,
   Animated,
-  SafeAreaView,
   Text,
 } from "react-native";
 import React, { useRef, useState } from "react";
@@ -58,7 +57,9 @@ const FloatingButton = () => {
           style={[styles.button, styles.secondary, getAnimatedStyle(-70)]}
         >
           <Icon type="material" name="group-add" color="white"></Icon>
-          <Text style={{ color: "white", marginLeft: 5 }}>Community</Text>
+          <Text style={[styles.buttonText, { fontFamily: FONTS.bold }]}>
+            Community
+          </Text>
         </Animated.View>
       </TouchableOpacity>
 
@@ -67,7 +68,9 @@ const FloatingButton = () => {
           style={[styles.button, styles.secondary, getAnimatedStyle(-130)]}
         >
           <Icon type="material" name="add-box" color="white"></Icon>
-          <Text style={{ color: "white", marginLeft: 5 }}>Challenge</Text>
+          <Text style={[styles.buttonText, { fontFamily: FONTS.bold }]}>
+            Contribute
+          </Text>
         </Animated.View>
       </TouchableOpacity>
 
@@ -112,6 +115,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     flexDirection: "row",
     right: -56,
+  },
+  buttonText: {
+    color: "white",
+    marginLeft: 5,
   },
 });
 
