@@ -16,7 +16,7 @@ import Profile from "./pages/Profile";
 import LogActivity from "./pages/LogActivity";
 import Login from "./pages/Login";
 import NewCommunityFlow from "./pages/NewCommunities";
-import MyCommunities from "./pages/CommunitiesList";
+import CommunitiesList from "./pages/CommunitiesList";
 
 //other imports we need
 import { LogoHeader } from "./components/Headers";
@@ -30,6 +30,7 @@ import {
   FONT_SOURCE_MEDIUM,
   FONT_SOURCE_BOLD,
 } from "./constants";
+import CommunitiesList from "./pages/CommunitiesList";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -95,7 +96,7 @@ function Tabs() {
       /> */}
       <Tab.Screen
         name="Communities"
-        component={MyCommunities}
+        component={CommunitiesList}
         options={{
           headerShadowVisible: false,
           headerTitle: "Communities",
