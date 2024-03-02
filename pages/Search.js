@@ -37,8 +37,7 @@ function SearchFeed({ props }) {
 
   async function fetchCommunities() {
     console.log("Fetching communities for user");
-
-    // Step 1: Fetch managing_members entries for the current user
+    // Fetch managing_members entries for the current user
     const { data: memberEntries, error: memberError } = await supabase
       .from("managing_members")
       .select("community_id")
@@ -52,18 +51,16 @@ function SearchFeed({ props }) {
     // Extract community IDs
     const communityIds = memberEntries.map((entry) => entry.community_id);
 
-    // Step 2: Fetch communities based on those IDs
+    // Fetch communities based on those IDs
     if (communityIds.length > 0) {
       const { data: communities, error: communitiesError } = await supabase
         .from("communities")
         .select("*")
         .in("id", communityIds); // Fetch communities where id is in communityIds array
-
       if (communitiesError) {
         console.error("Error fetching communities:", communitiesError.message);
         return;
       }
-
       console.log("Fetched communities:", communities);
       setCommunities(communities);
     } else {

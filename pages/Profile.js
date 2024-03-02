@@ -1,38 +1,89 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
+
 import {
   Text,
   SafeAreaView,
   View,
   Image,
+  Button,
   StyleSheet,
+  TouchableOpacity,
   ScrollView,
   Pressable,
 } from "react-native";
 import { useUser } from "../utils/UserContext";
 import { supabase } from "../utils/Supabase.js";
+import { Feather } from "@expo/vector-icons";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import Activity from "../components/Activity";
 import FeedItem from "../components/FeedItem";
 import { BasicButton } from "../components/Buttons";
 import { COLORS, FONTS } from "../constants.js";
-
-import { useFriendStore, useCommunitiesStore } from "../stores/stores.js";
-
-import { CommunityCard } from "../components/dashboard/CommunityCardCarousel";
+import { trackEvent } from "@aptabase/react-native";
+import { useFriendStore } from "../stores/stores.js";
 
 export default function Profile({ route = undefined }) {
   const { state, dispatch } = useUser();
+  const navigation = useNavigation();
   const [userId, setUserId] = useState(
     route?.params?.user.id ?? state.session?.user?.id
   );
   const [profile, setProfile] = useState(null);
   const [activities, setActivities] = useState([]);
   const [tabShow, setTabShow] = useState("activities");
+  const [communities, setCommunities] = useState([]);
+  const { insertFriend, removeFriend, friends } = useFriendStore();
 
-  const { friends } = useFriendStore();
-  const { communities } = useCommunitiesStore();
+  useEffect(() => {
+    trackEvent("page_view", { page: "Profile" });
+    fetchProfile();
+    fetchActivities();
+    fetchCommunities();
+  }, [useIsFocused(), friends]);
+
+  const fetchProfile = async () => {
+    try {
+      if (!userId) throw new Error("User not found");
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+      if (error) throw error;
+      setProfile(data);
+    } catch (error) {
+      console.error("Error fetching profile:", error.message);
+    }
+  };
+
+  const fetchActivities = async () => {
+    try {
+      if (!userId) throw new Error("User not found");
+      let { data: activities, error } = await supabase
+        .from("user_activities")
+        .select("*")
+        .eq("user_id", userId)
+        .order("timestamp", { ascending: false });
+      if (error) throw error;
+      setActivities(activities || []);
+    } catch (error) {
+      console.error("Error fetching activities:", error.message);
+    }
+  };
+  async function fetchCommunities() {
+    try {
+      let { data: comms, error } = await supabase
+        .from("communities")
+        .select("*")
+        .contains("members", [userId]);
+      setCommunities(comms || []);
+      if (error) throw error;
+    } catch (error) {
+      console.error("Error fetching communities:", error.message);
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -53,17 +104,31 @@ export default function Profile({ route = undefined }) {
         {userId == state.session?.user?.id ? null : (
           <BasicButton
             text={
-              profile?.friends?.includes(state.session?.user?.id)
-                ? "Friend Added!"
+              friends.some((friend) => friend.id == userId)
+                ? "Remove Friend"
                 : "Add Friend"
             }
             onPress={
-              profile?.friends?.includes(state.session?.user?.id)
-                ? undefined
-                : addFriend
+              friends.some((friend) => friend.id == userId)
+                ? () => {
+                    removeFriend(supabase, state.session.user.id, userId);
+                    trackEvent("button press", {
+                      page: "friend",
+                      action: "remove friend",
+                      profile: profile.first_name + " " + profile.last_name,
+                    });
+                  }
+                : () => {
+                    insertFriend(supabase, state.session.user.id, userId);
+                    trackEvent("button press", {
+                      page: "friend",
+                      action: "add friend",
+                      profile: profile.first_name + " " + profile.last_name,
+                    });
+                  }
             }
             backgroundColor={
-              profile?.friends?.includes(state.session?.user?.id)
+              friends.some((friend) => friend.id == userId)
                 ? "gray"
                 : COLORS.primary
             }
@@ -145,7 +210,13 @@ export default function Profile({ route = undefined }) {
               communities?.map((community, key) => {
                 return (
                   <View style={{ marginHorizontal: "5%" }} key={key}>
-                    <CommunityCard communityData={community} />
+                    <FeedItem
+                      key={key}
+                      name={community.name}
+                      icon={{
+                        url: community.photo_url,
+                      }}
+                    ></FeedItem>
                   </View>
                 );
               })

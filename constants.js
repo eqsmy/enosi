@@ -9,7 +9,8 @@ export const COLORS = {
     lightprimary: "#70B600",
     accent: "#C69ED4",
     lightaccent: "#F8E6FF",
-    defaultgray: "#A1A99E"
+    defaultgray: "#A1A99E",
+    lightgrey: "#E8E8E8",
 };
 
 export const FONTS = {
