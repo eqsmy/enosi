@@ -16,7 +16,7 @@ import Profile from "./pages/Profile";
 import LogActivity from "./pages/LogActivity";
 import Login from "./pages/Login";
 import NewCommunityFlow from "./pages/NewCommunities";
-import MyCommunities from "./pages/MyCommunities";
+import MyCommunities from "./pages/CommunitiesList";
 
 //other imports we need
 import { LogoHeader } from "./components/Headers";
@@ -94,11 +94,11 @@ function Tabs() {
         }}
       /> */}
       <Tab.Screen
-        name="My Communities"
+        name="Communities"
         component={MyCommunities}
         options={{
           headerShadowVisible: false,
-          headerTitle: "My Communities",
+          headerTitle: "Communities",
           tabBarIcon: ({ color, size }) => (
             <Icon name="tree" type="entypo" color={color} size={size} />
           ),
