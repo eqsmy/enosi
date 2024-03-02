@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { Icon } from "react-native-elements";
 import { FAB } from "@rneui/themed";
 import Toast from "react-native-toast-message";
 
@@ -15,7 +16,10 @@ import { ChallengesStack } from "./pages/Challenges2";
 import Profile from "./pages/Profile";
 import LogActivity from "./pages/LogActivity";
 import Login from "./pages/Login";
+import NewCommunityFlow from "./pages/NewCommunities";
+import CommunitiesList from "./pages/CommunitiesList";
 import ChallengeDetail from "@pages/ChallengeDetail";
+
 
 //other imports we need
 import { LogoHeader } from "./components/Headers";
@@ -29,7 +33,7 @@ import {
   FONT_SOURCE_MEDIUM,
   FONT_SOURCE_BOLD,
 } from "./constants";
-import NewCommunityFlow from "./pages/NewCommunities";
+import CommunitiesList from "./pages/CommunitiesList";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -91,7 +95,7 @@ function Tabs() {
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="ChallengesStack"
         component={ChallengesStack}
         options={{
@@ -100,6 +104,17 @@ function Tabs() {
           tabBarLabel: "Challenges",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="map" color={color} size={size} />
+          ),
+        }}
+      /> */}
+      <Tab.Screen
+        name="Communities"
+        component={CommunitiesList}
+        options={{
+          headerShadowVisible: false,
+          headerTitle: "Communities",
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="tree" type="entypo" color={color} size={size} />
           ),
         }}
       />

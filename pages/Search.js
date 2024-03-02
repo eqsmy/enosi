@@ -36,16 +36,36 @@ function SearchFeed({ props }) {
   const [search, setSearch] = useState("");
 
   async function fetchCommunities() {
-    // console.log("fetching");
-    try {
-      let { data: comms, error } = await supabase
+    console.log("Fetching communities for user");
+    // Fetch managing_members entries for the current user
+    const { data: memberEntries, error: memberError } = await supabase
+      .from("managing_members")
+      .select("community_id")
+      .eq("user_id", state.session.user.id);
+
+    if (memberError) {
+      console.error("Error fetching membership info:", memberError.message);
+      return;
+    }
+
+    // Extract community IDs
+    const communityIds = memberEntries.map((entry) => entry.community_id);
+
+    // Fetch communities based on those IDs
+    if (communityIds.length > 0) {
+      const { data: communities, error: communitiesError } = await supabase
         .from("communities")
         .select("*")
-        .contains("members", [state.session.user.id]);
-      setCommunities(comms);
-      if (error) throw error;
-    } catch (error) {
-      alert(error.message);
+        .in("id", communityIds); // Fetch communities where id is in communityIds array
+      if (communitiesError) {
+        console.error("Error fetching communities:", communitiesError.message);
+        return;
+      }
+      console.log("Fetched communities:", communities);
+      setCommunities(communities);
+    } else {
+      console.log("User is not a member of any communities.");
+      setCommunities([]);
     }
   }
 
