@@ -7,6 +7,7 @@ import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { Icon } from "react-native-elements";
 import { FAB } from "@rneui/themed";
+import Toast from "react-native-toast-message";
 
 //import all the pages we have
 import Home from "./pages/Home";
@@ -17,6 +18,8 @@ import LogActivity from "./pages/LogActivity";
 import Login from "./pages/Login";
 import NewCommunityFlow from "./pages/NewCommunities";
 import CommunitiesList from "./pages/CommunitiesList";
+import ChallengeDetail from "@pages/ChallengeDetail";
+
 
 //other imports we need
 import { LogoHeader } from "./components/Headers";
@@ -48,6 +51,16 @@ const Theme = {
 };
 
 function Tabs() {
+  const { state, dispatch } = useUser();
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (!error) {
+      dispatch({ type: "SET_SESSION", payload: null });
+    } else {
+      console.error("Error logging out:", error);
+    }
+  };
+
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -63,7 +76,7 @@ function Tabs() {
               <LogoHeader {...props} />
             </View>
           ),
-          headerStyle: { height: 120, borderWidth: 0 },
+          headerStyle: { height: 120 },
           tabBarStyle: { visibility: "hidden" },
           headerShadowVisible: false,
           tabBarIcon: ({ color, size }) => (
@@ -138,15 +151,6 @@ function RootStack() {
     console.log("Logged In State Changed:", state.loggedIn);
   }, [state.loggedIn]);
 
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (!error) {
-      dispatch({ type: "SET_SESSION", payload: null });
-    } else {
-      console.error("Error logging out:", error);
-    }
-  };
-
   return (
     <Stack.Navigator>
       {state.loggedIn ? (
@@ -171,6 +175,13 @@ function RootStack() {
               headerShown: false,
             }}
             component={NewCommunityFlow}
+          />
+          <Stack.Screen
+            name="ChallengeDetail"
+            options={{
+              headerShown: false,
+            }}
+            component={ChallengeDetail}
           />
         </>
       ) : (
@@ -240,6 +251,7 @@ export default function App() {
   return (
     <UserProvider>
       <AppContent />
+      <Toast topOffset={100} />
     </UserProvider>
   );
 }

@@ -37,7 +37,7 @@ function SearchFeed({ props }) {
 
   async function fetchCommunities() {
     console.log("Fetching communities for user");
-    //Fetch managing_members entries for the current user
+    // Fetch managing_members entries for the current user
     const { data: memberEntries, error: memberError } = await supabase
       .from("managing_members")
       .select("community_id")
