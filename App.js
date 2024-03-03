@@ -107,11 +107,11 @@ function Tabs() {
         }}
       /> */}
       <Tab.Screen
-        name="Communities"
+        name="My Communities"
         component={CommunitiesList}
         options={{
           headerShadowVisible: false,
-          headerTitle: "Communities",
+          headerTitle: "My Communities",
           tabBarIcon: ({ color, size }) => (
             <Icon name="tree" type="entypo" color={color} size={size} />
           ),
@@ -256,8 +256,8 @@ const styles = StyleSheet.create({
 export default function App() {
   return (
     <UserProvider>
-        <AppContent />
-        <Toast topOffset={100} />
+      <AppContent />
+      <Toast topOffset={100} />
     </UserProvider>
   );
 }
