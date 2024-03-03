@@ -290,7 +290,7 @@ export const useCommunityDetailStore = create()((set, get) => ({
       set({
         communityDetail: data,
         loading: false,
-        communityDetailFeed: prepareCommunityDetailFeed(
+        communityDetailFeed: prepareFeedData(
           data.contributions,
           data.feeds
         ),
@@ -312,7 +312,7 @@ export const useCommunityDetailStore = create()((set, get) => ({
   },
 }));
 
-function prepareCommunityDetailFeed(contributions, feed) {
+export function prepareFeedData(contributions, feed) {
   let feedItems = [];
   if (feed) {
     feedItems = feed.map((item) => ({
@@ -335,23 +335,3 @@ function prepareCommunityDetailFeed(contributions, feed) {
   mergedItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   return mergedItems;
 }
-
-export const useProfileStore = create()((set, get) => ({
-  profile: null,
-  loading: true,
-
-  fetchProfile: async (supabase, user_id) => {
-    set({ loading: true });
-    let { data, error } = await supabase
-      .from("view_user_profile")
-      .select("*")
-      .eq("user_id", user_id)
-      .single();
-    if (error) {
-      console.log("Error fetching profile", error);
-    }
-    if (data) {
-      set({ profile: data, loading: false });
-    }
-  },
-}));

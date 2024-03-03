@@ -27,8 +27,8 @@ export default function CommunityDetail({ route }) {
 
   useEffect(() => {
     fetchCommunityDetail(supabase, communityId);
-    console.log(communityDetail);
-    console.log(communityDetailFeed);
+    // console.log(communityDetail);
+    // console.log(communityDetailFeed);
   }, []);
 
   if (loading) {

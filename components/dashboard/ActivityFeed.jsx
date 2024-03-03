@@ -4,6 +4,7 @@ import { calculateProgress } from "@components/dashboard/ChallengeCardCarousel";
 import { useFeedStore } from "@stores/stores";
 import { useNavigation } from "@react-navigation/native";
 import { useCommunityDetailStore } from "@stores/stores";
+import { prepareFeedData } from "@stores/stores";
 // import { COLORS, FONTS } from "@constants";
 
 const timeAgo = (timestamp) => {
@@ -378,6 +379,89 @@ export const ActivityFeedCommunityDetail = () => {
         {communityDetailFeed.map((item, index) => renderItem({ item, index }))}
       </View>
     </>
+  );
+};
+
+const PostProfileCard = ({ post }) => {
+  return (
+    <View>
+      {post.image_url && (
+        <Image source={{ uri: post.image_url }} style={styles.image_url} />
+      )}
+      <Text style={styles.title}>{post.comment}</Text>
+    </View>
+  );
+};
+
+const ContributionProfileCard = ({ contribution, showProgressBar = true }) => {
+  const navigation = useNavigation();
+  const formattedGoal = `${contribution.total_before_contribution?.toLocaleString()} / ${contribution.goal_total?.toLocaleString()} ${
+    contribution.unit
+  }`;
+
+  return (
+    <View>
+      {contribution.image_url && (
+        <Image
+          source={{ uri: contribution.image_url }}
+          style={styles.contributionImage}
+        />
+      )}
+      <View style={styles.contributionContent}>
+        {contribution.comment && (
+          <Text style={styles.contributionText}>{contribution.comment}</Text>
+        )}
+        <Text style={styles.contributionDetail}>
+          {`Contributed ${contribution.contribution} ${contribution.unit} for `}
+          <Text
+            style={styles.challengeName}
+          >{`"${contribution.challenge_name}"`}</Text>
+        </Text>
+        {showProgressBar && (
+          <View style={styles.progressBarContainer}>
+            <View style={styles.progressBarBackground}>
+              <View
+                style={{
+                  ...styles.progressBarFill,
+                  width: calculateProgress(
+                    contribution.total_before_contribution,
+                    contribution.goal_total
+                  ), // Dynamic based on progress
+                }}
+              />
+            </View>
+            <View style={styles.goalContainer}>
+              {/* <View /> */}
+              <Text style={styles.goalText}>{formattedGoal}</Text>
+            </View>
+          </View>
+        )}
+      </View>
+    </View>
+  );
+};
+
+export const ActivityFeedProfile = ({ contributions, posts }) => {
+  const data = prepareFeedData(contributions, posts);
+
+  const renderItem = ({ item, index }) => {
+    return (
+      <View key={item.id}>
+        {item.type === "feed" ? (
+          <PostProfileCard post={item} />
+        ) : (
+          <ContributionProfileCard contribution={item} />
+        )}
+        {/* Render the separator line if it's not the last item */}
+        {index !== data.length - 1 && <View style={styles.separator} />}
+      </View>
+    );
+  };
+
+  return (
+    <View style={{ marginBottom: 32 }}>
+      {data.map((item, index) => renderItem({ item, index }))}
+    </View>
   );
 };
 

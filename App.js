@@ -13,8 +13,7 @@ import Toast from "react-native-toast-message";
 import Home from "./pages/Home";
 import Search from "./pages/Search";
 import { ChallengesStack } from "./pages/Challenges2";
-// import Profile from "./pages/Profile";
-import Profile from "@pages/NewProfile";
+import Profile from "@pages/Profile";
 import LogActivity from "./pages/LogActivity";
 import Login from "./pages/Login";
 import NewCommunityFlow from "./pages/NewCommunities";
@@ -189,6 +188,13 @@ function RootStack() {
               headerShown: false,
             }}
             component={CommunityDetail}
+          />
+          <Stack.Screen
+            name="Profile"
+            options={{
+              headerShown: true,
+            }}
+            component={Profile}
           />
         </>
       ) : (
