@@ -150,7 +150,7 @@ function RootStack() {
   }, [state.loggedIn]);
 
   return (
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={{ headerBackTitle: "Back" }}>
       {state.loggedIn ? (
         <>
           <Stack.Screen
@@ -164,7 +164,7 @@ function RootStack() {
             options={{
               headerShown: true,
               headerShadowVisible: false,
-              headerTitle: "Log Activity",
+              headerTitle: "Log Contribution",
             }}
           />
           <Stack.Screen

@@ -6,12 +6,12 @@ import {
   TextInput,
   Alert,
   ScrollView,
+  Pressable,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useEffect, useState, useRef } from "react";
-import SimplePicker from "react-native-simple-picker";
+import { useState, useMemo } from "react";
 import { Icon } from "react-native-elements";
 import {
   GestureHandlerRootView,
@@ -27,58 +27,24 @@ import {
 } from "react-native-autocomplete-dropdown";
 import { COLORS, FONTS } from "../constants.js";
 import { enosiStyles } from "./styles.js";
+import { useFeedStore, useUserActivityStore } from "../stores/stores.js";
+import UserChallenges from "../components/UserChallenges.js";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 
 export default function LogActivity() {
   const navigation = useNavigation();
-  //utilzie the user context to get user details and pass to activityData
   const { state } = useUser();
   const userId = state.session.user.id ? state.session.user.id : null;
-  const [activity, setActivity] = useState(null);
-  const [input, setInput] = useState("");
-  const [blurb, setBlurb] = useState("");
+  const [challenge, setChallenge] = useState(null);
   const [inputNum, setNum] = useState(null);
   const [image, setImage] = useState();
-  const [activityTypes, setActivityTypes] = useState([
-    { id: 0, title: "default" },
-  ]);
-  const [error, showError] = useState(null);
-
-  async function fetchActivityTypes() {
-    try {
-      let { data: activity_types, error } = await supabase
-        .from("activity_types")
-        .select("*");
-      types_list = [];
-      activity_types.map((item, idx) => {
-        types_list.push({ title: item["name"], id: idx + 1 });
-      });
-      setActivityTypes(types_list);
-      if (error) throw error;
-    } catch (error) {
-      alert(error.message);
-    }
-  }
-  useEffect(() => {
-    fetchActivityTypes();
-  }, []);
+  const { activeChallenges } = useFeedStore();
+  const { insertUserContribution } = useUserActivityStore();
+  const [blurb, setBlurb] = useState("");
 
   const photoUri = image;
-
-  const updateUserChallenges = async () => {
-    try {
-      const response = await supabase.rpc("add_user_contribution", {
-        x: inputNum,
-        activity: activity,
-        unit: unit,
-        user_: state.session.user.id,
-      });
-    } catch (error) {
-      alert(error.message);
-    }
-  };
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -91,82 +57,116 @@ export default function LogActivity() {
       setImage(result.assets[0].uri);
     }
   };
-  const picker = useRef(null);
 
   const handleSubmit = async () => {
-    if (!photoUri) {
+    if (!inputNum || !blurb) {
       Toast.show({
         type: "error",
-        text1: "Choose a photo",
-      });
-      return null;
-    }
-
-    if (!activity || !inputNum || !unit) {
-      Toast.show({
-        type: "error",
-        text1: "Activity information missing above",
+        text1:
+          "Missing caption or amount of " + challenge.unit + " contributed",
       });
       return;
     }
-    showError(processingMessage);
+    Toast.show({
+      type: "info",
+      text1: "Posting contribution",
+      autoHide: false,
+    });
 
-    const response = await fetch(photoUri);
-    const blob = await response.blob();
-    const reader = new FileReader();
+    const distance = parseFloat(inputNum);
+    if (isNaN(distance)) {
+      Toast.show({
+        type: "error",
+        text1: "Please enter a valid contribution quantity",
+      });
+      return;
+    }
 
-    reader.readAsDataURL(blob);
-    reader.onloadend = async () => {
-      try {
-        const base64 = reader.result.split(",")[1];
-        const buffer = Uint8Array.from(base64Decode(base64), (c) =>
-          c.charCodeAt(0)
-        ).buffer;
-        const imageName = `activity_${userId}_${new Date().getTime()}.jpg`;
-        const resp = await supabase.storage
-          .from("activity_photos")
-          .upload(imageName, buffer, {
-            contentType: "image/jpeg",
-          })
-          .catch((err) => {
-            console.error(err);
+    if (photoUri) {
+      const response = await fetch(photoUri);
+      const blob = await response.blob();
+      const reader = new FileReader();
+
+      reader.readAsDataURL(blob);
+      reader.onloadend = async () => {
+        try {
+          const base64 = reader.result.split(",")[1];
+          const buffer = Uint8Array.from(base64Decode(base64), (c) =>
+            c.charCodeAt(0)
+          ).buffer;
+          const imageName = `activity_${userId}_${new Date().getTime()}.jpg`;
+          const resp = await supabase.storage
+            .from("activity_photos")
+            .upload(imageName, buffer, {
+              contentType: "image/jpeg",
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+          const publicUrl = `https://usnnwgiufohluhxdtvys.supabase.co/storage/v1/object/public/activity_photos/${resp.data.path}`;
+
+          insertUserContribution(
+            supabase,
+            userId,
+            challenge.id,
+            inputNum,
+            challenge.unit,
+            publicUrl,
+            blurb
+          );
+          Toast.show({
+            type: "success",
+            text1: "Contribution successfully logged",
           });
-        const publicUrl = `https://usnnwgiufohluhxdtvys.supabase.co/storage/v1/object/public/activity_photos/${resp.data.path}`;
-        const distance = parseFloat(inputNum);
-        if (isNaN(distance)) {
-          Alert.alert("Error", "Please enter a valid number for distance.");
-          return;
+          navigation.navigate("Home");
+        } catch (error) {
+          console.error("Error logging activity:", error.message);
+          Alert.alert("Error", "Failed to log activity.");
         }
-        // Prepare data for submission
-        const activityData = {
-          user_id: userId,
-          activity_type: activity,
-          distance: distance,
-          blurb: blurb,
-          caption: input,
-          photo_url: publicUrl,
-          duration: 60,
-          distance_units: unit,
-        };
-        updateUserChallenges();
-
-        console.log("Inserting data:", activityData);
-        const { error } = await supabase
-          .from("user_activities")
-          .insert([activityData])
-          .select();
-        if (error) throw error;
-        //Alert.alert("Success", "Activity logged successfully.");
-        navigation.navigate("Home");
-      } catch (error) {
-        console.error("Error logging activity:", error.message);
-        Alert.alert("Error", "Failed to log activity.");
-      }
-    };
+      };
+    } else {
+      insertUserContribution(
+        supabase,
+        userId,
+        challenge.id,
+        inputNum,
+        challenge.unit,
+        null,
+        blurb
+      );
+      Toast.show({
+        type: "success",
+        text1: "Contribution successfully logged",
+      });
+      navigation.navigate("Home");
+    }
   };
-  const unitOptions = ["miles", "kilometers", "hours", "minutes"];
-  const [unit, setUnit] = useState("Pick unit");
-  const processingMessage = "Processing...";
+
+  const unitList = useMemo(() => {
+    let unitOptions = [];
+    activeChallenges.map((value, id) => {
+      unitOptions.push(value.unit);
+    });
+    return [...new Set(unitOptions)];
+  }, [activeChallenges]);
+  const [selectedUnit, setSelectedUnit] = useState(null);
+
+  const challengeList = useMemo(() => {
+    let challengeOptions = [];
+    activeChallenges.filter((value, id) => {
+      if (!selectedUnit || value.unit == selectedUnit) {
+        challengeOptions.push({
+          title: value.challenge_name,
+          id: value.challenge_id,
+          frac_complete: value.current_total / value.goal_total,
+          community: value.community.community_name,
+          photo_url: value.community.profile_photo_url,
+          unit: value.unit,
+        });
+      }
+    });
+    return challengeOptions;
+  }, [selectedUnit, activeChallenges]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "white" }}>
@@ -177,48 +177,55 @@ export default function LogActivity() {
             width: "90%",
           }}
         >
-          <Text style={{ marginTop: 20 }}>Activity Name</Text>
-          <TextInput
-            placeholder="What did you do?"
-            style={enosiStyles.searchBar}
-            onChangeText={(value) => {
-              setInput(value);
-            }}
-            value={input}
-          />
-          <Text style={{ marginTop: 10 }}>Caption</Text>
-          <TextInput
-            placeholder="How did it go?"
-            style={[
-              enosiStyles.searchBar,
-              {
-                paddingTop: 10,
-                height: "auto",
-              },
-            ]}
-            onChangeText={(value) => setBlurb(value)}
-            value={blurb}
-            multiline
-            textAlignVertical="top"
-          />
-          <Text style={styles.customBoxText}>Activity Details</Text>
+          <Text style={{ marginTop: 20 }}>
+            Which challenge are you contributing to?
+          </Text>
+          <View
+            style={{ display: "flex", marginTop: 10, flexDirection: "row" }}
+          >
+            {unitList?.map((value) => {
+              return (
+                <Pressable
+                  style={{
+                    backgroundColor:
+                      value == selectedUnit
+                        ? COLORS.accent
+                        : COLORS.lightaccent,
+                    marginHorizontal: 5,
+                    borderColor: COLORS.accent,
+                    borderWidth: 1,
+                    borderRadius: 20,
+                    padding: 6,
+                    paddingHorizontal: 10,
+                    width: "auto",
+                  }}
+                  onPress={() => {
+                    setSelectedUnit(value);
+                  }}
+                  disabled={challenge}
+                >
+                  <Text
+                    style={{
+                      color: value == selectedUnit ? "white" : "black",
+                    }}
+                  >
+                    {value}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
           <View style={{ justifyContent: "center", alignContent: "center" }}>
             <AutocompleteDropdown
               clearOnFocus={false}
               closeOnBlur={true}
               closeOnSubmit={false}
               initialValue={"0"}
-              onChangeText={(value) => {
-                setActivity(value);
-              }}
               onSelectItem={(value) => {
-                value && setActivity(value.title);
+                setChallenge(value);
               }}
-              dataSet={
-                activity
-                  ? [...activityTypes, { title: activity, id: 0 }]
-                  : activityTypes
-              }
+              onClear={() => setChallenge(null)}
+              dataSet={challengeList}
               inputContainerStyle={[
                 enosiStyles.searchBar,
                 {
@@ -230,154 +237,165 @@ export default function LogActivity() {
                 shadowOffset: 0,
                 borderWidth: 1,
               }}
-              emptyResultText="Set custom"
+              emptyResultText="No challenges available"
               textInputProps={{
-                placeholder: "Search for or add your own activity type",
+                placeholder: "Search for a challenge",
                 style: {
                   height: 38,
                   fontSize: 14,
                 },
               }}
+              renderItem={(item) => {
+                return (
+                  <View>
+                    <UserChallenges
+                      item={item}
+                      onPress={() => nagvigateToLogbook(item.challenge_id)}
+                      showUser
+                    ></UserChallenges>
+                  </View>
+                );
+              }}
             />
           </View>
-          <SimplePicker
-            ref={picker}
-            options={unitOptions}
-            onSubmit={(option) => {
-              setUnit(option);
-            }}
-          />
-
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              alignSelf: "center",
-              marginTop: 10,
-              marginBottom: 10,
-            }}
-          >
-            <View style={styles.numBox}>
-              <View>
-                <TextInput
-                  style={{
-                    fontSize: 72,
-                    textAlign: "right",
-                  }}
-                  value={inputNum}
-                  onChangeText={(x) => {
-                    setNum(x);
-                  }}
-                  keyboardType="numeric"
-                  placeholderTextColor={"#c9c9c9"}
-                  placeholder={"0.0"}
-                />
-              </View>
-            </View>
-            <TouchableOpacity
-              style={styles.pickUnitButton}
-              onPress={() => {
-                picker.current.show();
-              }}
-            >
-              <Text
+          {challenge ? (
+            <View>
+              <Text style={{ marginTop: 20 }}>How did it go?</Text>
+              <TextInput
+                placeholder="Write a contribution caption"
+                style={[
+                  enosiStyles.searchBar,
+                  {
+                    paddingTop: 10,
+                    height: "auto",
+                    marginBottom: 10,
+                  },
+                ]}
+                onChangeText={(value) => setBlurb(value)}
+                value={blurb}
+                multiline
+                textAlignVertical="top"
+              />
+              <Text style={{ marginTop: 10 }}>How much did u contribute?</Text>
+              <View
                 style={{
-                  color: COLORS.primary,
-                  fontSize: 16,
-                  padding: 5,
-                  fontWeight: "500",
-                  textAlign: "right",
-                  fontFamily: FONTS.bold,
-                  paddingTop: -5,
-                }}
-              >
-                <Icon
-                  style={{}}
-                  size={20}
-                  name="edit"
-                  color={COLORS.primary}
-                ></Icon>
-                {unit}{" "}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <TouchableOpacity
-              style={[
-                {
-                  borderRadius: 25,
-                  borderWidth: 1,
-                  borderStyle: photoUri ? "solid" : "dashed",
-                  borderColor: COLORS.primary,
-                  justifyContent: "center",
-                  textAlign: "center",
-                },
-                styles.uploadedImage,
-              ]}
-              onPress={pickImage}
-            >
-              {photoUri ? (
-                <Image
-                  source={{ uri: photoUri }}
-                  style={styles.uploadedImage}
-                />
-              ) : (
-                <View style={{ alignItems: "center" }}>
-                  <Icon
-                    style={{}}
-                    size={50}
-                    name="add-photo-alternate"
-                    color={COLORS.primary}
-                  ></Icon>
-                  <Text style={styles.uploadButtonText}>Choose Photo</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              width: "100%",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={[
-                styles.log,
-                {
+                  display: "flex",
+                  flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginTop: 20,
-                },
-              ]}
-            >
-              <TouchableOpacity
-                onPress={() => {
-                  handleSubmit();
+                  alignSelf: "center",
+                  marginTop: 10,
+                  marginBottom: 10,
                 }}
               >
+                <View style={styles.numBox}>
+                  <View>
+                    <TextInput
+                      style={{
+                        fontSize: 72,
+                        textAlign: "right",
+                      }}
+                      value={inputNum}
+                      onChangeText={(x) => {
+                        setNum(x);
+                      }}
+                      keyboardType="numeric"
+                      placeholderTextColor={"#c9c9c9"}
+                      placeholder={"0.0"}
+                    />
+                  </View>
+                </View>
                 <Text
                   style={{
-                    color: "white",
+                    color: COLORS.primary,
+                    fontSize: 16,
+                    padding: 5,
+                    fontWeight: "500",
+                    textAlign: "right",
                     fontFamily: FONTS.bold,
-                    fontWeight: "800",
-                    fontSize: 18,
+                    paddingTop: -5,
                   }}
                 >
-                  Post
+                  {challenge.unit}{" "}
                 </Text>
-              </TouchableOpacity>
+              </View>
+
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                }}
+              >
+                <TouchableOpacity
+                  style={[
+                    {
+                      borderRadius: 25,
+                      borderWidth: 1,
+                      borderStyle: photoUri ? "solid" : "dashed",
+                      borderColor: COLORS.primary,
+                      justifyContent: "center",
+                      textAlign: "center",
+                    },
+                    styles.uploadedImage,
+                  ]}
+                  onPress={pickImage}
+                >
+                  {photoUri ? (
+                    <Image
+                      source={{ uri: photoUri }}
+                      style={styles.uploadedImage}
+                    />
+                  ) : (
+                    <View style={{ alignItems: "center" }}>
+                      <Icon
+                        style={{}}
+                        size={50}
+                        name="add-photo-alternate"
+                        color={COLORS.primary}
+                      ></Icon>
+                      <Text style={styles.uploadButtonText}>Choose Photo</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <View
+                  style={[
+                    styles.log,
+                    {
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginTop: 20,
+                    },
+                  ]}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleSubmit();
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "white",
+                        fontFamily: FONTS.bold,
+                        fontWeight: "800",
+                        fontSize: 18,
+                      }}
+                    >
+                      Post
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
-          </View>
+          ) : null}
         </ScrollView>
       </AutocompleteDropdownContextProvider>
     </GestureHandlerRootView>

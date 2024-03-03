@@ -1,26 +1,21 @@
 import { Image, StyleSheet, Text, View, Pressable } from "react-native";
 import CircularProgress from "react-native-circular-progress-indicator";
-import {COLORS, FONTS} from "../constants.js"
+import { COLORS, FONTS } from "../constants.js";
 
 export default function UserChallenges({ item, onPress, showUser }) {
   return (
     <View style={styles.challengeCard}>
       <View style={styles.challengeInfo}>
-        <Image
-          source={{ uri: item.challenges.photo_url }}
-          style={styles.challengeImage}
-        />
+        <Image source={{ uri: item.photo_url }} style={styles.challengeImage} />
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.challengeTitle}>{item.challenges.name}</Text>
-        <Text style={styles.challengeDetails}>
-          Info: {item.challenges.description}
-        </Text>
+        <Text style={styles.challengeTitle}>{item.title}</Text>
+        <Text style={styles.challengeDetails}>Community: {item.community}</Text>
       </View>
-      {item.progress < 100 ? (
+      {item.frac_complete < 1 ? (
         <CircularProgress
           radius={20}
-          value={item.progress}
+          value={item.frac_complete * 100}
           inActiveStrokeColor={COLORS.lightprimary}
           inActiveStrokeOpacity={0.2}
           progressValueColor={COLORS.primary}
