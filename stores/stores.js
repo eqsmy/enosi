@@ -224,6 +224,7 @@ export const useFeedStore = create()((set, get) => ({
     if (error) {
       console.log("Error fetching active challenges", error);
     }
+    console.log(user_id);
     if (data) {
       set({ activeChallenges: data.active_challenges });
     }
