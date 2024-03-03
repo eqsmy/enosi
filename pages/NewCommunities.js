@@ -14,11 +14,11 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { COLORS, FONTS } from "../constants";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
-import Toast from "react-native-root-toast";
 import StandardTextInput from "../components/TextInput";
 import StandardPhotoPicker from "../components/PhotoPicker";
 import { useUser } from "../utils/UserContext";
 import { useCommunitiesStore } from "../stores/stores";
+import Toast from "react-native-toast-message";
 
 const Stack = createStackNavigator();
 
@@ -126,16 +126,19 @@ export function NewCommunities() {
         profilePhotoUrl
       );
       if (communityId) {
-        Toast.show("Community created successfully!", {
-          duration: Toast.durations.LONG,
+        Toast.show({
+          type: "success",
+          text1: "Community Created!",
+          position: "top",
         });
-        //console.log("Right before Navigate");
         navigation.navigate("CommunityDetail", { communityId });
       }
     } catch (error) {
       console.log(error);
-      Toast.show("Error creating community", {
-        duration: Toast.durations.LONG,
+      Toast.show({
+        type: "error",
+        text1: "There was an error. Community not created.",
+        position: "top",
       });
     }
   }
