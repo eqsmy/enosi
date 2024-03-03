@@ -122,10 +122,10 @@ export function NewCommunities() {
         .insert([communityData]);
       if (error) throw error;
       // Reset state or navigate as necessary
-         Toast.show({
-           type: "success",
-           text1: "Community created successfully!",
-         });
+      Toast.show({
+        type: "success",
+        text1: "Community created successfully!",
+      });
       navigation.navigate("Communities");
     } catch (error) {
       console.error("Error creating community:", error.message);
@@ -180,24 +180,34 @@ export function NewCommunities() {
           style={styles.photoPicker}
           onPress={() => pickImage(true)}
         >
-          <FontAwesome
-            name="user-circle-o"
-            size={24}
-            color={COLORS.lightgrey}
-          />
-          <Text style={styles.photoPickerText}>Select Profile Photo</Text>
-          {profilePhoto && (
+          {profilePhoto ? (
             <Image source={{ uri: profilePhoto }} style={styles.imagePreview} />
+          ) : (
+            <>
+              <FontAwesome
+                name="user-circle-o"
+                size={24}
+                color={COLORS.lightgrey}
+              />
+              <Text style={styles.photoPickerText}>Select Profile Photo</Text>
+            </>
           )}
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.photoPicker}
           onPress={() => pickImage(false)}
         >
-          <FontAwesome name="picture-o" size={24} color={COLORS.lightgrey} />
-          <Text style={styles.photoPickerText}>Select Header Photo</Text>
-          {headerPhoto && (
+          {headerPhoto ? (
             <Image source={{ uri: headerPhoto }} style={styles.imagePreview} />
+          ) : (
+            <>
+              <FontAwesome
+                name="picture-o"
+                size={24}
+                color={COLORS.lightgrey}
+              />
+              <Text style={styles.photoPickerText}>Select Header Photo</Text>
+            </>
           )}
         </TouchableOpacity>
       </View>
@@ -207,14 +217,16 @@ export function NewCommunities() {
         </Text>
         <Switch
           trackColor={{ false: COLORS.lightgrey, true: COLORS.primary }}
-          thumbColor={isPublic ? COLORS.accent : COLORS.secondary}
+          thumbColor={isPublic ? COLORS.white : COLORS.secondary}
           ios_backgroundColor={COLORS.defaultgray}
           onValueChange={setIsPublic}
           value={isPublic}
         />
       </View>
-      <View style={{ width: "100%", alignItems: "center" }}>
-        <BasicButton onPress={createCommunity} text="Submit" />
+      <View style={{ width: "35%", alignItems: "center" }}>
+        <TouchableOpacity onPress={createCommunity} style={styles.submitButton}>
+          <Text style={styles.submitButtonText}>Submit</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -275,11 +287,13 @@ const styles = StyleSheet.create({
   },
   photoPicker: {
     alignItems: "center",
-    backgroundColor: COLORS.defaultgray,
+    justifyContent: "center",
+    backgroundColor: COLORS.primary,
     padding: 10,
     borderRadius: 5,
     flex: 1,
     marginHorizontal: 5,
+    height: 150,
   },
   photoPickerText: {
     fontFamily: FONTS.bold,
@@ -289,7 +303,7 @@ const styles = StyleSheet.create({
   imagePreview: {
     width: 100,
     height: 100,
-    borderRadius: 50,
+    borderRadius: 60,
     marginTop: 10,
   },
   toggleGroup: {
@@ -302,14 +316,14 @@ const styles = StyleSheet.create({
   submitButton: {
     backgroundColor: COLORS.primary,
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 30,
     width: "100%",
     alignItems: "center",
   },
   submitButtonText: {
     fontFamily: FONTS.bold,
-    color: COLORS.lightaccent,
-    fontSize: 25,
+    color: "white",
+    fontSize: 18,
   },
 });
 
