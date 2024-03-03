@@ -58,7 +58,6 @@ export const useCommunitiesStore = create()((set, get) => ({
       throw new Error("Failed to create community, no data returned.");
     }
     //assuming the community is successfully created, proceed to add membership
-    console.log(communityData.id);
     const communityId = communityData[0].id;
 
     //now add the user as the admin of the community
