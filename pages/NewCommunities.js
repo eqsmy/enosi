@@ -1,18 +1,13 @@
 import {
   Text,
   View,
-  TextInput,
   ScrollView,
-  Image,
   TouchableOpacity,
   Switch,
   StyleSheet,
 } from "react-native";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
-import { BasicButton } from "../components/Buttons";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { useUser } from "../utils/UserContext";
 import { supabase } from "../utils/Supabase";
 import _ from "lodash";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -20,6 +15,8 @@ import { COLORS, FONTS } from "../constants";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
 import Toast from "react-native-root-toast";
+import StandardTextInput from "../components/TextInput";
+import StandardPhotoPicker from "../components/PhotoPicker";
 
 const Stack = createStackNavigator();
 
@@ -139,77 +136,47 @@ export function NewCommunities() {
       contentContainerStyle={styles.contentContainer}
     >
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>Community Name</Text>
-        <TextInput
-          style={styles.input}
+        <StandardTextInput
+          labelText="Community Name"
           placeholder="Enter community name"
           value={communityName}
           onChangeText={setCommunityName}
-        ></TextInput>
-      </View>
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Location</Text>
-        <View style={styles.iconInput}>
-          <MaterialIcons
-            name="location-on"
-            size={24}
-            color={COLORS.secondary}
-          />
-          <TextInput
-            style={styles.inputWithIcon}
-            value={communityLocation}
-            onChangeText={setCommunityLocation}
-            placeholder="Community location"
-          />
-        </View>
-      </View>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Description</Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
+        />
+        <StandardTextInput
+          labelText="Location"
+          placeholder="Community location"
+          value={communityLocation}
+          onChangeText={setCommunityLocation}
+          spaceAbove={10}
+          icon={"location-on"}
+        />
+        <StandardTextInput
+          labelText="Description"
+          placeholder="What's your community about?"
           value={communityDetails}
           onChangeText={setCommunityDetails}
-          placeholder="What's your community about?"
-          multiline
+          spaceAbove={10}
+          height={120}
         />
       </View>
 
       <View style={styles.photoPickerGroup}>
-        <TouchableOpacity
-          style={styles.photoPicker}
-          onPress={() => pickImage(true)}
-        >
-          {profilePhoto ? (
-            <Image source={{ uri: profilePhoto }} style={styles.imagePreview} />
-          ) : (
-            <>
-              <FontAwesome
-                name="user-circle-o"
-                size={24}
-                color={COLORS.lightgrey}
-              />
-              <Text style={styles.photoPickerText}>Select Profile Photo</Text>
-            </>
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.photoPicker}
-          onPress={() => pickImage(false)}
-        >
-          {headerPhoto ? (
-            <Image source={{ uri: headerPhoto }} style={styles.imagePreview} />
-          ) : (
-            <>
-              <FontAwesome
-                name="picture-o"
-                size={24}
-                color={COLORS.lightgrey}
-              />
-              <Text style={styles.photoPickerText}>Select Header Photo</Text>
-            </>
-          )}
-        </TouchableOpacity>
+        <StandardPhotoPicker
+          photoUri={profilePhoto}
+          pickImage={() => pickImage(true)}
+          labelText="Select Profile Photo"
+          iconName="user-circle-o"
+          iconSize={30}
+          iconFamily="font-awesome"
+        />
+        <StandardPhotoPicker
+          photoUri={headerPhoto}
+          pickImage={() => pickImage(false)}
+          labelText="Select Header Photo"
+          iconName="picture-o"
+          iconSize={30}
+          iconFamily="font-awesome"
+        />
       </View>
       <View style={styles.toggleGroup}>
         <Text style={styles.label}>
@@ -250,8 +217,6 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: 5,
     fontFamily: FONTS.bold,
-    color: COLORS.primary,
-    fontSize: 16,
   },
   input: {
     backgroundColor: COLORS.lightgrey,
@@ -280,9 +245,8 @@ const styles = StyleSheet.create({
   },
   photoPickerGroup: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     width: "100%",
-    marginTop: 20,
     marginBottom: 20,
   },
   photoPicker: {

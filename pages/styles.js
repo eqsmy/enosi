@@ -1,7 +1,5 @@
 import { StyleSheet } from "react-native";
 
-
-
 export const enosiStyles = StyleSheet.create({
   container: {
     flex: 1,
@@ -23,13 +21,27 @@ export const enosiStyles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
   },
+  uploadedImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 10,
+    //marginBottom: 10,
+  },
+  uploadButtonText: {
+    color: COLORS.primary,
+    fontWeight: "700",
+    fontSize: 16,
+    fontFamily: FONTS.bold,
+    padding: 8,
+    paddingHorizontal: 25,
+    textAlign: "center",
+  },
   searchBar: {
     height: 40,
     marginTop: 10,
     width: "100%",
     borderWidth: 1,
     padding: 10,
-    borderRadius: 100,
     backgroundColor: "#f6f6f6",
     borderWidth: 1,
     borderColor: "#e8e8e8",
