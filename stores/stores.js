@@ -304,7 +304,7 @@ export const useCommunityDetailStore = create()((set, get) => ({
   communityDetailFeed: [],
 
   fetchCommunityDetail: async (supabase, community_id, user_id) => {
-    set({ loading: true });
+    //set({ loading: true });
     let { data, error } = await supabase
       .from("view_community_details")
       .select("*")
@@ -313,11 +313,17 @@ export const useCommunityDetailStore = create()((set, get) => ({
     if (error) {
       console.log("Error fetching community", error);
     }
+    console.log(data);
     if (data) {
+      console.log(
+        "MEMBER: ",
+        data.members?.some((value) => value.member_id == user_id)
+      );
       set({
         communityDetail: data,
         loading: false,
-        isMember: data.members.some((value) => value.member_id == user_id),
+        isMember:
+          data.members?.some((value) => value.member_id == user_id) ?? false,
         communityDetailFeed: prepareCommunityDetailFeed(
           data.contributions,
           data.feeds
@@ -351,7 +357,7 @@ export const useCommunityDetailStore = create()((set, get) => ({
                 return;
               }
               console.log("Existing row deleted.");
-              fetchCommunityDetail(supabase, community_id, user_id);
+              get().fetchCommunityDetail(supabase, community_id, user_id);
             });
         } else {
           // Row doesn't exist, insert it
@@ -364,7 +370,7 @@ export const useCommunityDetailStore = create()((set, get) => ({
                 return;
               }
               console.log("Community joined.");
-              fetchCommunityDetail(supabase, community_id, user_id);
+              get().fetchCommunityDetail(supabase, community_id, user_id);
             });
         }
       });
