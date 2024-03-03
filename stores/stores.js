@@ -34,7 +34,7 @@ export const useCommunitiesStore = create()((set, get) => ({
     profile_photo_url
   ) => {
     const { data, error } = await supabase
-      .from("tristan_user_communities")
+      .from("user_communities")
       .insert([
         { user_id, name, description, header_photo_url, profile_photo_url },
       ])
@@ -76,7 +76,7 @@ export const useUserActivityStore = create()((set, get) => ({
     comment
   ) => {
     const { data, error } = await supabase
-      .from("tristan_user_challenge_contributions")
+      .from("user_challenge_contributions")
       .insert([
         {
           user_id,
@@ -99,7 +99,7 @@ export const useUserActivityStore = create()((set, get) => ({
   fetchUserContributions: async (supabase, user_id) => {
     let { data, error } = await supabase
 
-      .from("tristan_user_challenge_contributions")
+      .from("user_challenge_contributions")
       .select("*")
       .eq("user_id", user_id);
     if (error) {
@@ -118,21 +118,17 @@ export const useUserActivityStore = create()((set, get) => ({
     image_url
   ) => {
     const { data, error } = await supabase
-      .from("tristan_community_feeds")
+      .from("user_posts")
       .insert([{ user_id, community_id, comment, image_url }])
       .select();
     if (error) {
       console.log("Error inserting community post", error);
     }
-
-    // if (data) {
-    //   fetchCommunityPosts(supabase, community_id);
-    // }
   },
 
   fetchUsersCommunityPosts: async (supabase, user_id) => {
     let { data, error } = await supabase
-      .from("tristan_community_feeds")
+      .from("user_posts")
       .select("*")
       .eq("user_id", user_id);
     if (error) {
@@ -172,7 +168,7 @@ export const useFriendStore = create()((set, get) => ({
 
   insertFriend: async (supabase, user_id, friend_user_id) => {
     const { data, error } = await supabase
-      .from("tristan_user_friends")
+      .from("user_friends")
       .insert([{ user_id, friend_user_id }])
       .select();
     if (error) {
@@ -185,7 +181,7 @@ export const useFriendStore = create()((set, get) => ({
 
   removeFriend: async (supabase, user_id, friend_id) => {
     const { data, error } = await supabase
-      .from("tristan_user_friends")
+      .from("user_friends")
       .delete()
       .eq("user_id", user_id)
       .eq("friend_user_id", friend_id);
@@ -256,7 +252,7 @@ export const useChallengeStore = create()((set, get) => ({
   fetchChallengeDetail: async (supabase, challenge_id) => {
     set({ loading: true });
     let { data, error } = await supabase
-      .from("view_active_challenge_details")
+      .from("view_challenge_details")
       .select("*")
       .eq("challenge_id", challenge_id)
       .single();
@@ -300,7 +296,7 @@ export const useCommunityDetailStore = create()((set, get) => ({
 
   toggleJoin: async (supabase, user_id, community_id) => {
     const { data, error } = await supabase
-      .from("tristan_user_communities")
+      .from("user_communities")
       .upsert([{ user_id, community_id }])
       .select();
     if (error) {
