@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Text,
   StyleSheet,
@@ -13,25 +13,27 @@ import { COLORS } from "../constants";
 import BackButton from "@components/BackButton";
 import { useNavigation } from "@react-navigation/native";
 import { ActivityFeedCommunityDetail } from "@components/dashboard/ActivityFeed";
+import { useUser } from "../utils/UserContext";
 
 export default function CommunityDetail({ route }) {
   const { communityId } = route.params;
+  const { state, dispatch } = useUser();
   const {
     communityDetail,
     fetchCommunityDetail,
     loading,
     isMember,
+    toggleJoin
   } = useCommunityDetailStore();
   const navigation = useNavigation();
 
   useEffect(() => {
-    fetchCommunityDetail(supabase, communityId);
+    fetchCommunityDetail(supabase, communityId, state.session.user.id);
   }, []);
 
   if (loading) {
     return <CommunityDetailSkeleton />;
   }
-
   return (
     <View style={{ flex: 1 }}>
       <SafeAreaView
@@ -77,7 +79,8 @@ export default function CommunityDetail({ route }) {
           <TouchableOpacity
             style={styles.joinButton}
             onPress={() => {
-              // toggleJoin(supabase, user_id, community_id);
+              console.log("pressed")
+              toggleJoin(supabase, state.session.user.id, communityId);
             }}
           >
             <Text style={styles.joinButtonText}>
