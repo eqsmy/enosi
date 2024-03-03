@@ -19,6 +19,7 @@ import Login from "./pages/Login";
 import NewCommunityFlow from "./pages/NewCommunities";
 import CommunitiesList from "./pages/CommunitiesList";
 import ChallengeDetail from "@pages/ChallengeDetail";
+import CommunityDetail from "@pages/CommunityDetail";
 
 //other imports we need
 import { LogoHeader } from "./components/Headers";
@@ -180,6 +181,13 @@ function RootStack() {
               headerShown: false,
             }}
             component={ChallengeDetail}
+          />
+          <Stack.Screen
+            name="CommunityDetail"
+            options={{
+              headerShown: false,
+            }}
+            component={CommunityDetail}
           />
         </>
       ) : (

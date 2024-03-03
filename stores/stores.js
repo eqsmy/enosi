@@ -269,3 +269,69 @@ export const useChallengeStore = create()((set, get) => ({
     }
   },
 }));
+
+export const useCommunityDetailStore = create()((set, get) => ({
+  communityDetail: null,
+  loading: true,
+  isMember: false,
+  communityDetailFeed: [],
+
+  fetchCommunityDetail: async (supabase, community_id) => {
+    set({ loading: true });
+    let { data, error } = await supabase
+      .from("view_community_details")
+      .select("*")
+      .eq("community_id", community_id)
+      .single();
+    if (error) {
+      console.log("Error fetching community", error);
+    }
+    if (data) {
+      set({
+        communityDetail: data,
+        loading: false,
+        communityDetailFeed: prepareCommunityDetailFeed(
+          data.contributions,
+          data.feeds
+        ),
+      });
+    }
+  },
+
+  toggleJoin: async (supabase, user_id, community_id) => {
+    const { data, error } = await supabase
+      .from("tristan_user_communities")
+      .upsert([{ user_id, community_id }])
+      .select();
+    if (error) {
+      console.log("Error joining community", error);
+    }
+    if (data) {
+      fetchCommunityDetail(supabase, community_id);
+    }
+  },
+}));
+
+function prepareCommunityDetailFeed(contributions, feed) {
+  let feedItems = [];
+  if (feed) {
+    feedItems = feed.map((item) => ({
+      ...item,
+      type: "feed", // Add type key
+    }));
+  }
+  let contributionItems = [];
+  if (contributions) {
+    contributionItems = contributions.map((item) => ({
+      ...item,
+      type: "contribution", // Add type key
+    }));
+  }
+
+  // Merge the arrays
+  const mergedItems = [...feedItems, ...contributionItems];
+
+  // Sort by created_at, most recent first
+  mergedItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  return mergedItems;
+}
