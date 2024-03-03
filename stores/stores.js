@@ -335,3 +335,23 @@ function prepareCommunityDetailFeed(contributions, feed) {
   mergedItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   return mergedItems;
 }
+
+export const useProfileStore = create()((set, get) => ({
+  profile: null,
+  loading: true,
+
+  fetchProfile: async (supabase, user_id) => {
+    set({ loading: true });
+    let { data, error } = await supabase
+      .from("view_user_profile")
+      .select("*")
+      .eq("user_id", user_id)
+      .single();
+    if (error) {
+      console.log("Error fetching profile", error);
+    }
+    if (data) {
+      set({ profile: data, loading: false });
+    }
+  },
+}));
