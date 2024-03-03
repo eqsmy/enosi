@@ -12,15 +12,23 @@ import { useCommunityDetailStore } from "@stores/stores";
 import { COLORS } from "../constants";
 import BackButton from "@components/BackButton";
 import { useNavigation } from "@react-navigation/native";
+import { ActivityFeedCommunityDetail } from "@components/dashboard/ActivityFeed";
 
 export default function CommunityDetail({ route }) {
   const { communityId } = route.params;
-  const { communityDetail, fetchCommunityDetail, loading, isMember } =
-    useCommunityDetailStore();
+  const {
+    communityDetail,
+    fetchCommunityDetail,
+    loading,
+    isMember,
+    communityDetailFeed,
+  } = useCommunityDetailStore();
   const navigation = useNavigation();
 
   useEffect(() => {
     fetchCommunityDetail(supabase, communityId);
+    console.log(communityDetail);
+    console.log(communityDetailFeed);
   }, []);
 
   if (loading) {
@@ -67,7 +75,7 @@ export default function CommunityDetail({ route }) {
               style={{
                 color: COLORS.defaultgray,
               }}
-            >{`${communityDetail.members.length} Members`}</Text>
+            >{`${communityDetail.members.length} Members - ${communityDetail.location}`}</Text>
           </View>
           <TouchableOpacity
             style={styles.joinButton}
@@ -80,10 +88,11 @@ export default function CommunityDetail({ route }) {
             </Text>
           </TouchableOpacity>
         </View>
-
+        {/* lcoation of the community: communityDetail.location */}
         <Text style={styles.challengeDescription}>
           {communityDetail.community_description}
         </Text>
+        <ActivityFeedCommunityDetail />
       </View>
     </View>
   );

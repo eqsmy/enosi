@@ -276,6 +276,7 @@ export const useCommunityDetailStore = create()((set, get) => ({
   communityDetail: null,
   loading: true,
   isMember: false,
+  communityDetailFeed: [],
 
   fetchCommunityDetail: async (supabase, community_id) => {
     set({ loading: true });
@@ -288,7 +289,14 @@ export const useCommunityDetailStore = create()((set, get) => ({
       console.log("Error fetching community", error);
     }
     if (data) {
-      set({ communityDetail: data, loading: false });
+      set({
+        communityDetail: data,
+        loading: false,
+        communityDetailFeed: prepareCommunityDetailFeed(
+          data.contributions,
+          data.feeds
+        ),
+      });
     }
   },
 
@@ -305,3 +313,27 @@ export const useCommunityDetailStore = create()((set, get) => ({
     }
   },
 }));
+
+function prepareCommunityDetailFeed(contributions, feed) {
+  let feedItems = [];
+  if (feed) {
+    feedItems = feed.map((item) => ({
+      ...item,
+      type: "feed", // Add type key
+    }));
+  }
+  let contributionItems = [];
+  if (contributions) {
+    contributionItems = contributions.map((item) => ({
+      ...item,
+      type: "contribution", // Add type key
+    }));
+  }
+
+  // Merge the arrays
+  const mergedItems = [...feedItems, ...contributionItems];
+
+  // Sort by created_at, most recent first
+  mergedItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  return mergedItems;
+}
