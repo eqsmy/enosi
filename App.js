@@ -12,7 +12,6 @@ import Toast from "react-native-toast-message";
 //import all the pages we have
 import Home from "./pages/Home";
 import Search from "./pages/Search";
-import { ChallengesStack } from "./pages/Challenges2";
 import Profile from "./pages/Profile";
 import LogActivity from "./pages/LogActivity";
 import Login from "./pages/Login";
@@ -94,18 +93,6 @@ function Tabs() {
           ),
         }}
       />
-      {/* <Tab.Screen
-        name="ChallengesStack"
-        component={ChallengesStack}
-        options={{
-          headerShadowVisible: false,
-          headerShown: false,
-          tabBarLabel: "Challenges",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="map" color={color} size={size} />
-          ),
-        }}
-      /> */}
       <Tab.Screen
         name="My Communities"
         component={CommunitiesList}

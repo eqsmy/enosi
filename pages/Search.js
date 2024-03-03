@@ -39,7 +39,7 @@ function SearchFeed({ props }) {
     console.log("Fetching communities for user");
     // Fetch managing_members entries for the current user
     const { data: memberEntries, error: memberError } = await supabase
-      .from("managing_members")
+      .from("community_membership")
       .select("community_id")
       .eq("user_id", state.session.user.id);
 
@@ -52,14 +52,13 @@ function SearchFeed({ props }) {
     // Fetch communities based on those IDs
     if (communityIds.length > 0) {
       const { data: communities, error: communitiesError } = await supabase
-        .from("communities")
+        .from("view_community_details")
         .select("*")
-        .in("id", communityIds); // Fetch communities where id is in communityIds array
+        .in("community_id", communityIds); // Fetch communities where id is in communityIds array
       if (communitiesError) {
         console.error("Error fetching communities:", communitiesError.message);
         return;
       }
-      console.log("Fetched communities:", communities);
       setCommunities(communities);
     } else {
       console.log("User is not a member of any communities.");
@@ -100,7 +99,7 @@ function SearchFeed({ props }) {
       {
         title: "Communities",
         data: communities.filter((community) => {
-          return community.name.toLowerCase().includes(search.toLowerCase());
+          return community.community_name.toLowerCase().includes(search.toLowerCase());
         }),
       },
     ];
@@ -240,9 +239,9 @@ function SearchFeed({ props }) {
             } else if (section.title == "Communities") {
               return (
                 <FeedItem
-                  name={item.name}
+                  name={item.community_name}
                   icon={{
-                    url: item.photo_url,
+                    url: item.profile_photo_url,
                   }}
                 ></FeedItem>
               );
