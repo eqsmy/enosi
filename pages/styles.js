@@ -22,6 +22,11 @@ export const enosiStyles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
   },
+  separator: {
+    height: 1,
+    backgroundColor: "lightgrey",
+    marginVertical: 8,
+  },
   uploadedImage: {
     width: 150,
     height: 150,

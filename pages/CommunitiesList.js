@@ -4,42 +4,30 @@ import CommunityCard from "../components/CommunityCard";
 import { supabase } from "../utils/Supabase";
 import FloatingButton from "../components/FloatingButton";
 import { COLORS, FONTS } from "../constants";
+import { useCommunitiesStore, useCommunityDetailStore } from "../stores/stores";
+import { enosiStyles } from "./styles";
 
 const CommunitiesList = () => {
-  const [communities, setCommunities] = useState([]);
-
-  useEffect(() => {
-    fetchCommunities();
-  }, []);
-
-  const fetchCommunities = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("view_community_details")
-        .select("*");
-      if (error) throw error;
-      setCommunities(data);
-    } catch (error) {
-      console.error(
-        "Error fetching communities with member count:",
-        error.message
-      );
-    }
-  };
-
+  const { communities } = useCommunitiesStore();
   return (
     <View style={styles.container}>
       <FlatList
         data={communities}
         keyExtractor={(item) => item.community_id.toString()}
-        renderItem={({ item }) => (
-          <CommunityCard
-            community_name={item.community_name}
-            community_description={item.community_description}
-            location={item.location}
-            member_count={item.member_count}
-            profile_photo_url={item.profile_photo_url}
-          />
+        renderItem={({ item, index }) => (
+          <View>
+            <CommunityCard
+              community_name={item.name}
+              community_description={item.description}
+              location={item.location}
+              member_count={item.members.length}
+              profile_photo_url={item.profile_photo_url}
+              community_id={item.community_id}
+            />
+            {/*index !== communities.length - 1 && (
+              <View style={enosiStyles.separator} />
+            )*/}
+          </View>
         )}
       />
       <FloatingButton />
@@ -51,6 +39,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    backgroundColor: "white",
   },
 });
 

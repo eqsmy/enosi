@@ -21,14 +21,11 @@ export default function CommunityDetail({ route }) {
     fetchCommunityDetail,
     loading,
     isMember,
-    communityDetailFeed,
   } = useCommunityDetailStore();
   const navigation = useNavigation();
 
   useEffect(() => {
     fetchCommunityDetail(supabase, communityId);
-    console.log(communityDetail);
-    console.log(communityDetailFeed);
   }, []);
 
   if (loading) {
