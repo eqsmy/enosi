@@ -29,24 +29,56 @@ export const useCommunitiesStore = create()((set, get) => ({
     supabase,
     user_id,
     name,
+    is_public,
+    location,
     description,
     header_photo_url,
     profile_photo_url
   ) => {
-    const { data, error } = await supabase
-      .from("user_communities")
+    //step 1: create the new community and insert it into the communities table
+    const { data: communityData, error: communityError } = await supabase
+      .from("communities")
       .insert([
-        { user_id, name, description, header_photo_url, profile_photo_url },
+        {
+          name,
+          is_public,
+          location,
+          description,
+          header_photo_url,
+          profile_photo_url,
+        },
       ])
-      .select()
-      .single();
-    if (error) {
-      console.log("Error creating community", error);
+      .select("id");
+    console.log(communityData);
+    if (communityError) {
+      console.log("Error creating community", communityError);
+      throw new Error(communityError.message);
+      return; // exit early if there is an error
+    } else if (!communityData) {
+      throw new Error("Failed to create community, no data returned.");
     }
-    if (data) {
-      // data.id should be the new community id
-      // TODO: insert the user as an admin of the community
-      fetchCommunitiesView(supabase, user_id);
+    //assuming the community is successfully created, proceed to add membership
+    console.log(communityData.id);
+    const communityId = communityData[0].id;
+
+    //now add the user as the admin of the community
+    const { error: membershipError } = await supabase
+      .from("community_membership")
+      .insert([
+        {
+          user_id,
+          community_id: communityId,
+          role: "admin",
+          joined_at: new Date().toISOString(),
+        },
+      ]);
+    if (membershipError) {
+      console.error("Error adding community membership", membershipError);
+      throw new Error(communityError.message);
+    } else {
+      console.log("Community and membership created successfully!");
+      get().fetchCommunitiesView(supabase, user_id);
+      return communityId;
     }
   },
 }));

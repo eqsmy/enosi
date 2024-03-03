@@ -18,11 +18,18 @@ import Toast from "react-native-root-toast";
 import StandardTextInput from "../components/TextInput";
 import StandardPhotoPicker from "../components/PhotoPicker";
 import { useUser } from "../utils/UserContext";
+import { useCommunitiesStore } from "../stores/stores";
 
 const Stack = createStackNavigator();
 
 export function NewCommunities() {
   const navigation = useNavigation();
+  const { state } = useUser();
+  const userId = state.session.user.id;
+  const { insertCommunity } = useCommunitiesStore((state) => ({
+    insertCommunity: state.insertCommunity,
+  }));
+  // collect all the community data
   const [communityName, setCommunityName] = useState("");
   const [communityDetails, setCommunityDetails] = useState("");
   const [profilePhoto, setProfilePhoto] = useState(null);
@@ -61,7 +68,7 @@ export function NewCommunities() {
     }
   };
 
-  const uploadImage = async (imageUri, folder) => {
+  const uploadImage = async (imageUri) => {
     const response = await fetch(imageUri);
     const blob = await response.blob();
     const reader = new FileReader();
@@ -107,27 +114,29 @@ export function NewCommunities() {
         uploadProfilePhoto,
         uploadHeaderPhoto,
       ]);
-      const communityData = {
-        name: communityName,
-        public: isPublic,
-        location: communityLocation,
-        description: communityDetails,
-        header_photo_url: headerPhotoUrl,
-        profile_photo_url: profilePhotoUrl,
-      };
-      const { error } = await supabase
-        .from("communities")
-        .insert([communityData]);
-      if (error) throw error;
-      // Reset state or navigate as necessary
-      Toast.show({
-        type: "success",
-        text1: "Community created successfully!",
-      });
-      navigation.navigate("Communities");
+
+      const communityId = await insertCommunity(
+        supabase,
+        userId,
+        communityName,
+        isPublic,
+        communityLocation,
+        communityDetails,
+        headerPhotoUrl,
+        profilePhotoUrl
+      );
+      if (communityId) {
+        Toast.show("Community created successfully!", {
+          duration: Toast.durations.LONG,
+        });
+        //console.log("Right before Navigate");
+        navigation.navigate("CommunityDetail", { communityId });
+      }
     } catch (error) {
-      console.error("Error creating community:", error.message);
-      alert("Error", "Failed to create community.");
+      console.log(error);
+      Toast.show("Error creating community", {
+        duration: Toast.durations.LONG,
+      });
     }
   }
 
