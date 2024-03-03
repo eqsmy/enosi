@@ -15,7 +15,7 @@ const CommunityCard = ({
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{community_name}</Text>
         <Text style={styles.description}>{community_description}</Text>
-        <Text style={styles.members}>{`${member_count}  members`}</Text>
+        <Text style={styles.members}>{`${member_count} members`}</Text>
         <Text style={styles.location}>{location}</Text>
       </View>
     </View>
