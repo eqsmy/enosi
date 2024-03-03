@@ -272,7 +272,7 @@ export const useCommunityDetailStore = create()((set, get) => ({
   isMember: false,
   communityDetailFeed: [],
 
-  fetchCommunityDetail: async (supabase, community_id) => {
+  fetchCommunityDetail: async (supabase, community_id, user_id) => {
     set({ loading: true });
     let { data, error } = await supabase
       .from("view_community_details")
@@ -286,6 +286,7 @@ export const useCommunityDetailStore = create()((set, get) => ({
       set({
         communityDetail: data,
         loading: false,
+        isMember: data.members.some((value) => value.member_id == user_id),
         communityDetailFeed: prepareCommunityDetailFeed(
           data.contributions,
           data.feeds
@@ -295,16 +296,47 @@ export const useCommunityDetailStore = create()((set, get) => ({
   },
 
   toggleJoin: async (supabase, user_id, community_id) => {
-    const { data, error } = await supabase
-      .from("user_communities")
-      .upsert([{ user_id, community_id }])
-      .select();
-    if (error) {
-      console.log("Error joining community", error);
-    }
-    if (data) {
-      fetchCommunityDetail(supabase, community_id);
-    }
+    supabase
+      .from("community_membership")
+      .select("*")
+      .eq("user_id", user_id)
+      .eq("community_id", community_id)
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Error checking existing row:", error.message);
+          return;
+        }
+
+        if (data.length > 0) {
+          // Row already exists, delete it
+          supabase
+            .from("community_membership")
+            .delete()
+            .eq("user_id", user_id)
+            .eq("community_id", community_id)
+            .then(({ error }) => {
+              if (error) {
+                console.error("Error deleting existing row:", error.message);
+                return;
+              }
+              console.log("Existing row deleted.");
+              fetchCommunityDetail(supabase, community_id, user_id);
+            });
+        } else {
+          // Row doesn't exist, insert it
+          supabase
+            .from("community_membership")
+            .upsert({ user_id, community_id, role: "member" })
+            .then(({ error }) => {
+              if (error) {
+                console.error("Error inserting row:", error.message);
+                return;
+              }
+              console.log("Community joined.");
+              fetchCommunityDetail(supabase, community_id, user_id);
+            });
+        }
+      });
   },
 }));
 
