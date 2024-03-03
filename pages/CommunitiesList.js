@@ -1,7 +1,8 @@
-import React, {useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, FlatList } from "react-native";
 import CommunityCard from "../components/CommunityCard";
-import {supabase } from "../utils/Supabase";
+import { supabase } from "../utils/Supabase";
+import FloatingButton from "../components/FloatingButton";
 import { COLORS, FONTS } from "../constants";
 
 const CommunitiesList = () => {
@@ -14,9 +15,8 @@ const CommunitiesList = () => {
   const fetchCommunities = async () => {
     try {
       const { data, error } = await supabase
-        .from("community_with_member_count")
+        .from("view_community_details")
         .select("*");
-
       if (error) throw error;
       setCommunities(data);
     } catch (error) {
@@ -31,17 +31,18 @@ const CommunitiesList = () => {
     <View style={styles.container}>
       <FlatList
         data={communities}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.community_id.toString()}
         renderItem={({ item }) => (
           <CommunityCard
-            photo={item.photo}
-            name={item.name}
-            about={item.about}
-            members={item.num_members}
+            community_name={item.community_name}
+            community_description={item.community_description}
             location={item.location}
+            member_count={item.member_count}
+            profile_photo_url={item.profile_photo_url}
           />
         )}
       />
+      <FloatingButton />
     </View>
   );
 };

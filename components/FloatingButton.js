@@ -4,7 +4,6 @@ import {
   TouchableOpacity,
   Dimensions,
   Animated,
-  SafeAreaView,
   Text,
 } from "react-native";
 import React, { useRef, useState } from "react";
@@ -53,23 +52,35 @@ const FloatingButton = () => {
   });
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate("NewCommunityFlow")}>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate("NewCommunityFlow");
+          toggleMenu();
+        }}
+      >
         <Animated.View
           style={[styles.button, styles.secondary, getAnimatedStyle(-70)]}
         >
           <Icon type="material" name="group-add" color="white"></Icon>
-          <Text style={{ color: "white", marginLeft: 5 }}>
-            Create community
+          <Text style={[styles.buttonText, { fontFamily: FONTS.bold }]}>
+            Community
           </Text>
         </Animated.View>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate("LogActivity")}>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate("LogActivity");
+          toggleMenu();
+        }}
+      >
         <Animated.View
           style={[styles.button, styles.secondary, getAnimatedStyle(-130)]}
         >
           <Icon type="material" name="add-box" color="white"></Icon>
-          <Text style={{ color: "white", marginLeft: 5 }}>Log activity</Text>
+          <Text style={[styles.buttonText, { fontFamily: FONTS.bold }]}>
+            Contribute
+          </Text>
         </Animated.View>
       </TouchableOpacity>
 
@@ -114,6 +125,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     flexDirection: "row",
     right: -56,
+  },
+  buttonText: {
+    color: "white",
+    marginLeft: 5,
   },
 });
 
