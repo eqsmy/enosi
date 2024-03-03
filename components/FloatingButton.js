@@ -52,7 +52,12 @@ const FloatingButton = () => {
   });
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate("NewCommunityFlow")}>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate("NewCommunityFlow");
+          toggleMenu();
+        }}
+      >
         <Animated.View
           style={[styles.button, styles.secondary, getAnimatedStyle(-70)]}
         >
@@ -63,7 +68,12 @@ const FloatingButton = () => {
         </Animated.View>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate("LogActivity")}>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate("LogActivity");
+          toggleMenu();
+        }}
+      >
         <Animated.View
           style={[styles.button, styles.secondary, getAnimatedStyle(-130)]}
         >
