@@ -72,10 +72,10 @@ export const useCommunitiesStore = create()((set, get) => ({
         },
       ]);
     if (membershipError) {
-      console.error("Error adding community membership", membershipError);
+      //console.error("Error adding community membership", membershipError);
       throw new Error(communityError.message);
     } else {
-      console.log("Community and membership created successfully!");
+      //console.log("Community and membership created successfully!");
       get().fetchCommunitiesView(supabase, user_id);
       return communityId;
     }
