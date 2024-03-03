@@ -11,8 +11,7 @@ import {
 import Toast from "react-native-toast-message";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useEffect, useState, useRef, useMemo } from "react";
-import SimplePicker from "react-native-simple-picker";
+import { useState, useMemo } from "react";
 import { Icon } from "react-native-elements";
 import {
   GestureHandlerRootView,
@@ -28,7 +27,7 @@ import {
 } from "react-native-autocomplete-dropdown";
 import { COLORS, FONTS } from "../constants.js";
 import { enosiStyles } from "./styles.js";
-import { useChallengeStore, useFeedStore } from "../stores/stores.js";
+import { useFeedStore, useUserActivityStore } from "../stores/stores.js";
 import UserChallenges from "../components/UserChallenges.js";
 
 const width = Dimensions.get("window").width;
@@ -38,27 +37,14 @@ export default function LogActivity() {
   const navigation = useNavigation();
   const { state } = useUser();
   const userId = state.session.user.id ? state.session.user.id : null;
-  const [activity, setActivity] = useState(null);
-  const [input, setInput] = useState("");
-  const [blurb, setBlurb] = useState("");
+  const [challenge, setChallenge] = useState(null);
   const [inputNum, setNum] = useState(null);
   const [image, setImage] = useState();
-  const [error, showError] = useState(null);
-  const { fetchActiveChallenges, activeChallenges } = useFeedStore();
+  const { activeChallenges } = useFeedStore();
+  const { insertUserContribution } = useUserActivityStore();
+  const [blurb, setBlurb] = useState("");
 
   const photoUri = image;
-
-  const updateUserChallenges = async () => {
-    try {
-      const response = await supabase.rpc("add_user_contribution", {
-        x: inputNum,
-        activity: activity,
-        user_: state.session.user.id,
-      });
-    } catch (error) {
-      alert(error.message);
-    }
-  };
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -71,77 +57,89 @@ export default function LogActivity() {
       setImage(result.assets[0].uri);
     }
   };
-  const picker = useRef(null);
 
   const handleSubmit = async () => {
-    if (!photoUri) {
+    if (!inputNum || !blurb) {
       Toast.show({
         type: "error",
-        text1: "Choose a photo",
-      });
-      return null;
-    }
-
-    if (!activity || !inputNum) {
-      Toast.show({
-        type: "error",
-        text1: "Activity information missing above",
+        text1:
+          "Missing caption or amount of " + challenge.unit + " contributed",
       });
       return;
     }
-    showError(processingMessage);
+    Toast.show({
+      type: "info",
+      text1: "Posting contribution",
+      autoHide: false,
+    });
 
-    const response = await fetch(photoUri);
-    const blob = await response.blob();
-    const reader = new FileReader();
+    const distance = parseFloat(inputNum);
+    if (isNaN(distance)) {
+      Toast.show({
+        type: "error",
+        text1: "Please enter a valid contribution quantity",
+      });
+      return;
+    }
 
-    reader.readAsDataURL(blob);
-    reader.onloadend = async () => {
-      try {
-        const base64 = reader.result.split(",")[1];
-        const buffer = Uint8Array.from(base64Decode(base64), (c) =>
-          c.charCodeAt(0)
-        ).buffer;
-        const imageName = `activity_${userId}_${new Date().getTime()}.jpg`;
-        const resp = await supabase.storage
-          .from("activity_photos")
-          .upload(imageName, buffer, {
-            contentType: "image/jpeg",
-          })
-          .catch((err) => {
-            console.error(err);
+    if (photoUri) {
+      const response = await fetch(photoUri);
+      const blob = await response.blob();
+      const reader = new FileReader();
+
+      reader.readAsDataURL(blob);
+      reader.onloadend = async () => {
+        try {
+          const base64 = reader.result.split(",")[1];
+          const buffer = Uint8Array.from(base64Decode(base64), (c) =>
+            c.charCodeAt(0)
+          ).buffer;
+          const imageName = `activity_${userId}_${new Date().getTime()}.jpg`;
+          const resp = await supabase.storage
+            .from("activity_photos")
+            .upload(imageName, buffer, {
+              contentType: "image/jpeg",
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+          const publicUrl = `https://usnnwgiufohluhxdtvys.supabase.co/storage/v1/object/public/activity_photos/${resp.data.path}`;
+
+          insertUserContribution(
+            supabase,
+            userId,
+            challenge.id,
+            inputNum,
+            challenge.unit,
+            publicUrl,
+            blurb
+          );
+          Toast.show({
+            type: "success",
+            text1: "Contribution successfully logged",
           });
-        const publicUrl = `https://usnnwgiufohluhxdtvys.supabase.co/storage/v1/object/public/activity_photos/${resp.data.path}`;
-        const distance = parseFloat(inputNum);
-        if (isNaN(distance)) {
-          Alert.alert("Error", "Please enter a valid number for distance.");
-          return;
+          navigation.navigate("Home");
+        } catch (error) {
+          console.error("Error logging activity:", error.message);
+          Alert.alert("Error", "Failed to log activity.");
         }
-        // Prepare data for submission
-        const activityData = {
-          user_id: userId,
-          activity_type: activity,
-          distance: distance,
-          blurb: blurb,
-          caption: input,
-          photo_url: publicUrl,
-          duration: 60,
-          distance_units: activity.unit,
-        };
-        updateUserChallenges();
-
-        console.log("Inserting data:", activityData);
-        const { error } = await supabase
-          .from("user_activities")
-          .insert([activityData])
-          .select();
-        if (error) throw error;
-        navigation.navigate("Home");
-      } catch (error) {
-        console.error("Error logging activity:", error.message);
-        Alert.alert("Error", "Failed to log activity.");
-      }
-    };
+      };
+    } else {
+      insertUserContribution(
+        supabase,
+        userId,
+        challenge.id,
+        inputNum,
+        challenge.unit,
+        null,
+        blurb
+      );
+      Toast.show({
+        type: "success",
+        text1: "Contribution successfully logged",
+      });
+      navigation.navigate("Home");
+    }
   };
 
   const unitList = useMemo(() => {
@@ -151,7 +149,6 @@ export default function LogActivity() {
     });
     return [...new Set(unitOptions)];
   }, [activeChallenges]);
-  const processingMessage = "Processing...";
   const [selectedUnit, setSelectedUnit] = useState(null);
 
   const challengeList = useMemo(() => {
@@ -203,9 +200,9 @@ export default function LogActivity() {
                     width: "auto",
                   }}
                   onPress={() => {
-                    console.log(value);
                     setSelectedUnit(value);
                   }}
+                  disabled={challenge}
                 >
                   <Text
                     style={{
@@ -225,9 +222,9 @@ export default function LogActivity() {
               closeOnSubmit={false}
               initialValue={"0"}
               onSelectItem={(value) => {
-                setActivity(value);
+                setChallenge(value);
               }}
-              onClear={() => setActivity(null)}
+              onClear={() => setChallenge(null)}
               dataSet={challengeList}
               inputContainerStyle={[
                 enosiStyles.searchBar,
@@ -261,8 +258,25 @@ export default function LogActivity() {
               }}
             />
           </View>
-          {activity ? (
+          {challenge ? (
             <View>
+              <Text style={{ marginTop: 20 }}>How did it go?</Text>
+              <TextInput
+                placeholder="Write a contribution caption"
+                style={[
+                  enosiStyles.searchBar,
+                  {
+                    paddingTop: 10,
+                    height: "auto",
+                    marginBottom: 10,
+                  },
+                ]}
+                onChangeText={(value) => setBlurb(value)}
+                value={blurb}
+                multiline
+                textAlignVertical="top"
+              />
+              <Text style={{ marginTop: 10 }}>How much did u contribute?</Text>
               <View
                 style={{
                   display: "flex",
@@ -302,7 +316,7 @@ export default function LogActivity() {
                     paddingTop: -5,
                   }}
                 >
-                  {activity.unit}{" "}
+                  {challenge.unit}{" "}
                 </Text>
               </View>
 
