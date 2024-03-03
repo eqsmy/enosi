@@ -19,6 +19,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { COLORS, FONTS } from "../constants";
 import * as ImagePicker from "expo-image-picker";
 import { decode } from "base64-arraybuffer";
+import Toast from "react-native-root-toast";
 
 const Stack = createStackNavigator();
 
@@ -95,30 +96,40 @@ export function NewCommunities() {
 
   async function createCommunity() {
     // Upload profile and header photos
-    const profilePhotoUrl = profilePhoto
-      ? await uploadImage(profilePhoto, "profile_photos")
-      : null;
-    const headerPhotoUrl = headerPhoto
-      ? await uploadImage(headerPhoto, "header_photos")
-      : null;
+    const uploadProfilePhoto = profilePhoto
+      ? uploadImage(profilePhoto, "profile_photos")
+      : Promise.resolve(null);
+    const uploadHeaderPhoto = headerPhoto
+      ? uploadImage(headerPhoto, "header_photos")
+      : Promise.resolve(null);
 
-    const communityData = {
-      name: communityName,
-      public: isPublic,
-      location: communityLocation,
-      description: communityDetails,
-      header_photo_url: headerPhotoUrl,
-      profile_photo_url: profilePhotoUrl,
-    };
     try {
+      // Upload images in parallel
+      const [profilePhotoUrl, headerPhotoUrl] = await Promise.all([
+        uploadProfilePhoto,
+        uploadHeaderPhoto,
+      ]);
+      const communityData = {
+        name: communityName,
+        public: isPublic,
+        location: communityLocation,
+        description: communityDetails,
+        header_photo_url: headerPhotoUrl,
+        profile_photo_url: profilePhotoUrl,
+      };
       const { error } = await supabase
         .from("communities")
         .insert([communityData]);
       if (error) throw error;
-      alert("Community created successfully!");
       // Reset state or navigate as necessary
+         Toast.show({
+           type: "success",
+           text1: "Community created successfully!",
+         });
+      navigation.navigate("Communities");
     } catch (error) {
-      alert("Failed to create community: " + error.message);
+      console.error("Error creating community:", error.message);
+      alert("Error", "Failed to create community.");
     }
   }
 
@@ -136,7 +147,6 @@ export function NewCommunities() {
           onChangeText={setCommunityName}
         ></TextInput>
       </View>
-
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Location</Text>
         <View style={styles.iconInput}>
@@ -191,7 +201,6 @@ export function NewCommunities() {
           )}
         </TouchableOpacity>
       </View>
-
       <View style={styles.toggleGroup}>
         <Text style={styles.label}>
           {isPublic ? "Public Community" : "Private Community"}
@@ -204,7 +213,6 @@ export function NewCommunities() {
           value={isPublic}
         />
       </View>
-
       <View style={{ width: "100%", alignItems: "center" }}>
         <BasicButton onPress={createCommunity} text="Submit" />
       </View>
@@ -248,6 +256,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   textArea: {
+    paddingTop: 15,
     height: 120,
   },
   iconInput: {

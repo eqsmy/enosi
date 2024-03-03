@@ -248,8 +248,8 @@ const styles = StyleSheet.create({
 export default function App() {
   return (
     <UserProvider>
-      <AppContent />
-      <Toast topOffset={100} />
+        <AppContent />
+        <Toast topOffset={100} />
     </UserProvider>
   );
 }
