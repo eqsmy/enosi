@@ -131,7 +131,8 @@ export function NewCommunities() {
           text1: "Community Created!",
           position: "top",
         });
-        navigation.navigate("CommunityDetail", { communityId });
+        navigation.navigate("My Communities");
+        navigation.push("CommunityDetail", { communityId });
       }
     } catch (error) {
       console.log(error);

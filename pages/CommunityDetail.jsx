@@ -74,7 +74,7 @@ export default function CommunityDetail({ route }) {
               style={{
                 color: COLORS.defaultgray,
               }}
-            >{`${communityDetail.members.length} Members - ${communityDetail.location}`}</Text>
+            >{`${communityDetail.members?.length ?? 0} Members - ${communityDetail.location}`}</Text>
           </View>
           <TouchableOpacity
             style={styles.joinButton}
