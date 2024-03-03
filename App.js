@@ -48,6 +48,16 @@ const Theme = {
 };
 
 function Tabs() {
+  const { state, dispatch } = useUser();
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (!error) {
+      dispatch({ type: "SET_SESSION", payload: null });
+    } else {
+      console.error("Error logging out:", error);
+    }
+  };
+
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -126,15 +136,6 @@ function RootStack() {
   useEffect(() => {
     console.log("Logged In State Changed:", state.loggedIn);
   }, [state.loggedIn]);
-
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (!error) {
-      dispatch({ type: "SET_SESSION", payload: null });
-    } else {
-      console.error("Error logging out:", error);
-    }
-  };
 
   return (
     <Stack.Navigator>
