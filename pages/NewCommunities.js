@@ -17,6 +17,7 @@ import { decode } from "base64-arraybuffer";
 import Toast from "react-native-root-toast";
 import StandardTextInput from "../components/TextInput";
 import StandardPhotoPicker from "../components/PhotoPicker";
+import { useUser } from "../utils/UserContext";
 
 const Stack = createStackNavigator();
 
