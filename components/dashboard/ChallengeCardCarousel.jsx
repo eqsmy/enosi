@@ -9,6 +9,7 @@ import {
 import React from "react";
 import { useFeedStore } from "@stores/stores.js";
 import { useNavigation } from '@react-navigation/native';
+import { COLORS } from "../../constants";
 
 
 export const calculateProgress = (progressCount, goal) => {
@@ -24,9 +25,8 @@ function ChallengeCard({ challengeData }) {
   };
 
   //   format the goal based on the units, add commas to the number
-  const formattedGoal = `${challengeData.current_total.toLocaleString()} / ${challengeData.goal_total.toLocaleString()} ${
-    challengeData.unit
-  }`;
+  const formattedGoal = `${challengeData.current_total.toLocaleString()} / ${challengeData.goal_total.toLocaleString()} ${challengeData.unit
+    }`;
 
   return (
     <TouchableOpacity onPress={handlePress}>
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   deliveryTimeBadge: {
-    backgroundColor: "green",
+    backgroundColor: COLORS.primary,
     borderRadius: 20,
     paddingHorizontal: 8,
     paddingVertical: 3,
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   },
   progressBarFill: {
     height: "100%",
-    backgroundColor: "green",
+    backgroundColor: COLORS.primary,
   },
   goalContainer: {
     flexDirection: "row",
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   activeGoalIndicator: {
     height: 2,
     width: "100%",
-    backgroundColor: "green",
+    backgroundColor: COLORS.primary,
     marginTop: 2,
   },
   logo: {

@@ -5,6 +5,7 @@ import { useFeedStore } from "@stores/stores";
 import { useNavigation } from "@react-navigation/native";
 import { useCommunityDetailStore } from "@stores/stores";
 import { enosiStyles } from "../../pages/styles";
+import { COLORS } from "../../constants";
 // import { COLORS, FONTS } from "@constants";
 
 const timeAgo = (timestamp) => {
@@ -473,7 +474,7 @@ const styles = StyleSheet.create({
   },
   progressBarFill: {
     height: "100%",
-    backgroundColor: "#4caf50",
+    backgroundColor: COLORS.primary,
   },
   goalContainer: {
     flexDirection: "row",
