@@ -390,6 +390,8 @@ export const useCommunityDetailStore = create()((set, get) => ({
       set({
         communityDetail: data,
         loading: false,
+        isMember:
+          data.members?.some((value) => value.member_id == user_id) ?? false,
         communityDetailFeed: prepareFeedData(data.contributions, data.feeds),
       });
     }
