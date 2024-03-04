@@ -28,7 +28,7 @@ export default function CommunityDetail({ route }) {
   const navigation = useNavigation();
 
   useEffect(() => {
-    fetchCommunityDetail(supabase, communityId, state.session.user.id);
+    fetchCommunityDetail(supabase, communityId);
   }, []);
 
   if (loading) {
