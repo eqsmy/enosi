@@ -99,7 +99,9 @@ function SearchFeed({ props }) {
       {
         title: "Communities",
         data: communities.filter((community) => {
-          return community.community_name.toLowerCase().includes(search.toLowerCase());
+          return community.community_name
+            .toLowerCase()
+            .includes(search.toLowerCase());
         }),
       },
     ];
@@ -232,7 +234,7 @@ function SearchFeed({ props }) {
                       : undefined
                   }
                   onPress={() => {
-                    navigation.push("Profile", { user: item });
+                    navigation.push("Profile", { user_id: item.id });
                   }}
                 />
               );
