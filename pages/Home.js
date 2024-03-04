@@ -34,8 +34,13 @@ export default function Home() {
   const { fetchUserContributions, fetchUsersCommunityPosts } =
     useUserActivityStore();
 
-  const { feed, activeChallenges, fetchFeed, fetchActiveChallenges } =
-    useFeedStore();
+  const {
+    feed,
+    activeChallenges,
+    fetchExploreFeed,
+    fetchFeed,
+    fetchActiveChallenges,
+  } = useFeedStore();
 
   useEffect(() => {
     fetchFriendsView(supabase, state.session.user.id);
@@ -44,6 +49,7 @@ export default function Home() {
     fetchUsersCommunityPosts(supabase, state.session.user.id);
     fetchFeed(supabase, state.session.user.id);
     fetchActiveChallenges(supabase, state.session.user.id);
+    fetchExploreFeed(supabase, state.session.user.id);
   }, [useIsFocused()]);
 
   if (feed.length > 0 && activeChallenges.length > 0) {
@@ -83,7 +89,7 @@ const BlankFeedScreen = () => {
       </Text>
       <Button
         title="Find Communities & Friends"
-        onPress={() => navigation.navigate("SearchTab")} // Replace 'SearchScreen' with the actual route name
+        onPress={() => navigation.navigate("Explore")} // Replace 'SearchScreen' with the actual route name
       />
       <FloatingButton />
     </View>

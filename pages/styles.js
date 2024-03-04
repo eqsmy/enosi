@@ -49,7 +49,7 @@ export const enosiStyles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     backgroundColor: "#f6f6f6",
-    borderWidth: 1,
     borderColor: "#e8e8e8",
+    borderRadius: 20,
   },
 });
