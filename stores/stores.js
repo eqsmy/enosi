@@ -270,7 +270,6 @@ export const useFeedStore = create()((set, get) => ({
     if (error) {
       console.log("Error fetching active challenges", error);
     }
-    console.log(user_id);
     if (data) {
       set({ activeChallenges: data.active_challenges });
     }
@@ -348,12 +347,7 @@ export const useCommunityDetailStore = create()((set, get) => ({
     if (error) {
       console.log("Error fetching community", error);
     }
-    console.log(data);
     if (data) {
-      console.log(
-        "MEMBER: ",
-        data.members?.some((value) => value.member_id == user_id)
-      );
       set({
         communityDetail: data,
         loading: false,
