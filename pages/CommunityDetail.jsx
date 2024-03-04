@@ -26,9 +26,10 @@ export default function CommunityDetail({ route }) {
     toggleJoin
   } = useCommunityDetailStore();
   const navigation = useNavigation();
+  console.log(isMember)
 
   useEffect(() => {
-    fetchCommunityDetail(supabase, communityId);
+    fetchCommunityDetail(supabase, communityId, state.session.user.id);
   }, []);
 
   if (loading) {
