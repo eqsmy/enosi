@@ -227,6 +227,8 @@ export const useFriendStore = create()((set, get) => ({
 export const useFeedStore = create()((set, get) => ({
   feed: [],
   activeChallenges: [],
+  exploreFeed: [],
+  communitiesSearchList: [],
 
   fetchFeed: async (supabase, user_id) => {
     let { data, error } = await supabase
@@ -239,6 +241,23 @@ export const useFeedStore = create()((set, get) => ({
     }
     if (data) {
       set({ feed: prepareFeed(data) });
+    }
+  },
+
+  fetchExploreFeed: async (supabase, user_id) => {
+    let { data, error } = await supabase
+      .from("view_explore_page")
+      .select("*")
+      .eq("user_id", user_id)
+      .single();
+    if (error) {
+      console.log("Error fetching feed", error);
+    }
+    if (data) {
+      set({
+        exploreFeed: prepareExploreFeed(data),
+        communitiesSearchList: data.explore_communities,
+      });
     }
   },
 
@@ -257,6 +276,22 @@ export const useFeedStore = create()((set, get) => ({
     }
   },
 }));
+
+function prepareExploreFeed(rawFeed) {
+  const communityItems = rawFeed.explore_communities?.map((item) => ({
+    ...item,
+    type: "community", // Add type key
+  }));
+  const challengeItems = rawFeed.explore_challenges.map((item) => ({
+    ...item,
+    type: "challenge", // Add type key
+  }));
+  const mergedItems = [...communityItems, ...challengeItems];
+
+  // Sort by created_at, most recent first
+  mergedItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  return mergedItems;
+}
 
 function prepareFeed(rawFeed) {
   const feedItems = rawFeed.feed.map((item) => ({
