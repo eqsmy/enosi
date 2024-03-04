@@ -32,6 +32,8 @@ import {
   FONT_SOURCE_MEDIUM,
   FONT_SOURCE_BOLD,
 } from "./constants";
+import Explore from "./pages/Explore";
+import ExploreTab from "./pages/Explore";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -83,10 +85,11 @@ function Tabs() {
         }}
       />
       <Tab.Screen
-        name="SearchTab"
-        children={Search}
+        name="ExploreTab"
+        children={ExploreTab}
         options={{
-          tabBarLabel: "Search",
+          tabBarLabel: "Explore",
+          headerShadowVisible: false,
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="search" color={color} size={size} />

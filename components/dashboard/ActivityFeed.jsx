@@ -6,8 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useCommunityDetailStore } from "@stores/stores";
 import { prepareFeedData } from "@stores/stores";
 import { enosiStyles } from "@pages/styles";
-
-// import { COLORS, FONTS } from "@constants";
+import { COLORS } from "../../constants";
 
 const timeAgo = (timestamp) => {
   timestamp = new Date(timestamp).getTime();
@@ -565,7 +564,7 @@ const styles = StyleSheet.create({
   },
   progressBarFill: {
     height: "100%",
-    backgroundColor: "#4caf50",
+    backgroundColor: COLORS.primary,
   },
   goalContainer: {
     flexDirection: "row",

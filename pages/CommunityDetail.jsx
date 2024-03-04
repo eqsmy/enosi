@@ -79,7 +79,6 @@ export default function CommunityDetail({ route }) {
           <TouchableOpacity
             style={styles.joinButton}
             onPress={() => {
-              console.log("pressed")
               toggleJoin(supabase, state.session.user.id, communityId);
             }}
           >
