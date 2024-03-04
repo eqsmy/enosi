@@ -181,8 +181,8 @@ export const useUserActivityStore = create()((set, get) => ({
  * - removeFriend - removes a friend from the user's list
  */
 export const useFriendStore = create()((set, get) => ({
+  loading: true,
   friends: [],
-
   fetchFriendsView: async (supabase, user_id) => {
     let { data, error } = await supabase
       .from("view_user_friends_list")
@@ -191,22 +191,53 @@ export const useFriendStore = create()((set, get) => ({
       .single();
     if (error) {
       console.log("Error fetching friends list", error);
+      return { error: error, data: null };
     }
     if (data) {
-      set({ friends: data.friends });
+      return { error: null, data: data };
+    }
+  },
+
+  fetchProfile: async (supabase, user_id) => {
+    set({ loading: true });
+    let { data, error } = await supabase
+      .from("view_user_profile")
+      .select("*")
+      .eq("user_id", user_id)
+      .single();
+    if (error) {
+      console.log("Error fetching profile", error);
+      set({ loading: false });
+      return { error: error, data: null };
+    }
+    if (data) {
+      console.log("fetchProfile success", data);
+      set({ loading: false });
+      return { data: data, error: null };
     }
   },
 
   insertFriend: async (supabase, user_id, friend_user_id) => {
     const { data, error } = await supabase
       .from("user_friends")
-      .insert([{ user_id, friend_user_id }])
+      .insert([
+        {
+          user_id: user_id,
+          friend_user_id: friend_user_id,
+          status: "accepted",
+        },
+      ])
       .select();
     if (error) {
-      console.log("Error inserting friend", error);
+      console.log("Error adding friend", error);
+      return { error: error, data: null };
     }
+
     if (data) {
-      get().fetchFriendsView(supabase, user_id);
+      console.log("Friend added", data);
+      const refreshedProfile = await fetchProfile(supabase, user_id);
+      console.log("refreshedProfile", refreshedProfile);
+      return refreshedProfile;
     }
   },
 
@@ -215,11 +246,19 @@ export const useFriendStore = create()((set, get) => ({
       .from("user_friends")
       .delete()
       .eq("user_id", user_id)
-      .eq("friend_user_id", friend_id);
+      .eq("friend_user_id", friend_id)
+      .select();
     if (error) {
       console.log("Error removing friend", error);
-    } else {
-      get().fetchFriendsView(supabase, user_id);
+      return { error: error, data: null };
+    }
+
+    if (data) {
+      console.log("Friend removed", data);
+      // return data;
+      const refreshedProfile = await fetchProfile(supabase, user_id);
+      console.log("refreshedProfile", refreshedProfile);
+      return refreshedProfile;
     }
   },
 }));
@@ -322,10 +361,7 @@ export const useCommunityDetailStore = create()((set, get) => ({
       set({
         communityDetail: data,
         loading: false,
-        communityDetailFeed: prepareFeedData(
-          data.contributions,
-          data.feeds
-        ),
+        communityDetailFeed: prepareFeedData(data.contributions, data.feeds),
       });
     }
   },

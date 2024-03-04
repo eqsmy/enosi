@@ -13,6 +13,7 @@ import { supabase } from "../utils/Supabase.js";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { COLORS, FONTS } from "../constants.js";
 import { ActivityFeedProfile } from "@components/dashboard/ActivityFeed";
+import { insertFriend, removeFriend, fetchProfile } from "@stores/api";
 
 export default function ProfilePage({ route }) {
   const { state, dispatch } = useUser();
@@ -24,24 +25,39 @@ export default function ProfilePage({ route }) {
     route?.params?.user_id == state.session.user.id || !route?.params?.user_id;
 
   useEffect(() => {
-    async function fetchProfileData() {
+    async function fetch() {
       setLoading(true);
-      let { data, error } = await supabase
-        .from("view_user_profile")
-        .select("*")
-        .eq("user_id", currentUserID)
-        .single();
-      if (error) {
-        console.log("Error fetching profile", error);
-      }
+      const { data, error } = await fetchProfile(supabase, currentUserID);
       if (data) {
         setProfile(data);
       }
       setLoading(false);
     }
 
-    fetchProfileData();
+    fetch();
   }, []);
+
+  const handleFollow = async () => {
+    if (following) {
+      const { data, error } = await removeFriend(
+        supabase,
+        state.session.user.id,
+        currentUserID
+      );
+      if (data) {
+        setProfile(data);
+      }
+    } else {
+      const { data, error } = await insertFriend(
+        supabase,
+        state.session.user.id,
+        currentUserID
+      );
+      if (data) {
+        setProfile(data);
+      }
+    }
+  };
 
   if (loading) {
     return <ProfilePageSkeleton />;
@@ -50,6 +66,13 @@ export default function ProfilePage({ route }) {
   if (!profile) {
     return <Text>Profile not found</Text>;
   }
+  // check if we follow the user or not
+  const following =
+    profile.friends && profile.friends.length > 0
+      ? profile.friends.find(
+          (follower) => follower.friend_id === state.session.user.id
+        )
+      : null;
 
   const renderList = () => {
     if (activeTab === "friends") {
@@ -149,8 +172,13 @@ export default function ProfilePage({ route }) {
                   padding: 10,
                   borderRadius: 20,
                 }}
+                onPress={handleFollow}
               >
-                <Text style={{ color: "#FFF" }}>Follow</Text>
+                {following ? (
+                  <Text style={{ color: "#FFF" }}>Unfollow</Text>
+                ) : (
+                  <Text style={{ color: "#FFF" }}>Follow</Text>
+                )}
               </TouchableOpacity>
             </View>
           )}
@@ -162,9 +190,6 @@ export default function ProfilePage({ route }) {
             padding: 10,
             borderBottomWidth: 1,
             borderBottomColor: "#f0f0f0",
-            // make this tab stciky to the top
-            position: "sticky",
-            top: 0,
           }}
         >
           <TouchableOpacity onPress={() => setActiveTab("friends")}>

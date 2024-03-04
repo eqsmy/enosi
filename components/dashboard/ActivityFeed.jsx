@@ -5,6 +5,8 @@ import { useFeedStore } from "@stores/stores";
 import { useNavigation } from "@react-navigation/native";
 import { useCommunityDetailStore } from "@stores/stores";
 import { prepareFeedData } from "@stores/stores";
+import { enosiStyles } from "@pages/styles";
+
 // import { COLORS, FONTS } from "@constants";
 
 const timeAgo = (timestamp) => {
@@ -66,8 +68,9 @@ const ContributionCard = ({ contribution, showProgressBar = true }) => {
     });
   };
 
-  const formattedGoal = `${contribution.challenge.current_total?.toLocaleString()} / ${contribution.challenge.goal_total?.toLocaleString()} ${contribution.challenge.unit
-    }`;
+  const formattedGoal = `${contribution.challenge.current_total?.toLocaleString()} / ${contribution.challenge.goal_total?.toLocaleString()} ${
+    contribution.challenge.unit
+  }`;
   return (
     <View style={styles.contributionContainer}>
       <View style={styles.contributionHeader}>
@@ -272,8 +275,9 @@ const ContributionCommunityDetailCard = ({
     });
   };
 
-  const formattedGoal = `${contribution.total_before_contribution?.toLocaleString()} / ${contribution.goal_total?.toLocaleString()} ${contribution.unit
-    }`;
+  const formattedGoal = `${contribution.total_before_contribution?.toLocaleString()} / ${contribution.goal_total?.toLocaleString()} ${
+    contribution.unit
+  }`;
 
   return (
     <View>
@@ -444,7 +448,7 @@ export const ActivityFeedProfile = ({ contributions, posts }) => {
 
   const renderItem = ({ item, index }) => {
     return (
-      <View key={item.id}>
+      <View key={index}>
         {item.type === "feed" ? (
           <PostProfileCard post={item} />
         ) : (
@@ -475,6 +479,11 @@ const styles = StyleSheet.create({
   },
   subreddit: {
     fontWeight: "bold",
+  },
+  separator: {
+    height: 1,
+    backgroundColor: "lightgrey",
+    marginVertical: 8,
   },
   time: {
     color: "#555",
