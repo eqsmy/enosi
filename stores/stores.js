@@ -29,24 +29,55 @@ export const useCommunitiesStore = create()((set, get) => ({
     supabase,
     user_id,
     name,
+    is_public,
+    location,
     description,
     header_photo_url,
     profile_photo_url
   ) => {
-    const { data, error } = await supabase
-      .from("tristan_user_communities")
+    //step 1: create the new community and insert it into the communities table
+    const { data: communityData, error: communityError } = await supabase
+      .from("communities")
       .insert([
-        { user_id, name, description, header_photo_url, profile_photo_url },
+        {
+          name,
+          is_public,
+          location,
+          description,
+          header_photo_url,
+          profile_photo_url,
+        },
       ])
-      .select()
-      .single();
-    if (error) {
-      console.log("Error creating community", error);
+      .select("id");
+    console.log(communityData);
+    if (communityError) {
+      console.log("Error creating community", communityError);
+      throw new Error(communityError.message);
+      return; // exit early if there is an error
+    } else if (!communityData) {
+      throw new Error("Failed to create community, no data returned.");
     }
-    if (data) {
-      // data.id should be the new community id
-      // TODO: insert the user as an admin of the community
-      fetchCommunitiesView(supabase, user_id);
+    //assuming the community is successfully created, proceed to add membership
+    const communityId = communityData[0].id;
+
+    //now add the user as the admin of the community
+    const { error: membershipError } = await supabase
+      .from("community_membership")
+      .insert([
+        {
+          user_id,
+          community_id: communityId,
+          role: "admin",
+          joined_at: new Date().toISOString(),
+        },
+      ]);
+    if (membershipError) {
+      //console.error("Error adding community membership", membershipError);
+      throw new Error(communityError.message);
+    } else {
+      //console.log("Community and membership created successfully!");
+      get().fetchCommunitiesView(supabase, user_id);
+      return communityId;
     }
   },
 }));
@@ -76,7 +107,7 @@ export const useUserActivityStore = create()((set, get) => ({
     comment
   ) => {
     const { data, error } = await supabase
-      .from("tristan_user_challenge_contributions")
+      .from("user_challenge_contributions")
       .insert([
         {
           user_id,
@@ -99,7 +130,7 @@ export const useUserActivityStore = create()((set, get) => ({
   fetchUserContributions: async (supabase, user_id) => {
     let { data, error } = await supabase
 
-      .from("tristan_user_challenge_contributions")
+      .from("user_challenge_contributions")
       .select("*")
       .eq("user_id", user_id);
     if (error) {
@@ -118,21 +149,17 @@ export const useUserActivityStore = create()((set, get) => ({
     image_url
   ) => {
     const { data, error } = await supabase
-      .from("tristan_community_feeds")
+      .from("user_posts")
       .insert([{ user_id, community_id, comment, image_url }])
       .select();
     if (error) {
       console.log("Error inserting community post", error);
     }
-
-    // if (data) {
-    //   fetchCommunityPosts(supabase, community_id);
-    // }
   },
 
   fetchUsersCommunityPosts: async (supabase, user_id) => {
     let { data, error } = await supabase
-      .from("tristan_community_feeds")
+      .from("user_posts")
       .select("*")
       .eq("user_id", user_id);
     if (error) {
@@ -172,7 +199,7 @@ export const useFriendStore = create()((set, get) => ({
 
   insertFriend: async (supabase, user_id, friend_user_id) => {
     const { data, error } = await supabase
-      .from("tristan_user_friends")
+      .from("user_friends")
       .insert([{ user_id, friend_user_id }])
       .select();
     if (error) {
@@ -185,7 +212,7 @@ export const useFriendStore = create()((set, get) => ({
 
   removeFriend: async (supabase, user_id, friend_id) => {
     const { data, error } = await supabase
-      .from("tristan_user_friends")
+      .from("user_friends")
       .delete()
       .eq("user_id", user_id)
       .eq("friend_user_id", friend_id);
@@ -256,7 +283,7 @@ export const useChallengeStore = create()((set, get) => ({
   fetchChallengeDetail: async (supabase, challenge_id) => {
     set({ loading: true });
     let { data, error } = await supabase
-      .from("view_active_challenge_details")
+      .from("view_challenge_details")
       .select("*")
       .eq("challenge_id", challenge_id)
       .single();
@@ -276,8 +303,8 @@ export const useCommunityDetailStore = create()((set, get) => ({
   isMember: false,
   communityDetailFeed: [],
 
-  fetchCommunityDetail: async (supabase, community_id) => {
-    set({ loading: true });
+  fetchCommunityDetail: async (supabase, community_id, user_id) => {
+    //set({ loading: true });
     let { data, error } = await supabase
       .from("view_community_details")
       .select("*")
@@ -286,7 +313,12 @@ export const useCommunityDetailStore = create()((set, get) => ({
     if (error) {
       console.log("Error fetching community", error);
     }
+    console.log(data);
     if (data) {
+      console.log(
+        "MEMBER: ",
+        data.members?.some((value) => value.member_id == user_id)
+      );
       set({
         communityDetail: data,
         loading: false,
@@ -299,16 +331,47 @@ export const useCommunityDetailStore = create()((set, get) => ({
   },
 
   toggleJoin: async (supabase, user_id, community_id) => {
-    const { data, error } = await supabase
-      .from("tristan_user_communities")
-      .upsert([{ user_id, community_id }])
-      .select();
-    if (error) {
-      console.log("Error joining community", error);
-    }
-    if (data) {
-      fetchCommunityDetail(supabase, community_id);
-    }
+    supabase
+      .from("community_membership")
+      .select("*")
+      .eq("user_id", user_id)
+      .eq("community_id", community_id)
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Error checking existing row:", error.message);
+          return;
+        }
+
+        if (data.length > 0) {
+          // Row already exists, delete it
+          supabase
+            .from("community_membership")
+            .delete()
+            .eq("user_id", user_id)
+            .eq("community_id", community_id)
+            .then(({ error }) => {
+              if (error) {
+                console.error("Error deleting existing row:", error.message);
+                return;
+              }
+              console.log("Existing row deleted.");
+              get().fetchCommunityDetail(supabase, community_id, user_id);
+            });
+        } else {
+          // Row doesn't exist, insert it
+          supabase
+            .from("community_membership")
+            .upsert({ user_id, community_id, role: "member" })
+            .then(({ error }) => {
+              if (error) {
+                console.error("Error inserting row:", error.message);
+                return;
+              }
+              console.log("Community joined.");
+              get().fetchCommunityDetail(supabase, community_id, user_id);
+            });
+        }
+      });
   },
 }));
 

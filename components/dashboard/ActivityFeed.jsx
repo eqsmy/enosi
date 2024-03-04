@@ -66,9 +66,8 @@ const ContributionCard = ({ contribution, showProgressBar = true }) => {
     });
   };
 
-  const formattedGoal = `${contribution.challenge.current_total?.toLocaleString()} / ${contribution.challenge.goal_total?.toLocaleString()} ${
-    contribution.challenge.unit
-  }`;
+  const formattedGoal = `${contribution.challenge.current_total?.toLocaleString()} / ${contribution.challenge.goal_total?.toLocaleString()} ${contribution.challenge.unit
+    }`;
   return (
     <View style={styles.contributionContainer}>
       <View style={styles.contributionHeader}>
@@ -140,7 +139,7 @@ export const ActivityFeed = () => {
           <ContributionCard contribution={item} />
         )}
         {/* Render the separator line if it's not the last item */}
-        {index !== feed.length - 1 && <View style={styles.separator} />}
+        {index !== feed.length - 1 && <View style={enosiStyles.separator} />}
       </View>
     );
   };
@@ -206,7 +205,7 @@ export const ActivityFeedChallengeDetail = ({ contributions }) => {
         <ContributionCardChallengeDetail contribution={item} />
         {/* Render the separator line if it's not the last item */}
         {index !== contributions.length - 1 && (
-          <View style={styles.separator} />
+          <View style={enosiStyles.separator} />
         )}
       </View>
     );
@@ -273,9 +272,8 @@ const ContributionCommunityDetailCard = ({
     });
   };
 
-  const formattedGoal = `${contribution.total_before_contribution?.toLocaleString()} / ${contribution.goal_total?.toLocaleString()} ${
-    contribution.unit
-  }`;
+  const formattedGoal = `${contribution.total_before_contribution?.toLocaleString()} / ${contribution.goal_total?.toLocaleString()} ${contribution.unit
+    }`;
 
   return (
     <View>
@@ -348,7 +346,7 @@ export const ActivityFeedCommunityDetail = () => {
         )}
         {/* Render the separator line if it's not the last item */}
         {index !== communityDetailFeed.length - 1 && (
-          <View style={styles.separator} />
+          <View style={enosiStyles.separator} />
         )}
       </View>
     );
@@ -502,11 +500,6 @@ const styles = StyleSheet.create({
     height: 200,
     marginBottom: 8,
     borderRadius: 8,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: "lightgrey",
-    marginVertical: 8,
   },
   contributionContainer: {
     backgroundColor: "#FFF",

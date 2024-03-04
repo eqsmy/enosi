@@ -29,6 +29,7 @@ import { COLORS, FONTS } from "../constants.js";
 import { enosiStyles } from "./styles.js";
 import { useFeedStore, useUserActivityStore } from "../stores/stores.js";
 import UserChallenges from "../components/UserChallenges.js";
+import StandardTextInput from "../components/TextInput.js";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
@@ -260,21 +261,12 @@ export default function LogActivity() {
           </View>
           {challenge ? (
             <View>
-              <Text style={{ marginTop: 20 }}>How did it go?</Text>
-              <TextInput
+              <StandardTextInput
+                labelText={"How did it go?"}
                 placeholder="Write a contribution caption"
-                style={[
-                  enosiStyles.searchBar,
-                  {
-                    paddingTop: 10,
-                    height: "auto",
-                    marginBottom: 10,
-                  },
-                ]}
-                onChangeText={(value) => setBlurb(value)}
                 value={blurb}
-                multiline
-                textAlignVertical="top"
+                onChangeText={(value) => setBlurb(value)}
+                spaceAbove={20}
               />
               <Text style={{ marginTop: 10 }}>How much did u contribute?</Text>
               <View
@@ -337,14 +329,14 @@ export default function LogActivity() {
                       justifyContent: "center",
                       textAlign: "center",
                     },
-                    styles.uploadedImage,
+                    enosiStyles.uploadedImage,
                   ]}
                   onPress={pickImage}
                 >
                   {photoUri ? (
                     <Image
                       source={{ uri: photoUri }}
-                      style={styles.uploadedImage}
+                      style={enosiStyles.uploadedImage}
                     />
                   ) : (
                     <View style={{ alignItems: "center" }}>
@@ -477,13 +469,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 18,
     color: "grey",
-  },
-
-  uploadedImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 10,
-    //marginBottom: 10,
   },
   upLoadButtons: {
     backgroundColor: COLORS.primary,

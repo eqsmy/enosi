@@ -1,255 +1,309 @@
 import {
   Text,
   View,
-  SafeAreaView,
-  TextInput,
-  FlatList,
   ScrollView,
+  TouchableOpacity,
   Switch,
+  StyleSheet,
 } from "react-native";
-import { enosiStyles } from "./styles";
-import { BasicButton } from "../components/Buttons";
-import { ProfilePreview } from "../components/ProfilePreview";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { useUser } from "../utils/UserContext";
 import { supabase } from "../utils/Supabase";
-import { useMemo } from "react";
 import _ from "lodash";
 import { createStackNavigator } from "@react-navigation/stack";
-import { COLORS } from "../constants";
+import { COLORS, FONTS } from "../constants";
+import * as ImagePicker from "expo-image-picker";
+import { decode } from "base64-arraybuffer";
+import StandardTextInput from "../components/TextInput";
+import StandardPhotoPicker from "../components/PhotoPicker";
+import { useUser } from "../utils/UserContext";
+import { useCommunitiesStore } from "../stores/stores";
+import Toast from "react-native-toast-message";
 
 const Stack = createStackNavigator();
 
-export function PrivacySettings() {
-  const navigation = useNavigation();
-  function setCommunitySettings() {
-    // TODO
-    navigation.navigate("SearchTab");
-  }
-
-  const defaultPrivacyOptions = [
-    {
-      name: "Private Community",
-      descriptionEnabled:
-        "This community's challenges will only be visible to members.",
-      descriptionDisabled:
-        "This community's challenges will be visible to non-members.",
-      status: true,
-    },
-    {
-      name: "Searchable",
-      descriptionEnabled: "This group is searchable for all users.",
-      descriptionDisabled: "This group is not searchable.",
-      status: false,
-    },
-    {
-      name: "Require Approval",
-      descriptionEnabled:
-        "New members must be approved by a community administrator.",
-      descriptionDisabled: "New members can join without approval.",
-      status: false,
-    },
-    {
-      name: "Restrict Group Invitations",
-      descriptionEnabled: "Only community administrators can send invites.",
-      descriptionDisabled: "Anyone in the group can send invites.",
-      status: true,
-    },
-  ];
-  const [settings, setSettings] = useState(defaultPrivacyOptions);
-  return (
-    <SafeAreaView style={enosiStyles.feedContainer}>
-      {settings.map((option, idx) => {
-        return (
-          <View
-            style={{
-              borderBottomWidth: 1,
-              display: "flex",
-              width: "90%",
-              flexDirection: "row",
-              borderBottomColor: "#e8e8e8",
-              height: 80,
-              paddingTop: 20,
-            }}
-            key={idx}
-          >
-            <View style={{ width: "80%" }}>
-              <Text style={{ fontWeight: "bold", fontSize: 16 }}>
-                {option.name}
-              </Text>
-              <Text
-                style={{
-                  marginTop: 5,
-                  fontSize: 12,
-                  color: "grey",
-                }}
-              >
-                {option.status
-                  ? option.descriptionEnabled
-                  : option.descriptionDisabled}
-              </Text>
-            </View>
-            <Switch
-              style={{ position: "absolute", right: 0, top: 25 }}
-              value={option.status}
-              onValueChange={(value) => {
-                const tempOptions = [...settings];
-                tempOptions[idx] = {
-                  ...tempOptions[idx],
-                  status: !tempOptions[idx].status,
-                };
-                setSettings(tempOptions);
-              }}
-              trackColor={{ true: COLORS.primary, false: undefined }}
-            ></Switch>
-          </View>
-        );
-      })}
-      <View style={{ position: "absolute", bottom: 50 }}>
-        <BasicButton
-          onPress={setCommunitySettings}
-          text={
-            _.isEqual(settings, defaultPrivacyOptions)
-              ? "Save Defaults"
-              : "Save"
-          }
-        ></BasicButton>
-      </View>
-      <Text style={{ position: "absolute", bottom: 25, color: "grey" }}>
-        (These settings can be changed later)
-      </Text>
-    </SafeAreaView>
-  );
-}
-
 export function NewCommunities() {
   const navigation = useNavigation();
+  const { state } = useUser();
+  const userId = state.session.user.id;
+  const { insertCommunity } = useCommunitiesStore((state) => ({
+    insertCommunity: state.insertCommunity,
+  }));
+  // collect all the community data
   const [communityName, setCommunityName] = useState("");
-  const [peopleSearch, setPeopleSearch] = useState("");
-  const { state, dispatch } = useUser();
-  const [peopleToAdd, setPeopleToAdd] = useState([state.session.user.id]);
-  const [profiles, setProfiles] = useState([]);
+  const [communityDetails, setCommunityDetails] = useState("");
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [headerPhoto, setHeaderPhoto] = useState(null);
+  const [isPublic, setIsPublic] = useState(true);
+  const [communityLocation, setCommunityLocation] = useState(null);
+
   useEffect(() => {
-    async function fetchUsers() {
-      try {
-        let { data: profs, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .neq("id", state.session.user.id);
-        setProfiles(profs);
-        if (error) throw error;
-      } catch (error) {
-        alert(error.message);
+    (async () => {
+      if (Platform.OS !== "web") {
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+          alert("Sorry, we need camera roll permissions to make this work!");
+        }
       }
-    }
-    fetchUsers();
+    })();
   }, []);
 
-  const filteredUsers = useMemo(() => {
-    return profiles.filter((person) => {
-      return (person.first_name + " " + person.last_name).includes(
-        peopleSearch
-      );
+  // Function to pick image from gallery
+  const pickImage = async (isProfile) => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
     });
-  }, [peopleSearch, profiles]);
 
-  async function createCommunity() {
-    const communityData = {
-      name: communityName,
-      members: peopleToAdd,
-    };
-    try {
-      const { data, error } = await supabase
-        .from("communities")
-        .insert([communityData])
-        .select();
-      if (error) throw error;
-      navigation.navigate("NewCommunityPrivacySettings");
-      // Reset form or navigate to another screen if necessary
-    } catch (error) {
-      console.error("Error creating community:", error.message);
-      alert("Error", "Failed to create community.");
+    if (!result.canceled) {
+      const imageUri = result.assets[0].uri;
+      if (isProfile) {
+        setProfilePhoto(imageUri);
+      } else {
+        setHeaderPhoto(imageUri);
+      }
     }
-  }
-  const renderItem = ({ item }) => {
-    return (
-      <ProfilePreview
-        name={item.first_name + " " + item.last_name}
-        avatar={{ url: item.avatar_url }}
-        bio={item.bio}
-        id={item.id}
-        added={peopleToAdd.includes(item.id)}
-        toggleAddPerson={(person) => {
-          if (peopleToAdd.includes(item.id)) {
-            setPeopleToAdd(
-              peopleToAdd.filter((person) => {
-                return person != item.id;
-              })
-            );
-          } else {
-            setPeopleToAdd([...peopleToAdd, person]);
-          }
-        }}
-      />
-    );
   };
 
-  return (
-    <SafeAreaView style={enosiStyles.container}>
-      <View
-        style={{
-          height: "100%",
-          width: "90%",
-          position: "absolute",
-        }}
-      >
-        <View style={{ marginBottom: 20, marginTop: 10 }}>
-          <Text>Name your community</Text>
-          <TextInput
-            placeholder="Community Name"
-            style={enosiStyles.searchBar}
-            value={communityName}
-            onChangeText={setCommunityName}
-          ></TextInput>
-        </View>
-        <View style={{ height: "70%" }}>
-          <View>
-            <Text>Invite friends</Text>
-            <TextInput
-              placeholder="Search. . ."
-              style={enosiStyles.searchBar}
-              value={peopleSearch}
-              onChangeText={setPeopleSearch}
-            ></TextInput>
-            <View
-              style={{
-                width: "100%",
-                height: "80%",
-                paddingTop: 10,
-              }}
-            >
-              <FlatList
-                data={filteredUsers}
-                numColumns={2}
-                horizontal={false}
-                renderItem={renderItem}
-              ></FlatList>
-            </View>
-          </View>
-        </View>
+  const uploadImage = async (imageUri) => {
+    const response = await fetch(imageUri);
+    const blob = await response.blob();
+    const reader = new FileReader();
 
-        <View style={{ width: "100%", alignItems: "center" }}>
-          <BasicButton
-            backgroundColor={peopleToAdd.length > 0 ? undefined : "#BDBDBD"}
-            onPress={createCommunity}
-            text="Submit"
-          ></BasicButton>
-        </View>
+    return new Promise((resolve, reject) => {
+      try {
+        reader.onload = async () => {
+          const base64 = reader.result.split(",")[1];
+          const decodedData = decode(base64);
+          const fileName = `community_/${new Date().getTime()}.jpg`;
+
+          const resp = await supabase.storage
+            .from("community_photos")
+            .upload(fileName, decodedData, {
+              contentType: "image/jepg",
+            })
+            .catch((error) => {
+              reject(error.message);
+            });
+          // Construct and return the public URL for the uploaded file
+          const publicUrl = `https://usnnwgiufohluhxdtvys.supabase.co/storage/v1/object/public/community_photos/${resp.data.path}`;
+          resolve(publicUrl);
+        };
+        reader.readAsDataURL(blob);
+      } catch (error) {
+        reject(error.message);
+      }
+    });
+  };
+
+  async function createCommunity() {
+    // Upload profile and header photos
+    const uploadProfilePhoto = profilePhoto
+      ? uploadImage(profilePhoto, "profile_photos")
+      : Promise.resolve(null);
+    const uploadHeaderPhoto = headerPhoto
+      ? uploadImage(headerPhoto, "header_photos")
+      : Promise.resolve(null);
+
+    try {
+      // Upload images in parallel
+      const [profilePhotoUrl, headerPhotoUrl] = await Promise.all([
+        uploadProfilePhoto,
+        uploadHeaderPhoto,
+      ]);
+
+      const communityId = await insertCommunity(
+        supabase,
+        userId,
+        communityName,
+        isPublic,
+        communityLocation,
+        communityDetails,
+        headerPhotoUrl,
+        profilePhotoUrl
+      );
+      if (communityId) {
+        Toast.show({
+          type: "success",
+          text1: "Community Created!",
+          position: "top",
+        });
+        navigation.navigate("My Communities");
+        navigation.push("CommunityDetail", { communityId });
+      }
+    } catch (error) {
+      console.log(error);
+      Toast.show({
+        type: "error",
+        text1: "There was an error. Community not created.",
+        position: "top",
+      });
+    }
+  }
+
+  return (
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
+      <View style={styles.inputGroup}>
+        <StandardTextInput
+          labelText="Community Name"
+          placeholder="Enter community name"
+          value={communityName}
+          onChangeText={setCommunityName}
+        />
+        <StandardTextInput
+          labelText="Location"
+          placeholder="Community location"
+          value={communityLocation}
+          onChangeText={setCommunityLocation}
+          spaceAbove={10}
+          icon={"location-on"}
+        />
+        <StandardTextInput
+          labelText="Description"
+          placeholder="What's your community about?"
+          value={communityDetails}
+          onChangeText={setCommunityDetails}
+          spaceAbove={10}
+          height={120}
+        />
       </View>
-    </SafeAreaView>
+
+      <View style={styles.photoPickerGroup}>
+        <StandardPhotoPicker
+          photoUri={profilePhoto}
+          pickImage={() => pickImage(true)}
+          labelText="Select Profile Photo"
+          iconName="user-circle-o"
+          iconSize={30}
+          iconFamily="font-awesome"
+        />
+        <StandardPhotoPicker
+          photoUri={headerPhoto}
+          pickImage={() => pickImage(false)}
+          labelText="Select Header Photo"
+          iconName="picture-o"
+          iconSize={30}
+          iconFamily="font-awesome"
+        />
+      </View>
+      <View style={styles.toggleGroup}>
+        <Text style={styles.label}>
+          {isPublic ? "Public Community" : "Private Community"}
+        </Text>
+        <Switch
+          trackColor={{ false: COLORS.lightgrey, true: COLORS.primary }}
+          thumbColor={isPublic ? COLORS.white : COLORS.secondary}
+          ios_backgroundColor={COLORS.defaultgray}
+          onValueChange={setIsPublic}
+          value={isPublic}
+        />
+      </View>
+      <View style={{ width: "35%", alignItems: "center" }}>
+        <TouchableOpacity onPress={createCommunity} style={styles.submitButton}>
+          <Text style={styles.submitButtonText}>Submit</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "white",
+  },
+  contentContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingBottom: 20,
+  },
+  inputGroup: {
+    width: "100%",
+    marginBottom: 30,
+  },
+  label: {
+    marginBottom: 5,
+    fontFamily: FONTS.bold,
+  },
+  input: {
+    backgroundColor: COLORS.lightgrey,
+    borderRadius: 10,
+    fontFamily: FONTS.medium,
+    padding: 15,
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  inputWithIcon: {
+    flex: 1,
+    fontFamily: FONTS.medium,
+    padding: 5,
+    marginLeft: 5,
+  },
+  textArea: {
+    paddingTop: 15,
+    height: 120,
+  },
+  iconInput: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.lightgrey,
+    borderRadius: 5,
+    padding: 10,
+  },
+  photoPickerGroup: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    width: "100%",
+    marginBottom: 20,
+  },
+  photoPicker: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS.primary,
+    padding: 10,
+    borderRadius: 5,
+    flex: 1,
+    marginHorizontal: 5,
+    height: 150,
+  },
+  photoPickerText: {
+    fontFamily: FONTS.bold,
+    color: COLORS.darkgray,
+    marginTop: 5,
+  },
+  imagePreview: {
+    width: 100,
+    height: 100,
+    borderRadius: 60,
+    marginTop: 10,
+  },
+  toggleGroup: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 20,
+  },
+  submitButton: {
+    backgroundColor: COLORS.primary,
+    padding: 15,
+    borderRadius: 30,
+    width: "100%",
+    alignItems: "center",
+  },
+  submitButtonText: {
+    fontFamily: FONTS.bold,
+    color: "white",
+    fontSize: 18,
+  },
+});
 
 export default function NewCommunityFlow({}) {
   return (
@@ -266,13 +320,13 @@ export default function NewCommunityFlow({}) {
         }}
         children={(props) => <NewCommunities props={props} />}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="NewCommunityPrivacySettings"
         options={{
           title: "Community Settings",
         }}
         component={PrivacySettings}
-      />
+      /> */}
     </Stack.Navigator>
   );
 }
