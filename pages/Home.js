@@ -18,6 +18,7 @@ import {
   useFriendStore,
   useUserActivityStore,
   useFeedStore,
+  useChallengeStore,
 } from "../stores/stores.js";
 
 import { ActivityFeed } from "@components/dashboard/ActivityFeed";
@@ -33,6 +34,7 @@ export default function Home() {
   const { fetchFriendsView } = useFriendStore();
   const { fetchUserContributions, fetchUsersCommunityPosts } =
     useUserActivityStore();
+  const { fetchChallengesMaster } = useChallengeStore();
 
   const {
     feed,
@@ -50,6 +52,7 @@ export default function Home() {
     fetchFeed(supabase, state.session.user.id);
     fetchActiveChallenges(supabase, state.session.user.id);
     fetchExploreFeed(supabase, state.session.user.id);
+    fetchChallengesMaster(supabase);
   }, [useIsFocused()]);
 
   if (feed.length > 0 && activeChallenges.length > 0) {

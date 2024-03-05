@@ -34,6 +34,7 @@ import {
 } from "./constants";
 import Explore from "./pages/Explore";
 import ExploreTab from "./pages/Explore";
+import { CommunityJoinChallenge } from "./pages/CommunityDetail";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -178,6 +179,14 @@ function RootStack() {
               headerShown: false,
             }}
             component={CommunityDetail}
+          />
+          <Stack.Screen
+            name="CommunityJoinChallenge"
+            options={{
+              headerTitle: "Available Challenges",
+              headerShadowVisible: false,
+            }}
+            component={CommunityJoinChallenge}
           />
           <Stack.Screen
             name="Profile"

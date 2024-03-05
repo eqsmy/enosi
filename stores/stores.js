@@ -352,6 +352,7 @@ function prepareFeed(rawFeed) {
 export const useChallengeStore = create()((set, get) => ({
   challengeDetail: null,
   loading: true,
+  availableChallenges: [],
 
   fetchChallengeDetail: async (supabase, challenge_id) => {
     set({ loading: true });
@@ -366,6 +367,16 @@ export const useChallengeStore = create()((set, get) => ({
     if (data) {
       console.log("challengeDetail", data);
       set({ challengeDetail: data, loading: false });
+    }
+  },
+  fetchChallengesMaster: async (supabase) => {
+    let { data, error } = await supabase.from("challenges_master").select("*");
+    if (error) {
+      console.log("Error fetching master challenges list", error);
+    }
+    if (data) {
+      console.log("challenges", data);
+      set({ availableChallenges: data });
     }
   },
 }));
