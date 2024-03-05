@@ -77,7 +77,10 @@ export default function ProfilePage({ route }) {
   const renderList = () => {
     if (activeTab === "friends") {
       if (!profile.friends) {
-        return <Text>Add friends using the search tab!</Text>;
+        if (userIsMe) {
+          return <Text>Join communities using the search tab!</Text>;
+        }
+        return <Text>User has not added friends yet.</Text>;
       }
       return profile.friends.map((item, index) => (
         <View key={index}>
@@ -95,7 +98,11 @@ export default function ProfilePage({ route }) {
       ));
     } else if (activeTab === "communities") {
       if (!profile.communities) {
-        return <Text>Join communities using the search tab!</Text>;
+        if (userIsMe) {
+          return <Text>Join communities using the search tab!</Text>;
+        } else {
+          return <Text>User has not joined a community yet.</Text>;
+        }
       }
       return profile.communities.map((item, index) => (
         <View key={index}>
@@ -113,7 +120,10 @@ export default function ProfilePage({ route }) {
       ));
     } else if (activeTab === "contributions") {
       if (!profile.contributions) {
-        return <Text>Make contributions to communities!</Text>;
+        if (userIsMe) {
+          return <Text>Make contributions to communities!</Text>;
+        }
+        return <Text>User has not made any contributions yet.</Text>;
       }
       return (
         <ActivityFeedProfile

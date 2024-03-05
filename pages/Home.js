@@ -55,7 +55,7 @@ export default function Home() {
     fetchChallengesMaster(supabase);
   }, [useIsFocused()]);
 
-  if (feed.length > 0 && activeChallenges.length > 0) {
+  if (feed.length > 0 || activeChallenges.length > 0) {
     return (
       <SafeAreaView
         style={

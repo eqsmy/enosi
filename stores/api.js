@@ -53,3 +53,39 @@ export async function removeFriend(supabase, user_id, friend_user_id) {
     return refreshedProfile;
   }
 }
+
+export async function insertChallenge(
+  supabase,
+  community_id,
+  master_challenge
+) {
+  console.log("master", master_challenge);
+  const { data, error } = await supabase
+    .from("challenges_community")
+    .insert([
+      {
+        community_id: community_id,
+        challenge_master_id: master_challenge.id,
+        start_date: new Date(),
+        end_date: new Date(
+          new Date().getTime() + master_challenge.duration * 24 * 60 * 60 * 1000
+        ),
+        current_total: 0,
+        status: "active",
+        goal_total: master_challenge.goal_total,
+        challenge_name: master_challenge.name,
+        challenge_description: master_challenge.description,
+        unit: master_challenge.unit,
+      },
+    ])
+    .select();
+  if (error) {
+    console.log("Error adding challenge");
+    return { error: error, data: null };
+  }
+
+  if (data) {
+    console.log("Challenge added");
+    return { data: data, error: null };
+  }
+}

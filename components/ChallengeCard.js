@@ -10,22 +10,40 @@ import {
 import { COLORS, FONTS } from "../constants"; // Ensure this path is correct
 import { useNavigation } from "@react-navigation/native";
 import { Icon } from "react-native-elements";
+import { insertChallenge } from "@stores/api";
+import { supabase } from "../utils/Supabase";
+import { useUser } from "../utils/UserContext";
 
-export const ChallengeCard = ({
-  name,
-  description,
-  goal,
-  unit,
-  header_image,
-  alreadyJoined,
-}) => {
+export const ChallengeCard = ({ challenge, communityId, alreadyJoined }) => {
+  const { state } = useUser();
   const navigation = useNavigation();
+
+  console.log("this current cards challenge", challenge);
+
+  handleJoinChallenge = async (supabase, communityId, challenge) => {
+    console.log("Joining challenge", challenge);
+
+    const { data, error } = await insertChallenge(
+      supabase,
+      communityId,
+      challenge
+    );
+
+    if (error) {
+      console.log("Error joining challenge");
+    }
+    if (data) {
+      console.log("Challenge joined");
+      navigation.pop();
+    }
+  };
+
   return (
     <Pressable style={styles.cardContainer}>
-      <Image source={{ uri: header_image }} style={styles.photo} />
+      <Image source={{ uri: challenge.header_image }} style={styles.photo} />
       <View style={styles.infoContainer}>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.description}>{description}</Text>
+        <Text style={styles.name}>{challenge.name}</Text>
+        <Text style={styles.description}>{challenge.description}</Text>
         <View
           style={{ flexDirection: "row", alignItems: "center", marginTop: 10 }}
         ></View>
@@ -37,14 +55,14 @@ export const ChallengeCard = ({
             color={COLORS.primary}
           />
           <Text style={styles.members}>
-            {goal} {unit}
+            {challenge.goal} {challenge.unit}
           </Text>
         </View>
       </View>
       <TouchableOpacity
         style={alreadyJoined ? styles.acceptedButton : styles.joinButton}
         onPress={() => {
-          //toggleJoin(supabase, state.session.user.id, communityId);
+          handleJoinChallenge(supabase, communityId, challenge);
         }}
       >
         <Text

@@ -104,7 +104,10 @@ export const useUserActivityStore = create()((set, get) => ({
     contribution,
     unit,
     image_url,
-    comment
+    comment,
+    community_id,
+    total_before_contribution,
+    goal_total
   ) => {
     const { data, error } = await supabase
       .from("user_challenge_contributions")
@@ -116,11 +119,34 @@ export const useUserActivityStore = create()((set, get) => ({
           unit,
           image_url,
           comment,
+          community_id,
+          total_before_contribution,
         },
       ])
       .select();
-    if (error) {
+
+    console.log(
+      "check if ",
+      Number(total_before_contribution) + Number(contribution),
+      ">=",
+      goal_total
+    );
+
+    const { data: data2, error: error2 } = await supabase
+      .from("challenges_community")
+      .update({
+        current_total: Number(total_before_contribution) + Number(contribution),
+        status:
+          Number(total_before_contribution) + Number(contribution) >= goal_total
+            ? "complete"
+            : "active",
+      })
+      .eq("id", community_challenge_id)
+      .select();
+
+    if (error || error2) {
       console.log("Error inserting challenge log", error);
+      console.log("Error updating challenge total", error2);
     }
     if (data) {
       // fetchUserLogs(supabase, user_id);
@@ -320,11 +346,20 @@ function prepareExploreFeed(rawFeed) {
     ...item,
     type: "community", // Add type key
   }));
-  const challengeItems = rawFeed.explore_challenges.map((item) => ({
+  const challengeItems = rawFeed.explore_challenges?.map((item) => ({
     ...item,
     type: "challenge", // Add type key
   }));
-  const mergedItems = [...communityItems, ...challengeItems];
+
+  // Merge the arrays, handle the case if they are undefined
+  // const mergedItems = [...communityItems, ...challengeItems];
+  const mergedItems = [];
+  if (communityItems) {
+    mergedItems.push(...communityItems);
+  }
+  if (challengeItems) {
+    mergedItems.push(...challengeItems);
+  }
 
   // Sort by created_at, most recent first
   mergedItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -332,17 +367,23 @@ function prepareExploreFeed(rawFeed) {
 }
 
 function prepareFeed(rawFeed) {
-  const feedItems = rawFeed.feed.map((item) => ({
+  const feedItems = rawFeed?.feed?.map((item) => ({
     ...item,
     type: "feed", // Add type key
   }));
-  const contributionItems = rawFeed.contributions.map((item) => ({
+  const contributionItems = rawFeed?.contributions?.map((item) => ({
     ...item,
     type: "contribution", // Add type key
   }));
 
   // Merge the arrays
-  const mergedItems = [...feedItems, ...contributionItems];
+  const mergedItems = [];
+  if (feedItems) {
+    mergedItems.push(...feedItems);
+  }
+  if (contributionItems) {
+    mergedItems.push(...contributionItems);
+  }
 
   // Sort by created_at, most recent first
   mergedItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -369,13 +410,13 @@ export const useChallengeStore = create()((set, get) => ({
       set({ challengeDetail: data, loading: false });
     }
   },
+
   fetchChallengesMaster: async (supabase) => {
     let { data, error } = await supabase.from("challenges_master").select("*");
     if (error) {
       console.log("Error fetching master challenges list", error);
     }
     if (data) {
-      console.log("challenges", data);
       set({ availableChallenges: data });
     }
   },
