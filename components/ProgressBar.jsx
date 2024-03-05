@@ -15,7 +15,7 @@ const ProgressBar = ({
   };
 
   // Format the goal text
-  const formattedGoal = `${currentValue.toLocaleString()} / ${goalValue.toLocaleString()} miles`;
+  const formattedGoal = `${currentValue.toLocaleString()} / ${goalValue.toLocaleString()} ${unit}`;
 
   // Define size properties
   const barHeight = size === "large" ? 20 : 10;
@@ -23,7 +23,7 @@ const ProgressBar = ({
 
   return (
     <View style={styles.progressBarContainer}>
-      <View style={{...styles.progressBarBackground, height: barHeight}}>
+      <View style={{ ...styles.progressBarBackground, height: barHeight }}>
         <View
           style={{
             ...styles.progressBarFill,
@@ -34,7 +34,7 @@ const ProgressBar = ({
       {showLabel && (
         <View style={styles.goalContainer}>
           {/* Optional: Additional elements can be added here */}
-          <Text style={{...styles.goalText, fontSize: fontSize}}>{formattedGoal}</Text>
+          <Text style={{ ...styles.goalText, fontSize: fontSize }}>{formattedGoal}</Text>
         </View>
       )}
     </View>

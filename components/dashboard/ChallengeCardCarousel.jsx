@@ -31,9 +31,10 @@ function ChallengeCard({ challengeData }) {
   return (
     <TouchableOpacity onPress={handlePress}>
       <View style={styles.cardContainer}>
-        <Text style={styles.communityNameText} numberOfLines={1}>
-          {challengeData.community.community_name}
-        </Text>
+        {challengeData.community ?
+          <Text style={styles.communityNameText} numberOfLines={1}>
+            {challengeData.community.community_name}
+          </Text> : null}
         <Text style={styles.titleText} numberOfLines={1}>
           {challengeData.challenge_name}
         </Text>
@@ -65,18 +66,19 @@ function ChallengeCard({ challengeData }) {
           </View>
         </View>
         {/* Community Logo */}
-        <Image
-          style={styles.logo}
-          source={{
-            uri: challengeData.community.profile_photo_url,
-          }}
-        />
+        {challengeData.community ?
+          <Image
+            style={styles.logo}
+            source={{
+              uri: challengeData.community.profile_photo_url,
+            }}
+          /> : null}
       </View>
     </TouchableOpacity>
   );
 }
 
-export function ChallengeCardCarousel({ style }) {
+export function ChallengeCardCarousel({ style, challenges = undefined }) {
   const { activeChallenges } = useFeedStore();
 
   return (
@@ -88,11 +90,11 @@ export function ChallengeCardCarousel({ style }) {
         ...style,
       }}
     >
-      {activeChallenges.map((challenge, index) => (
+      {(challenges ?? activeChallenges).map((challenge, index) => (
         <View
           key={index}
           style={{
-            marginRight: index !== activeChallenges.length - 1 ? 12 : 0, // Add right margin to all but the last item
+            marginRight: index !== (challenges ?? activeChallenges).length - 1 ? 12 : 0, // Add right margin to all but the last item
           }}
         >
           <ChallengeCard key={index} challengeData={challenge} />
