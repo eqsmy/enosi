@@ -281,7 +281,10 @@ const ContributionCommunityDetailCard = ({
     });
   };
 
-  const formattedGoal = `${contribution.total_before_contribution?.toLocaleString()} / ${contribution.goal_total?.toLocaleString()} ${
+  const total_after_contribution =
+    contribution.total_before_contribution + contribution.contribution;
+
+  const formattedGoal = `${total_after_contribution.toLocaleString()} / ${contribution.goal_total?.toLocaleString()} ${
     contribution.unit
   }`;
 
@@ -298,11 +301,6 @@ const ContributionCommunityDetailCard = ({
         <Text style={styles.timeAgo}>{` · ${timeAgo(
           contribution.created_at
         )}`}</Text>
-        {/* <TouchableOpacity style={{ marginLeft: "auto" }} onPress={handlePress}>
-          <Text style={styles.communityName}>
-            {contribution.community.name}
-          </Text>
-        </TouchableOpacity> */}
       </View>
       {contribution.image_url && (
         <Image
@@ -327,14 +325,13 @@ const ContributionCommunityDetailCard = ({
                 style={{
                   ...styles.progressBarFill,
                   width: calculateProgress(
-                    contribution.total_before_contribution,
+                    total_after_contribution,
                     contribution.goal_total
-                  ), // Dynamic based on progress
+                  ),
                 }}
               />
             </View>
             <View style={styles.goalContainer}>
-              {/* <View /> */}
               <Text style={styles.goalText}>{formattedGoal}</Text>
             </View>
           </View>
@@ -404,7 +401,11 @@ const PostProfileCard = ({ post }) => {
 
 const ContributionProfileCard = ({ contribution, showProgressBar = true }) => {
   const navigation = useNavigation();
-  const formattedGoal = `${contribution.total_before_contribution?.toLocaleString()} / ${contribution.goal_total?.toLocaleString()} ${
+
+  const total_after_contribution =
+    contribution.total_before_contribution + contribution.contribution;
+
+  const formattedGoal = `${total_after_contribution?.toLocaleString()} / ${contribution.goal_total?.toLocaleString()} ${
     contribution.unit
   }`;
 
@@ -433,7 +434,7 @@ const ContributionProfileCard = ({ contribution, showProgressBar = true }) => {
                 style={{
                   ...styles.progressBarFill,
                   width: calculateProgress(
-                    contribution.total_before_contribution,
+                    total_after_contribution,
                     contribution.goal_total
                   ), // Dynamic based on progress
                 }}

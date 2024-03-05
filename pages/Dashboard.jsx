@@ -22,12 +22,6 @@ export function Dashboard() {
       >
         <Header title={"Active Challenges"} />
         <ChallengeCardCarousel style={{ marginBottom: 4 }} />
-        {/* <Divider style={{ marginBottom: 8}} /> */}
-
-        {/* <Header title={"Your Communities"} /> */}
-        {/* <CommunityCardCarosel /> */}
-
-        {/* <Header title={"Feed"} /> */}
         <ActivityFeed />
       </ScrollView>
     </SafeAreaView>

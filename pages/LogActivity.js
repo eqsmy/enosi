@@ -37,7 +37,7 @@ const height = Dimensions.get("window").height;
 export default function LogActivity() {
   const navigation = useNavigation();
   const { state } = useUser();
-  const { fetchFeed } = useFeedStore();
+  const { fetchFeed, fetchActiveChallenges } = useFeedStore();
   const userId = state.session.user.id ? state.session.user.id : null;
   const [challenge, setChallenge] = useState(null);
   const [inputNum, setNum] = useState(null);
@@ -45,8 +45,6 @@ export default function LogActivity() {
   const { activeChallenges } = useFeedStore();
   const { insertUserContribution } = useUserActivityStore();
   const [blurb, setBlurb] = useState("");
-
-  console.log("activeChallenges", activeChallenges);
 
   const photoUri = image;
 
@@ -118,9 +116,11 @@ export default function LogActivity() {
             publicUrl,
             blurb,
             challenge.community_id,
-            challenge.current_total
+            challenge.current_total,
+            challenge.goal_total
           );
           fetchFeed(supabase, userId);
+          fetchActiveChallenges(supabase, userId);
           Toast.show({
             type: "success",
             text1: "Contribution successfully logged",
@@ -132,6 +132,7 @@ export default function LogActivity() {
         }
       };
     } else {
+      console.log("challenge", challenge);
       insertUserContribution(
         supabase,
         userId,
@@ -141,9 +142,11 @@ export default function LogActivity() {
         null,
         blurb,
         challenge.community_id,
-        challenge.current_total
+        challenge.current_total,
+        challenge.goal_total
       );
       fetchFeed(supabase, userId);
+      fetchActiveChallenges(supabase, userId);
       Toast.show({
         type: "success",
         text1: "Contribution successfully logged",
@@ -174,6 +177,7 @@ export default function LogActivity() {
           unit: value.unit,
           community_id: value.community.community_id,
           current_total: value.current_total,
+          goal_total: value.goal_total,
         });
       }
     });
@@ -195,9 +199,10 @@ export default function LogActivity() {
           <View
             style={{ display: "flex", marginTop: 10, flexDirection: "row" }}
           >
-            {unitList?.map((value) => {
+            {unitList?.map((value, index) => {
               return (
                 <Pressable
+                  key={index}
                   style={{
                     backgroundColor:
                       value == selectedUnit
