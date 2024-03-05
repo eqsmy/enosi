@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   Text,
   StyleSheet,
@@ -6,6 +6,8 @@ import {
   Image,
   SafeAreaView,
   TouchableOpacity,
+  TextInput,
+  FlatList,
 } from "react-native";
 import { supabase } from "../utils/Supabase";
 import { useCommunityDetailStore } from "@stores/stores";
@@ -16,6 +18,76 @@ import { ActivityFeedCommunityDetail } from "@components/dashboard/ActivityFeed"
 import { useUser } from "../utils/UserContext";
 import { ChallengeCardCarousel } from "../components/dashboard/ChallengeCardCarousel";
 import { Header } from "../components/dashboard/Header";
+import { Icon } from "react-native-elements";
+import { enosiStyles } from "./styles";
+import { useChallengeStore } from "../stores/stores";
+import { ChallengeCard } from "../components/ChallengeCard";
+import { useState } from "react";
+
+export function CommunityJoinChallenge({ route }) {
+  const { communityId } = route.params;
+  const { state } = useUser();
+  const { availableChallenges } = useChallengeStore()
+  const {
+    communityDetail,
+    fetchCommunityDetail
+  } = useCommunityDetailStore();
+
+  useEffect(() => {
+    fetchCommunityDetail(supabase, communityId, state.session.user.id);
+  }, []);
+  const [search, setSearch] = useState("");
+  const filteredSearchList = useMemo(() => {
+    return availableChallenges.filter((item) => {
+      return item.name.toLowerCase().includes(search.toLowerCase());
+    });
+  }, [search, availableChallenges]);
+
+  console.log(communityDetail.challenges)
+
+  console.log(communityDetail.challenges.some((value) => {
+    return value.challenge_master_id == "3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f"
+  }))
+
+  return (
+    <SafeAreaView style={enosiStyles.feedContainer}>
+      <View
+        style={{
+          height: "100%",
+          width: "90%",
+          position: "absolute",
+        }}
+      >
+        <TextInput
+          placeholder="Search for challenges"
+          style={enosiStyles.searchBar}
+          value={search}
+          onChangeText={setSearch}
+        ></TextInput>
+        <FlatList
+          data={filteredSearchList}
+          style={{ marginTop: 20 }}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item, index }) => {
+            return (
+              <View>
+                <ChallengeCard
+                  name={item.name}
+                  description={item.description}
+                  header_image={item.header_image}
+                  goal={item.goal_total}
+                  unit={item.unit}
+                  alreadyJoined={communityDetail.challenges.some((value) => {
+                    return value.challenge_master_id == item.id
+                  })}
+                />
+              </View>)
+          }}
+        />
+      </View>
+    </SafeAreaView>
+  )
+}
 
 export default function CommunityDetail({ route }) {
   const { communityId } = route.params;
@@ -36,9 +108,6 @@ export default function CommunityDetail({ route }) {
   if (loading) {
     return <CommunityDetailSkeleton />;
   }
-
-  console.log(communityDetail.challenges)
-
   return (
     <View style={{ flex: 1 }}>
       <SafeAreaView
@@ -96,7 +165,10 @@ export default function CommunityDetail({ route }) {
           {communityDetail.community_description}
         </Text>
         <View>
-          <Header title={"Active Challenges"} style={{ paddingHorizontal: 0 }} />
+          <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <Header title={"Active Challenges"} style={{ paddingHorizontal: 0 }} />
+            <Icon size={30} color={COLORS.primary} name="add" type="material" onPress={() => { navigation.navigate("CommunityJoinChallenge", { communityId: communityId }) }} />
+          </View>
           {communityDetail.challenges ?
             <ChallengeCardCarousel challenges={communityDetail.challenges} style={{ paddingHorizontal: 0 }} />
             : <Text style={{ marginBottom: 10 }}>No active challenges</Text>}
