@@ -104,7 +104,9 @@ export const useUserActivityStore = create()((set, get) => ({
     contribution,
     unit,
     image_url,
-    comment
+    comment,
+    community_id,
+    total_before_contribution
   ) => {
     const { data, error } = await supabase
       .from("user_challenge_contributions")
@@ -116,11 +118,23 @@ export const useUserActivityStore = create()((set, get) => ({
           unit,
           image_url,
           comment,
+          community_id,
+          total_before_contribution,
         },
       ])
       .select();
-    if (error) {
+
+    const { data: data2, error: error2 } = await supabase
+      .from("challenges_community")
+      .update({
+        current_total: Number(total_before_contribution) + Number(contribution),
+      })
+      .eq("id", community_challenge_id)
+      .select();
+
+    if (error || error2) {
       console.log("Error inserting challenge log", error);
+      console.log("Error updating challenge total", error2);
     }
     if (data) {
       // fetchUserLogs(supabase, user_id);
@@ -369,13 +383,13 @@ export const useChallengeStore = create()((set, get) => ({
       set({ challengeDetail: data, loading: false });
     }
   },
+
   fetchChallengesMaster: async (supabase) => {
     let { data, error } = await supabase.from("challenges_master").select("*");
     if (error) {
       console.log("Error fetching master challenges list", error);
     }
     if (data) {
-      console.log("challenges", data);
       set({ availableChallenges: data });
     }
   },

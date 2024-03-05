@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { calculateProgress } from "@components/dashboard/ChallengeCardCarousel";
 import { useFeedStore } from "@stores/stores";
 import { useNavigation } from "@react-navigation/native";
@@ -67,8 +74,9 @@ const ContributionCard = ({ contribution, showProgressBar = true }) => {
     });
   };
 
-  const formattedGoal = `${contribution.challenge.current_total?.toLocaleString()} / ${contribution.challenge.goal_total?.toLocaleString()} ${contribution.challenge.unit
-    }`;
+  const formattedGoal = `${contribution.challenge.current_total?.toLocaleString()} / ${contribution.challenge.goal_total?.toLocaleString()} ${
+    contribution.challenge.unit
+  }`;
   return (
     <View style={styles.contributionContainer}>
       <View style={styles.contributionHeader}>
@@ -273,8 +281,9 @@ const ContributionCommunityDetailCard = ({
     });
   };
 
-  const formattedGoal = `${contribution.total_before_contribution?.toLocaleString()} / ${contribution.goal_total?.toLocaleString()} ${contribution.unit
-    }`;
+  const formattedGoal = `${contribution.total_before_contribution?.toLocaleString()} / ${contribution.goal_total?.toLocaleString()} ${
+    contribution.unit
+  }`;
 
   return (
     <View>
@@ -376,6 +385,7 @@ export const ActivityFeedCommunityDetail = () => {
       </Text>
       <ScrollView>
         {communityDetailFeed.map((item, index) => renderItem({ item, index }))}
+        {communityDetailFeed.length === 0 && <Text>No activity yet.</Text>}
       </ScrollView>
     </View>
   );
@@ -394,8 +404,9 @@ const PostProfileCard = ({ post }) => {
 
 const ContributionProfileCard = ({ contribution, showProgressBar = true }) => {
   const navigation = useNavigation();
-  const formattedGoal = `${contribution.total_before_contribution?.toLocaleString()} / ${contribution.goal_total?.toLocaleString()} ${contribution.unit
-    }`;
+  const formattedGoal = `${contribution.total_before_contribution?.toLocaleString()} / ${contribution.goal_total?.toLocaleString()} ${
+    contribution.unit
+  }`;
 
   return (
     <View>

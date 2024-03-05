@@ -37,6 +37,7 @@ const height = Dimensions.get("window").height;
 export default function LogActivity() {
   const navigation = useNavigation();
   const { state } = useUser();
+  const { fetchFeed } = useFeedStore();
   const userId = state.session.user.id ? state.session.user.id : null;
   const [challenge, setChallenge] = useState(null);
   const [inputNum, setNum] = useState(null);
@@ -44,6 +45,8 @@ export default function LogActivity() {
   const { activeChallenges } = useFeedStore();
   const { insertUserContribution } = useUserActivityStore();
   const [blurb, setBlurb] = useState("");
+
+  console.log("activeChallenges", activeChallenges);
 
   const photoUri = image;
 
@@ -113,8 +116,11 @@ export default function LogActivity() {
             inputNum,
             challenge.unit,
             publicUrl,
-            blurb
+            blurb,
+            challenge.community_id,
+            challenge.current_total
           );
+          fetchFeed(supabase, userId);
           Toast.show({
             type: "success",
             text1: "Contribution successfully logged",
@@ -133,8 +139,11 @@ export default function LogActivity() {
         inputNum,
         challenge.unit,
         null,
-        blurb
+        blurb,
+        challenge.community_id,
+        challenge.current_total
       );
+      fetchFeed(supabase, userId);
       Toast.show({
         type: "success",
         text1: "Contribution successfully logged",
@@ -163,6 +172,8 @@ export default function LogActivity() {
           community: value.community.community_name,
           photo_url: value.community.profile_photo_url,
           unit: value.unit,
+          community_id: value.community.community_id,
+          current_total: value.current_total,
         });
       }
     });
