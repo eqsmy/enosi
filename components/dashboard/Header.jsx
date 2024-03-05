@@ -3,7 +3,7 @@ import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 
 
-export const Header = ({ title, style }) => {
+export const Header = ({ title, style, arrowIcon = false }) => {
   return (
     <View
       style={{
@@ -16,7 +16,7 @@ export const Header = ({ title, style }) => {
       }}
     >
       <Text style={{ fontSize: 16, fontWeight: "700" }}>{title}</Text>
-      <Ionicons name="ios-chevron-forward" size={20} color="black" />
+      {arrowIcon ? <Ionicons name="ios-chevron-forward" size={20} color="black" /> : null}
     </View>
   );
 };

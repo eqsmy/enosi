@@ -111,7 +111,14 @@ function CommunityTile({ data }) {
 function ChallengeTile({ data }) {
   const navigation = useNavigation();
   return (
-    <Pressable style={styles.contributionHeader}>
+    <Pressable
+      style={styles.contributionHeader}
+      onPress={() => {
+        navigation.navigate("CommunityDetail", {
+          communityId: data.community_id,
+        });
+      }}
+    >
       <View>
         <Image
           source={{ uri: data.profile_photo_url }}
