@@ -65,7 +65,7 @@ const FloatingButton = () => {
             type="material"
             name="notebook-plus"
             color="white"
-            size= "25"
+            size={25}
           ></MaterialCommunityIcons>
           <Text style={[styles.buttonText, { fontFamily: FONTS.bold }]}>
             Challenge

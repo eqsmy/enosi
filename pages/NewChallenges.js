@@ -60,7 +60,9 @@ export function NewChallenges() {
 
     if (!result.canceled) {
       const imageUri = result.assets[0].uri;
+      setHeaderImage(imageUri);
     }
+    
   };
 
   const uploadImage = async (imageUri) => {
@@ -78,7 +80,7 @@ export function NewChallenges() {
           const resp = await supabase.storage
             .from("challenge_photos")
             .upload(fileName, decodedData, {
-              contentType: "image/jepg",
+              contentType: "image/jpeg",
             })
             .catch((error) => {
               reject(error.message);
@@ -95,9 +97,9 @@ export function NewChallenges() {
   };
 
   async function createChallenge() {
-    const uploadedImageUrl = headerImage
-      ? uploadImage(headerImage)
-      : Promise.resolve(null);
+    const communityPhotoUrl = headerImage
+      ? await uploadImage(headerImage)
+      : null;
     await insertChallenge(
       supabase,
       userId,
@@ -106,7 +108,7 @@ export function NewChallenges() {
       challengeGoal,
       challengeUnit,
       challengeDuration,
-      uploadedImageUrl
+      communityPhotoUrl
     );
     Toast.show({
       type: "success",
