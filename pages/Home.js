@@ -69,7 +69,7 @@ export default function Home() {
             width: "100%",
           }}
         >
-          <Header title={"Active Challenges"} />
+          <Header title={"Active Challenges"} style={{ fontSize: 24 }} />
           <ChallengeCardCarousel style={{ marginBottom: 4 }} />
           <ActivityFeed />
         </ScrollView>

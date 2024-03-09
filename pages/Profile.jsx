@@ -14,6 +14,7 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { COLORS, FONTS } from "../constants.js";
 import { ActivityFeedProfile } from "@components/dashboard/ActivityFeed";
 import { insertFriend, removeFriend, fetchProfile } from "@stores/api";
+import FloatingButton from "../components/FloatingButton.js";
 
 export default function ProfilePage({ route }) {
   const { state, dispatch } = useUser();
@@ -235,6 +236,7 @@ export default function ProfilePage({ route }) {
         </View>
         <View style={{ padding: 20 }}>{renderList()}</View>
       </ScrollView>
+      <FloatingButton />
     </SafeAreaView>
   );
 }

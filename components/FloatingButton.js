@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   container: {
     position: "absolute",
     bottom: 70,
-    right: 70,
+    right: 72,
   },
   button: {
     position: "absolute",
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 30,
     paddingLeft: 10,
-    width: "auto",
+    width: 121,
     paddingRight: 10,
     backgroundColor: COLORS.primary,
     flexDirection: "row",
