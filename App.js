@@ -35,6 +35,7 @@ import {
 import Explore from "./pages/Explore";
 import ExploreTab from "./pages/Explore";
 import { CommunityJoinChallenge } from "./pages/CommunityDetail";
+import NewChallenges from "./pages/NewChallenges";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -165,6 +166,11 @@ function RootStack() {
               headerShown: false,
             }}
             component={NewCommunityFlow}
+          />
+          <Stack.Screen
+            name="NewChallenges"
+            options={{ headerShown: false }}
+            component={NewChallenges}
           />
           <Stack.Screen
             name="ChallengeDetail"

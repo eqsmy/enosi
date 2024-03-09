@@ -54,6 +54,27 @@ const FloatingButton = () => {
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() => {
+          navigation.navigate("NewChallenges");
+          toggleMenu();
+        }}
+      >
+        <Animated.View
+          style={[styles.button, styles.secondary, getAnimatedStyle(-190)]}
+        >
+          <MaterialCommunityIcons
+            type="material"
+            name="notebook-plus"
+            color="white"
+            size= "25"
+          ></MaterialCommunityIcons>
+          <Text style={[styles.buttonText, { fontFamily: FONTS.bold }]}>
+            Challenge
+          </Text>
+        </Animated.View>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => {
           navigation.navigate("NewCommunityFlow");
           toggleMenu();
         }}

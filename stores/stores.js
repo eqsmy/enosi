@@ -420,6 +420,33 @@ export const useChallengeStore = create()((set, get) => ({
       set({ availableChallenges: data });
     }
   },
+
+  insertChallenge: async (supabase, challenge) => {
+    const { name, description, goal_total, unit, duration, header_image } =
+      challenge;
+    const { data, error } = await supabase.from("challenges_master").insert([
+      {
+        name,
+        description,
+        goal_total,
+        unit,
+        duration,
+        header_image,
+        // Assuming you want to set the created_at to the current timestamp
+        created_at: new Date().toISOString(),
+      },
+    ]);
+
+    if (error) {
+      console.error("Error inserting new challenge", error);
+      return null; // Return or handle error as needed
+    } else {
+      console.log("New challenge inserted successfully", data);
+      // Optionally fetch challenges again to update the list
+      get().fetchChallengesMaster(supabase);
+      return data[0]; // Assuming insert returns an array, and you're interested in the first (and only) item
+    }
+  },
 }));
 
 export const useCommunityDetailStore = create()((set, get) => ({
