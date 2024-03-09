@@ -228,35 +228,6 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 30,
   },
-  label: {
-    marginBottom: 5,
-    fontFamily: FONTS.bold,
-  },
-  input: {
-    backgroundColor: COLORS.lightgrey,
-    borderRadius: 10,
-    fontFamily: FONTS.medium,
-    padding: 15,
-    fontSize: 14,
-    marginBottom: 10,
-  },
-  inputWithIcon: {
-    flex: 1,
-    fontFamily: FONTS.medium,
-    padding: 5,
-    marginLeft: 5,
-  },
-  textArea: {
-    paddingTop: 15,
-    height: 120,
-  },
-  iconInput: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.lightgrey,
-    borderRadius: 5,
-    padding: 10,
-  },
   photoPickerGroup: {
     flexDirection: "row",
     justifyContent: "space-evenly",
@@ -272,11 +243,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 5,
     height: 150,
-  },
-  photoPickerText: {
-    fontFamily: FONTS.bold,
-    color: COLORS.darkgray,
-    marginTop: 5,
   },
   imagePreview: {
     width: 100,
