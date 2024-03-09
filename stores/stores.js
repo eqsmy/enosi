@@ -421,9 +421,16 @@ export const useChallengeStore = create()((set, get) => ({
     }
   },
 
-  insertChallenge: async (supabase, challenge) => {
-    const { name, description, goal_total, unit, duration, header_image } =
-      challenge;
+  insertChallenge: async (
+    supabase,
+    user_id,
+    name,
+    description,
+    goal_total,
+    unit,
+    duration,
+    header_image
+  ) => {
     const { data, error } = await supabase.from("challenges_master").insert([
       {
         name,

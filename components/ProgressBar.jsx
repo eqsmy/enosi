@@ -34,7 +34,7 @@ const ProgressBar = ({
       {showLabel && (
         <View style={styles.goalContainer}>
           {/* Optional: Additional elements can be added here */}
-          <Text style={{ ...styles.goalText, fontSize: fontSize }}>{formattedGoal}</Text>
+          <Text style={{ ...styles.goalText, fontSize }}>{formattedGoal}</Text>
         </View>
       )}
     </View>

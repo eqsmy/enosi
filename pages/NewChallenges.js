@@ -2,25 +2,32 @@ import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
-  ScrollView,
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  Switch,
   Image,
   Platform,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { useNavigation } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import { useChallengeStore } from "../stores/stores";
 import { COLORS, FONTS } from "../constants";
 import Toast from "react-native-toast-message";
 import { decode } from "base64-arraybuffer";
 import { supabase } from "../utils/Supabase";
+import StandardTextInput from "../components/TextInput";
+import StandardPhotoPicker from "../components/PhotoPicker";
+import { useUser } from "../utils/UserContext";
 
-const NewChallenges = () => {
+const Stack = createStackNavigator();
+
+export function NewChallenges() {
   const navigation = useNavigation();
+  const { state } = useUser();
+  const userId = state.session.user.id;
   const insertChallenge = useChallengeStore((state) => state.insertChallenge);
 
   const [challengeName, setChallengeName] = useState("");
@@ -56,10 +63,6 @@ const NewChallenges = () => {
     }
   };
 
-  const backButtonHandler = () => {
-    navigation.goBack();
-  };
-
   const uploadImage = async (imageUri) => {
     const response = await fetch(imageUri);
     const blob = await response.blob();
@@ -91,12 +94,13 @@ const NewChallenges = () => {
     });
   };
 
-  const createChallenge = async () => {
+  async function createChallenge() {
     const uploadedImageUrl = headerImage
-      ? await uploadImage(headerImage)
-      : null;
+      ? uploadImage(headerImage)
+      : Promise.resolve(null);
     await insertChallenge(
       supabase,
+      userId,
       challengeName,
       challengeDescription,
       challengeGoal,
@@ -109,56 +113,63 @@ const NewChallenges = () => {
       text1: "Challenge created successfully!",
     });
     navigation.goBack();
-  };
+  }
   return (
-    <SafeAreaView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainer={styles.contentContainer}
+    >
       <View style={styles.inputGroup}>
-        <TextInput
-          style={styles.input}
-          placeholder="Challenge Name"
+        <StandardTextInput
+          labelText="Challenge Name"
+          placeholder="Enter challenge name"
           value={challengeName}
           onChangeText={setChallengeName}
         />
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          placeholder="Challenge Description"
+        <StandardTextInput
+          labelText="Challenge Description"
+          placeholder="Tell us about the challenge"
           value={challengeDescription}
           onChangeText={setChallengeDescription}
-          multiline
+          height={90}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Goal Total"
+        <StandardTextInput
+          labelText="Goal amount"
+          placeholder="Give a numeric number for the total amount"
           value={challengeGoal}
           onChangeText={setChallengeGoal}
           keyboardType="numeric"
         />
-        <TextInput
-          style={styles.input}
+        <StandardTextInput
+          labelText="Unit Type"
           placeholder="Unit (miles, hours, etc.)"
           value={challengeUnit}
           onChangeText={setChallengeUnit}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Duration (in days)"
+        <StandardTextInput
+          labelText="Duration"
+          placeholder="How long will the challenge last (in days)."
           value={challengeDuration}
           onChangeText={setChallengeDuration}
           keyboardType="numeric"
         />
       </View>
-      <TouchableOpacity style={styles.photoPicker} onPress={pickImage}>
-        <Text style={styles.photoPickerText}>Select Challenge Image</Text>
-        {headerImage && (
-          <Image source={{ uri: headerImage }} style={styles.imagePreview} />
-        )}
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.submitButton} onPress={createChallenge}>
-        <Text style={styles.submitButtonText}>Create Challenge</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+      <StandardPhotoPicker
+        photoUri={headerImage}
+        pickImage={() => pickImage(false)}
+        labelText="Select Header Photo"
+        iconName="picture-o"
+        iconSize={30}
+        iconFamily="font-awesome"
+      />
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.submitButton} onPress={createChallenge}>
+          <Text style={styles.submitButtonText}>Create Challenge</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -166,50 +177,58 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "white",
   },
-  backButton: {
-    margin: 10,
-    alignSelf: "flex-start",
+  contentContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingBottom: 20,
   },
   inputGroup: {
-    marginBottom: 20,
-  },
-  input: {
-    backgroundColor: COLORS.lightgrey,
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 10,
-    fontFamily: FONTS.medium,
-    fontSize: 14,
-  },
-  textArea: {
-    height: 100,
-  },
-  photoPicker: {
-    alignItems: "center",
-    backgroundColor: COLORS.primary,
-    padding: 10,
-    borderRadius: 5,
-  },
-  photoPickerText: {
-    fontFamily: FONTS.bold,
-    color: "white",
-    marginBottom: 10,
+    width: "100%",
+    marginBottom: 40,
   },
   imagePreview: {
     width: 100,
     height: 100,
-    borderRadius: 50,
+    borderRadius: 60,
+    marginTop: 10,
+  },
+  buttonContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 15,
+    paddingHorizontal: 80,
+    borderRadius: 30,
   },
   submitButton: {
     backgroundColor: COLORS.primary,
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 30,
+    width: "100%",
     alignItems: "center",
   },
   submitButtonText: {
     fontFamily: FONTS.bold,
     color: "white",
+    fontSize: 18,
   },
 });
 
-export default NewChallenges;
+export default function NewChallengesFlow({}) {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShadowVisible: false,
+        headerBackTitle: "Back",
+      }}
+    >
+      <Stack.Screen
+        name="NewChallenges"
+        options={{
+          title: "New Challenge",
+        }}
+        children={(props) => <NewChallenges props={props} />}
+      />
+    </Stack.Navigator>
+  );
+}

@@ -54,7 +54,7 @@ const FloatingButton = () => {
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate("NewChallenges");
+          navigation.navigate("NewChallengesFlow");
           toggleMenu();
         }}
       >
