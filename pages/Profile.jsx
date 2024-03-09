@@ -15,18 +15,21 @@ import { COLORS, FONTS } from "../constants.js";
 import { ActivityFeedProfile } from "@components/dashboard/ActivityFeed";
 import { insertFriend, removeFriend, fetchProfile } from "@stores/api";
 import FloatingButton from "../components/FloatingButton.js";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 export default function ProfilePage({ route }) {
   const { state, dispatch } = useUser();
   const [activeTab, setActiveTab] = useState("friends");
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
-  const currentUserID = route?.params?.user_id || state.session.user.id;
+  const navigation = useNavigation();
+  const currentUserID = route?.params?.user_id || state.session?.user?.id;
   const userIsMe =
-    route?.params?.user_id == state.session.user.id || !route?.params?.user_id;
+    route?.params?.user_id == state.session?.user?.id ||
+    !route?.params?.user_id;
 
   useEffect(() => {
-    async function fetch() {
+    async function fetchProfileData() {
       setLoading(true);
       const { data, error } = await fetchProfile(supabase, currentUserID);
       if (data) {
@@ -34,9 +37,31 @@ export default function ProfilePage({ route }) {
       }
       setLoading(false);
     }
+    fetchProfileData();
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={handleLogout}>
+          <Icon name="logout" size={26} color="black" paddingHorizontal={12} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, currentUserID, dispatch]);
 
-    fetch();
-  }, []);
+  // Function to handle logout
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (!error) {
+        dispatch({ type: "SET_SESSION", payload: null });
+        // Ensure the navigation is done after the state has been updated
+        navigation.navigate("Login");
+      } else {
+        console.error("Error logging out:", error);
+      }
+    } catch (error) {
+      console.error("Logout exception", error);
+    }
+  };
 
   const handleFollow = async () => {
     if (following) {
