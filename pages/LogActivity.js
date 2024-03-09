@@ -284,7 +284,7 @@ export default function LogActivity() {
                 onChangeText={(value) => setBlurb(value)}
                 spaceAbove={20}
               />
-              <Text style={{ marginTop: 10 }}>How much did u contribute?</Text>
+              <Text style={{ marginTop: 10 }}>How much did you contribute?</Text>
               <View
                 style={{
                   display: "flex",

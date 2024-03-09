@@ -37,9 +37,6 @@ import {
 import Explore from "./pages/Explore";
 import ExploreTab from "./pages/Explore";
 
-
-
-
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -140,7 +137,7 @@ function Tabs() {
 }
 
 function RootStack() {
-  const { state, dispatch } = useUser();
+  const { state } = useUser();
   useEffect(() => {
     console.log("Logged In State Changed:", state.loggedIn);
   }, [state.loggedIn]);
@@ -242,14 +239,6 @@ const AppContent = () => {
   return fontsLoaded ? (
     <NavigationContainer theme={Theme} ref={navigationRef}>
       <RootStack />
-      {/* <FAB
-        placement="right"
-        color="black"
-        icon={{ name: "add", color: "white" }}
-        size="small"
-        onPress={() => navigationRef.current?.navigate("LogActivity")}
-        style={{ position: "absolute", margin: 16, right: 10, bottom: 70 }}
-      /> */}
     </NavigationContainer>
   ) : (
     // Return null or some loading indicator while fonts are loading
