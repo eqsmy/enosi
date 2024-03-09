@@ -62,7 +62,6 @@ export function NewChallenges() {
       const imageUri = result.assets[0].uri;
       setHeaderImage(imageUri);
     }
-    
   };
 
   const uploadImage = async (imageUri) => {
@@ -96,25 +95,86 @@ export function NewChallenges() {
     });
   };
 
+  const validateChallengeData = () => {
+    // Ensure that required fields are not empty
+    if (!challengeName.trim()) {
+      Toast.show({
+        type: "error",
+        text1: "Challenge name is required.",
+      });
+      return false;
+    }
+    if (!challengeDescription.trim()) {
+      Toast.show({
+        type: "error",
+        text1: "Challenge description is required.",
+      });
+      return false;
+    }
+    if (
+      !challengeGoal.trim() ||
+      isNaN(challengeGoal) ||
+      parseFloat(challengeGoal) <= 0
+    ) {
+      Toast.show({
+        type: "error",
+        text1: "Challenge goal must be a positive number.",
+      });
+      return false;
+    }
+    if (!challengeUnit.trim()) {
+      Toast.show({
+        type: "error",
+        text1: "Unit is required.",
+      });
+      return false;
+    }
+    if (
+      !challengeDuration.trim() ||
+      isNaN(challengeDuration) ||
+      parseInt(challengeDuration, 10) <= 0
+    ) {
+      Toast.show({
+        type: "error",
+        text1: "Duration must be a positive number of days.",
+      });
+      return false;
+    }
+    // If all checks pass, return true
+    return true;
+  };
+
   async function createChallenge() {
-    const communityPhotoUrl = headerImage
+    if (!validateChallengeData()) {
+      // Validation failed; exit early
+      return;
+    }
+    const uploadedImageUrl = headerImage
       ? await uploadImage(headerImage)
       : null;
-    await insertChallenge(
-      supabase,
-      userId,
-      challengeName,
-      challengeDescription,
-      challengeGoal,
-      challengeUnit,
-      challengeDuration,
-      communityPhotoUrl
-    );
-    Toast.show({
-      type: "success",
-      text1: "Challenge created successfully!",
-    });
-    navigation.goBack();
+    try {
+      await insertChallenge(
+        supabase,
+        userId,
+        challengeName,
+        challengeDescription,
+        parseFloat(challengeGoal),
+        challengeUnit,
+        parseFloat(challengeDuration, 10),
+        uploadedImageUrl
+      );
+      Toast.show({
+        type: "success",
+        text1: "Challenge created successfully!",
+      });
+      navigation.goBack();
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "There was an error. Challenge not created.",
+        text2: error?.message || "An unexpected error occurred.",
+      });
+    }
   }
   return (
     <ScrollView
