@@ -451,7 +451,6 @@ export const useChallengeStore = create()((set, get) => ({
       console.log("New challenge inserted successfully", data);
       // Optionally fetch challenges again to update the list
       get().fetchChallengesMaster(supabase);
-      return data[0]; // Assuming insert returns an array, and you're interested in the first (and only) item
     }
   },
 }));

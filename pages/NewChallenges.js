@@ -74,7 +74,7 @@ export function NewChallenges() {
         reader.onload = async () => {
           const base64 = reader.result.split(",")[1];
           const decodedData = decode(base64);
-          const fileName = `challenges_/${new Date().getTime()}.jpg`;
+          const fileName = `challenge_photos/${new Date().getTime()}.jpg`;
 
           const resp = await supabase.storage
             .from("challenge_photos")
