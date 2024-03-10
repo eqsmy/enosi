@@ -49,12 +49,16 @@ export default function ProfilePage({ route }) {
 
   // Function to handle logout
   const handleLogout = async () => {
+    console.log("Current session state before logout:", state.session);
     try {
       const { error } = await supabase.auth.signOut();
       if (!error) {
         dispatch({ type: "SET_SESSION", payload: null });
         // Ensure the navigation is done after the state has been updated
-        navigation.navigate("Login");
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Login" }],
+        });
       } else {
         console.error("Error logging out:", error);
       }
