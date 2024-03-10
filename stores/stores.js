@@ -19,6 +19,9 @@ export const useCommunitiesStore = create()((set, get) => ({
       .single();
     if (error) {
       console.log("Error fetching communities", error);
+      if (error.code === "PGRST116") {
+        set({ communities: [] });
+      }
     }
     if (data) {
       set({ communities: data.communities });
@@ -303,6 +306,9 @@ export const useFeedStore = create()((set, get) => ({
       .single();
     if (error) {
       console.log("Error fetching feed", error);
+      if (error.code === "PGRST116") {
+        set({ feed: [] });
+      }
     }
     if (data) {
       set({ feed: prepareFeed(data) });
@@ -334,6 +340,9 @@ export const useFeedStore = create()((set, get) => ({
       .single();
     if (error) {
       console.log("Error fetching active challenges", error);
+      if (error.code === "PGRST116") {
+        set({ activeChallenges: [] });
+      }
     }
     if (data) {
       set({ activeChallenges: data.active_challenges });
