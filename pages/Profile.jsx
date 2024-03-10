@@ -28,6 +28,14 @@ export default function ProfilePage({ route }) {
     route?.params?.user_id == state.session?.user?.id ||
     !route?.params?.user_id;
 
+  if (!state.session) {
+    // route to the login page
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Login" }],
+    });
+  }
+
   useEffect(() => {
     async function fetchProfileData() {
       setLoading(true);
@@ -38,18 +46,24 @@ export default function ProfilePage({ route }) {
       setLoading(false);
     }
     fetchProfileData();
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity onPress={handleLogout}>
-          <Icon name="logout" size={26} color="black" paddingHorizontal={12} />
-        </TouchableOpacity>
-      ),
-    });
+    if (userIsMe) {
+      navigation.setOptions({
+        headerRight: () => (
+          <TouchableOpacity onPress={handleLogout}>
+            <Icon
+              name="logout"
+              size={26}
+              color="black"
+              paddingHorizontal={12}
+            />
+          </TouchableOpacity>
+        ),
+      });
+    }
   }, [navigation, currentUserID, dispatch]);
 
   // Function to handle logout
   const handleLogout = async () => {
-    console.log("Current session state before logout:", state.session);
     try {
       const { error } = await supabase.auth.signOut();
       if (!error) {
@@ -100,7 +114,7 @@ export default function ProfilePage({ route }) {
   const following =
     profile.friends && profile.friends.length > 0
       ? profile.friends.find(
-          (follower) => follower.friend_id === state.session.user.id
+          (follower) => follower.friend_id === state?.session?.user?.id
         )
       : null;
 
@@ -199,7 +213,7 @@ export default function ProfilePage({ route }) {
           <View style={{ flexDirection: "row", marginVertical: 10 }}>
             <Text style={{ color: "#555" }}>
               {`${profile?.communities?.length || 0} communities - ${
-                profile?.friends?.length
+                profile?.friends?.length || 0
               } friends`}
             </Text>
           </View>
