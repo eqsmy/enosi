@@ -6,7 +6,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { Icon } from "react-native-elements";
-import { FAB } from "@rneui/themed";
 import Toast from "react-native-toast-message";
 
 //import all the pages we have
@@ -21,6 +20,7 @@ import ChallengeDetail from "@pages/ChallengeDetail";
 import CommunityDetail from "@pages/CommunityDetail";
 import NewChallengesFlow from "./pages/NewChallenges";
 import { CommunityJoinChallenge } from "./pages/CommunityDetail";
+import ExploreTab from "./pages/Explore";
 
 //other imports we need
 import { LogoHeader } from "./components/Headers";
@@ -34,8 +34,7 @@ import {
   FONT_SOURCE_MEDIUM,
   FONT_SOURCE_BOLD,
 } from "./constants";
-import Explore from "./pages/Explore";
-import ExploreTab from "./pages/Explore";
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -53,7 +52,7 @@ const Theme = {
 };
 
 function Tabs() {
-  const { state, dispatch } = useUser();
+  const { dispatch } = useUser();
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (!error) {
@@ -62,7 +61,6 @@ function Tabs() {
       console.error("Error logging out:", error);
     }
   };
-
   return (
     <Tab.Navigator>
       <Tab.Screen
