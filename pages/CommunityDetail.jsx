@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
+  ScrollView,
 } from "react-native";
 import { supabase } from "../utils/Supabase";
 import { useCommunityDetailStore } from "@stores/stores";
@@ -56,18 +57,20 @@ export function CommunityJoinChallenge({ route }) {
           onChangeText={setSearch}
         ></TextInput>
 
-        {filteredSearchList.map((item, index) => {
-          return (
-            <ChallengeCard
-              key={index}
-              challenge={item}
-              communityId={communityId}
-              alreadyJoined={communityDetail?.challenges?.some((value) => {
-                return value.challenge_master_id == item.id;
-              })}
-            />
-          );
-        })}
+        <ScrollView style={{ paddingTop: 10 }}>
+          {filteredSearchList.map((item, index) => {
+            return (
+              <ChallengeCard
+                key={index}
+                challenge={item}
+                communityId={communityId}
+                alreadyJoined={communityDetail?.challenges?.some((value) => {
+                  return value.challenge_master_id == item.id;
+                })}
+              />
+            );
+          })}
+        </ScrollView>
       </View>
     </SafeAreaView>
   );
@@ -132,9 +135,8 @@ export default function CommunityDetail({ route }) {
               style={{
                 color: COLORS.defaultgray,
               }}
-            >{`${communityDetail.members?.length ?? 0} Members - ${
-              communityDetail.location
-            }`}</Text>
+            >{`${communityDetail.members?.length ?? 0} Members - ${communityDetail.location
+              }`}</Text>
           </View>
           <TouchableOpacity
             style={isMember ? styles.leaveButton : styles.joinButton}
