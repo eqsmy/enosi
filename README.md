@@ -1,9 +1,9 @@
-# CS147 HiFI Prototype -- enosi
+# CS194H HiFI Prototype
 
 
 ## Introduction
 
-Welcome to the CS147 HiFI Prototype! This application is designed to showcase a high-fidelity prototype developed as part of the CS147 course. It's built using React Native, Expo, and Supabase to deliver a seamless and interactive user experience.
+Welcome to root! This application is designed to showcase our final prototype as part of the CS194H course. It's built using React Native, Expo, and Supabase to deliver a seamless and interactive user experience.
 
 ## For viewing in Expo
 ![image](https://github.com/eqsmy/enosi/assets/34151362/fdf07961-1d50-4b67-a07f-e1b1589f4bdb)
