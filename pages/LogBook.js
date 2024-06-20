@@ -11,7 +11,7 @@ import {
 import { enosiStyles } from "./styles";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "../utils/Supabase";
+import { supabase } from "../utils/Supabase.js";
 import {COLORS, FONTS} from "../constants.js"
 
 export default function LogBook({ route }) {

@@ -14,7 +14,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
 import NewCommunities, { PrivacySettings } from "./NewCommunities";
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "../utils/Supabase";
+import { supabase } from "../utils/Supabase.js";
 import { useUser } from "../utils/UserContext";
 import PeopleFeed from "./People";
 import Profile from "./Profile";

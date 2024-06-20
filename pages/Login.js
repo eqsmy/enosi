@@ -11,7 +11,7 @@ import {
   View,
   Button,
 } from "react-native";
-import { supabase } from "../utils/Supabase";
+import { supabase } from "../utils/Supabase.js";
 import { useNavigation } from "@react-navigation/native";
 import { enosiStyles } from "./styles";
 import { useUser } from "../utils/UserContext";

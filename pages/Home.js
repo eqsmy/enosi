@@ -8,7 +8,7 @@ import {
   Text,
   Button,
 } from "react-native";
-import { supabase } from "../utils/Supabase";
+import { supabase } from "../utils/Supabase.js";
 import { useUser } from "../utils/UserContext";
 import { useIsFocused } from "@react-navigation/native";
 import { enosiStyles } from "./styles";

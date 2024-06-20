@@ -18,7 +18,7 @@ import {
   TouchableOpacity,
 } from "react-native-gesture-handler";
 import * as ImagePicker from "expo-image-picker";
-import { supabase } from "../utils/Supabase";
+import { supabase } from "../utils/Supabase.js";
 import { useUser } from "../utils/UserContext";
 import { decode as base64Decode } from "base-64";
 import {
